@@ -1,0 +1,447 @@
+TMyGame
+v6
+r1
+cCheck dependencies
+cCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/main.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/GLSL_helper.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+cLd /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug/MyGame normal x86_64
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+c000000005349CA9200000000000000AA
+t1397344914
+s170
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/SDKSettings.plist
+c00000000529BE98A000000000000044C
+t1385949578
+s1100
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/CoreServices/SystemVersion.plist
+c00000000531FA4DB00000000000001DE
+t1394582747
+s478
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Cocoa.framework/Cocoa
+c00000000529BE98B000000000000253C
+t1385949579
+s9532
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreVideo.framework/CoreVideo
+c00000000529BE98C0000000000017D00
+t1385949580
+s97536
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/IOKit.framework/IOKit
+c00000000531FA4DB000000000004426C
+t1394582747
+s279148
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/OpenGL
+c00000000531FA4DC000000000000BB7C
+t1394582748
+s47996
+
+N/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/5.1/include/module.map
+c00000000531FA4DD0000000000000ADC
+t1394582749
+s2780
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp
+c00000000534EE9D80000000000002DF4
+t1397680600
+s11764
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp
+c00000000534EEC010000000000000E3D
+t1397681153
+s3645
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp
+c000000005365778200000000000042CE
+t1399158658
+s17102
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/Debug/MyGame
+t2
+s0
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o
+t1399158664
+s460792
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o
+t1399158664
+s10580
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/MyGame.LinkFileList
+c000000005365778500000000000001B5
+t1399158661
+s437
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o
+t1399158664
+s235820
+
+N/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/libglfw3.a
+c00000000534C46240000000000025B70
+t1397507620
+s154480
+
+CBuild AST from /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/Airplane.cpp
+r0
+
+CBuild AST from /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp
+r0
+
+CBuild AST from /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/GLSL_helper.cpp
+r0
+
+CBuild AST from /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/cessna500.m
+r0
+
+CBuild AST from /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/main.cpp
+r0
+
+CCheck dependencies
+r0
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection18"Check dependencies18"Check dependencies21e7a105af15b941^8f53bc05af15b941^---0#1#1#--18"Check dependencies36"16E43168-FD29-488B-B18D-8147BB569D7C-
+
+CCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/Airplane.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/Airplane.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+r0
+
+CCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s420851461.803024
+e420851464.864075
+r1
+xCompileC
+xbuild/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o
+x/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.h
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_fixes.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/setup.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_detail.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_float.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_int.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_gentype.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_size.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec1.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_swizzle.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_swizzle_func.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec1.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_trigonometric.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_trigonometric.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_vectorize.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_exponential.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_exponential.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_common.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_common.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_packing.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_packing.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_geometric.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_geometric.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_matrix.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_matrix.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_vector_relational.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_vector_relational.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_noise.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_noise.inl
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:138:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]
+o                register int s =  (i >> 16) & 0x00008000;
+o                ^~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:139:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]
+o                register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
+o                ^~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:140:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]
+o                register int m =   i        & 0x007fffff;
+o                ^~~~~~~~~
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:106:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/func_integer.hpp:198:
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: warning: operator '<<' has lower precedence than '-'; '-' will be evaluated first [-Wshift-op-parentheses]
+o                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));
+o                                                               ~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: note: place parentheses around the '-' expression to silence this warning
+o                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));
+o                                                                                                                   ^
+o                                                                  (                                                                        )
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:362:20: warning: implicit conversion loses integer precision: 'size_type' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+o   TriangleCount = Mesh.Triangles.size();
+o                 ~ ^~~~~~~~~~~~~~~~~~~~~
+o5 warnings generated.
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection110"Compile /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp181"CompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o 476_Lab1/CMeshLoaderSimple.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compilerace5d605af15b941^e7c8e608af15b941^-3163"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:138:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]                register int s =  (i >> 16) & 0x00008000;                ^~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:139:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]                register int e = ((i >> 23) & 0x000000ff) - (127 - 15);                ^~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:140:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]                register int m =   i        & 0x007fffff;                ^~~~~~~~~In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:106:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/func_integer.hpp:198:/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: warning: operator '<<' has lower precedence than '-'; '-' will be evaluated first [-Wshift-op-parentheses]                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));                                                               ~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: note: place parentheses around the '-' expression to silence this warning                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));                                                                                                                   ^                                                                  (                                                                        )/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:362:20: warning: implicit conversion loses integer precision: 'size_type' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]   TriangleCount = Mesh.Triangles.size();                 ~ ^~~~~~~~~~~~~~~~~~~~~5 warnings generated.5(36%IDEClangDiagnosticActivityLogMessage2@48"'register' storage class specifier is deprecated-420851464#18446744073709551615#0#4(2@128"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic23%DVTTextDocumentLocation3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^12#9#12#9#250#0#21"Apple LLVM 5.0 Notice--2@118"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^96#9#96#9#4138#0#21"Apple LLVM 5.0 Notice--2@126"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@111"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type.hpp0000000000000000^31#9#31#9#1562#0#21"Apple LLVM 5.0 Notice--2@130"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.hpp0000000000000000^116#9#116#9#3452#0#21"Apple LLVM 5.0 Notice--1#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^137#2#137#2#3636#0#12"Deprecations1(3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^137#2#137#11#3636#9#-2@48"'register' storage class specifier is deprecated-420851464#18446744073709551615#0#4(2@128"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^12#9#12#9#250#0#21"Apple LLVM 5.0 Notice--2@118"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^96#9#96#9#4138#0#21"Apple LLVM 5.0 Notice--2@126"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@111"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type.hpp0000000000000000^31#9#31#9#1562#0#21"Apple LLVM 5.0 Notice--2@130"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.hpp0000000000000000^116#9#116#9#3452#0#21"Apple LLVM 5.0 Notice--1#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^138#2#138#2#3681#0#12"Deprecations1(3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^138#2#138#11#3681#9#-2@48"'register' storage class specifier is deprecated-420851464#18446744073709551615#0#4(2@128"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^12#9#12#9#250#0#21"Apple LLVM 5.0 Notice--2@118"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^96#9#96#9#4138#0#21"Apple LLVM 5.0 Notice--2@126"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@111"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type.hpp0000000000000000^31#9#31#9#1562#0#21"Apple LLVM 5.0 Notice--2@130"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.hpp0000000000000000^116#9#116#9#3452#0#21"Apple LLVM 5.0 Notice--1#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^139#2#139#2#3740#0#12"Deprecations1(3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^139#2#139#11#3740#9#-2@72"Operator '<<' has lower precedence than '-'; '-' will be evaluated first-420851464#18446744073709551615#0#4(2@128"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp:13:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^12#9#12#9#250#0#21"Apple LLVM 5.0 Notice--2@119"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:106:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^105#9#105#9#4440#0#21"Apple LLVM 5.0 Notice--2@135"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/func_integer.hpp:198:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.hpp0000000000000000^197#9#197#9#9736#0#21"Apple LLVM 5.0 Notice--2@67"Place parentheses around the '-' expression to silence this warning-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#94#106#94#3471#0#14"Semantic Issue2(3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#45#106#45#3422#0#3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#118#106#118#3495#0#-1#27"com.apple.dt.IDE.diagnostic3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#94#106#94#3471#0#14"Semantic Issue2(3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#45#106#118#3422#72#3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#42#106#44#3419#0#-2@87"Implicit conversion loses integer precision: 'size_type' (aka 'unsigned long') to 'int'-420851464#18446744073709551615#0#-1#27"com.apple.dt.IDE.diagnostic3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^361#19#361#19#7968#0#22"Value Conversion Issue2(3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^361#19#361#40#7968#20#3@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^361#17#361#18#7966#0#-0#0#1#-19%DVTDocumentLocation4@115"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/CMeshLoaderSimple.cpp0000000000000000^3308"CompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o 476_Lab1/CMeshLoaderSimple.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd "/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame"    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -fmodules -fmodules-cache-path=/Users/twoods0129/Library/Developer/Xcode/DerivedData/ModuleCache -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.9 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-generated-files.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-own-target-headers.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-all-target-headers.hmap -iquote /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-project-headers.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/local/include/GLFW -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/DerivedSources/x86_64 -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/DerivedSources -F/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug -MMD -MT dependencies -MF /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.d --serialize-diagnostics /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.dia -c /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/CMeshLoaderSimple.cpp -o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o36"1C35AB11-670A-45A4-A448-9961E6BF3DE2-
+b3EE96DBD-AC33-4358-A2D6-D544D39B0847
+
+CCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/GLSL_helper.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s420851461.803028
+e420851464.510110
+r1
+xCompileC
+xbuild/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o
+x/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.h
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:21:61: warning: 'gluErrorString' is deprecated: first deprecated in OS X 10.9 [-Wdeprecated-declarations]
+o                printf ("glError in file %s @ line %d: %s\n", file, line, gluErrorString (glErr));
+o                                                                          ^
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:12:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.h:13:
+oIn file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/GLUT.framework/Headers/glut.h:61:
+o/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glu.h:260:24: note: 'gluErrorString' declared here
+oextern const GLubyte * gluErrorString (GLenum error) OPENGL_DEPRECATED(10_0, 10_9);
+o                       ^
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:131:12: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+o                        count = ftell(fp);
+o                              ~ ^~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:136:13: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+o                                count = fread(content,sizeof(char),count,fp);
+o                                      ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+o3 warnings generated.
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection104"Compile /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp169"CompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o 476_Lab1/GLSL_helper.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler54e6d605af15b941^7d978208af15b941^-1791"/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:21:61: warning: 'gluErrorString' is deprecated: first deprecated in OS X 10.9 [-Wdeprecated-declarations]                printf ("glError in file %s @ line %d: %s\n", file, line, gluErrorString (glErr));                                                                          ^In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:12:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.h:13:In file included from /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/GLUT.framework/Headers/glut.h:61:/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glu.h:260:24: note: 'gluErrorString' declared hereextern const GLubyte * gluErrorString (GLenum error) OPENGL_DEPRECATED(10_0, 10_9);                       ^/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:131:12: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]                        count = ftell(fp);                              ~ ^~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.cpp:136:13: warning: implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]                                count = fread(content,sizeof(char),count,fp);                                      ~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~3 warnings generated.3(36%IDEClangDiagnosticActivityLogMessage2@61"'gluErrorString' is deprecated: first deprecated in OS X 10.9-420851464#18446744073709551615#0#1(2@30"'gluErrorString' declared here-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic23%DVTTextDocumentLocation3@162"file:///Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Headers/glu.h0000000000000000^259#23#259#23#13628#0#14"Semantic Issue--1#27"com.apple.dt.IDE.diagnostic3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^20#60#20#60#513#0#12"Deprecations--2@60"Implicit conversion loses integer precision: 'long' to 'int'-420851464#18446744073709551615#0#-1#27"com.apple.dt.IDE.diagnostic3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^130#11#130#11#3155#0#22"Value Conversion Issue2(3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^130#11#130#20#3155#8#3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^130#9#130#10#3153#0#-2@84"Implicit conversion loses integer precision: 'size_t' (aka 'unsigned long') to 'int'-420851464#18446744073709551615#0#-1#27"com.apple.dt.IDE.diagnostic3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^135#12#135#12#3273#0#22"Value Conversion Issue2(3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^135#12#135#48#3273#35#3@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^135#10#135#11#3271#0#-0#0#1#-19%DVTDocumentLocation4@109"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GLSL_helper.cpp0000000000000000^3272"CompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o 476_Lab1/GLSL_helper.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd "/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame"    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -fmodules -fmodules-cache-path=/Users/twoods0129/Library/Developer/Xcode/DerivedData/ModuleCache -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.9 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-generated-files.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-own-target-headers.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-all-target-headers.hmap -iquote /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-project-headers.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/local/include/GLFW -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/DerivedSources/x86_64 -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/DerivedSources -F/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug -MMD -MT dependencies -MF /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.d --serialize-diagnostics /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.dia -c /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/GLSL_helper.cpp -o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o36"6203BB3E-D0A1-455B-AA04-AF2CB961F089-
+b3EE96DBD-AC33-4358-A2D6-D544D39B0847
+
+CCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/cessna500.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/cessna500.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+r0
+
+CCompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/main.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler
+s420851461.803025
+e420851464.800891
+r1
+xCompileC
+xbuild/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o
+x/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp
+xnormal
+xx86_64
+xc++
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp
+d/usr/local/include/GLFW/glfw3.h
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/CMeshLoaderSimple.h
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_fixes.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/setup.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_detail.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_float.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_int.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_gentype.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_size.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec1.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_swizzle.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_swizzle_func.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec1.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_vec4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat2x4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat3x4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x2.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x2.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x3.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x3.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x4.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_mat4x4.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_trigonometric.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_trigonometric.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/_vectorize.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_exponential.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_exponential.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_common.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_common.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_packing.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_packing.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_geometric.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_geometric.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_matrix.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_matrix.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_vector_relational.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_vector_relational.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_noise.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_noise.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLHandles.h
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GLSL_helper.h
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/matrix_transform.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/matrix_transform.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/type_ptr.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/half_float.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/half_float.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/quaternion.hpp
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/quaternion.inl
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/gtc/type_ptr.inl
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:138:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]
+o                register int s =  (i >> 16) & 0x00008000;
+o                ^~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:139:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]
+o                register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
+o                ^~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:140:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]
+o                register int m =   i        & 0x007fffff;
+o                ^~~~~~~~~
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:106:
+oIn file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/func_integer.hpp:198:
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: warning: operator '<<' has lower precedence than '-'; '-' will be evaluated first [-Wshift-op-parentheses]
+o                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));
+o                                                               ~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: note: place parentheses around the '-' expression to silence this warning
+o                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));
+o                                                                                                                   ^
+o                                                                  (                                                                        )
+o/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:118:38: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+o           (t1.tv_usec - t2.tv_usec))/1000;
+o           ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+o5 warnings generated.
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection97"Compile /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp155"CompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o 476_Lab1/main.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compilerbde5d605af15b941^9faae608af15b941^-3345"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:138:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]                register int s =  (i >> 16) & 0x00008000;                ^~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:139:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]                register int e = ((i >> 23) & 0x000000ff) - (127 - 15);                ^~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.inl:140:3: warning: 'register' storage class specifier is deprecated [-Wdeprecated-register]                register int m =   i        & 0x007fffff;                ^~~~~~~~~In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:106:In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/func_integer.hpp:198:/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: warning: operator '<<' has lower precedence than '-'; '-' will be evaluated first [-Wshift-op-parentheses]                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));                                                               ~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/func_integer.inl:107:95: note: place parentheses around the '-' expression to silence this warning                        return genUType(detail::highp_int_t(1) << detail::highp_int_t(32) + detail::highp_int_t(x) - detail::highp_int_t(y));                                                                                                                   ^                                                                  (                                                                        )/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:118:38: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]           (t1.tv_usec - t2.tv_usec))/1000;           ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~5 warnings generated.5(36%IDEClangDiagnosticActivityLogMessage2@48"'register' storage class specifier is deprecated-420851464#18446744073709551615#0#5(2@115"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic23%DVTTextDocumentLocation3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^21#9#21#9#453#0#21"Apple LLVM 5.0 Notice--2@121"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@108"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GameObject.hpp0000000000000000^11#9#11#9#182#0#21"Apple LLVM 5.0 Notice--2@118"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^96#9#96#9#4138#0#21"Apple LLVM 5.0 Notice--2@126"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@111"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type.hpp0000000000000000^31#9#31#9#1562#0#21"Apple LLVM 5.0 Notice--2@130"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.hpp0000000000000000^116#9#116#9#3452#0#21"Apple LLVM 5.0 Notice--1#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^137#2#137#2#3636#0#12"Deprecations1(3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^137#2#137#11#3636#9#-2@48"'register' storage class specifier is deprecated-420851464#18446744073709551615#0#5(2@115"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^21#9#21#9#453#0#21"Apple LLVM 5.0 Notice--2@121"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@108"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GameObject.hpp0000000000000000^11#9#11#9#182#0#21"Apple LLVM 5.0 Notice--2@118"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^96#9#96#9#4138#0#21"Apple LLVM 5.0 Notice--2@126"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@111"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type.hpp0000000000000000^31#9#31#9#1562#0#21"Apple LLVM 5.0 Notice--2@130"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.hpp0000000000000000^116#9#116#9#3452#0#21"Apple LLVM 5.0 Notice--1#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^138#2#138#2#3681#0#12"Deprecations1(3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^138#2#138#11#3681#9#-2@48"'register' storage class specifier is deprecated-420851464#18446744073709551615#0#5(2@115"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^21#9#21#9#453#0#21"Apple LLVM 5.0 Notice--2@121"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@108"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GameObject.hpp0000000000000000^11#9#11#9#182#0#21"Apple LLVM 5.0 Notice--2@118"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:97:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^96#9#96#9#4138#0#21"Apple LLVM 5.0 Notice--2@126"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/type.hpp:32:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@111"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type.hpp0000000000000000^31#9#31#9#1562#0#21"Apple LLVM 5.0 Notice--2@130"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/core/type_half.hpp:117:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.hpp0000000000000000^116#9#116#9#3452#0#21"Apple LLVM 5.0 Notice--1#27"com.apple.dt.IDE.diagnostic3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^139#2#139#2#3740#0#12"Deprecations1(3@116"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/type_half.inl0000000000000000^139#2#139#11#3740#9#-2@72"Operator '<<' has lower precedence than '-'; '-' will be evaluated first-420851464#18446744073709551615#0#5(2@115"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/main.cpp:22:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^21#9#21#9#453#0#21"Apple LLVM 5.0 Notice--2@121"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/GameObject.hpp:12:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@108"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/GameObject.hpp0000000000000000^11#9#11#9#182#0#21"Apple LLVM 5.0 Notice--2@119"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/glm.hpp:106:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@105"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/glm.hpp0000000000000000^105#9#105#9#4440#0#21"Apple LLVM 5.0 Notice--2@135"In file included from /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/476_Lab1/glm/./core/func_integer.hpp:198:-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.hpp0000000000000000^197#9#197#9#9736#0#21"Apple LLVM 5.0 Notice--2@67"Place parentheses around the '-' expression to silence this warning-420851464#18446744073709551615#0#-0#27"com.apple.dt.IDE.diagnostic3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#94#106#94#3471#0#14"Semantic Issue2(3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#45#106#45#3422#0#3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#118#106#118#3495#0#-1#27"com.apple.dt.IDE.diagnostic3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#94#106#94#3471#0#14"Semantic Issue2(3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#45#106#118#3422#72#3@119"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/glm/core/func_integer.inl0000000000000000^106#42#106#44#3419#0#-2@60"Implicit conversion loses integer precision: 'long' to 'int'-420851464#18446744073709551615#0#-1#27"com.apple.dt.IDE.diagnostic3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^117#37#117#37#2971#0#22"Value Conversion Issue2(3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^116#10#117#42#2895#77#3@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^116#3#116#9#2888#0#-0#0#1#-19%DVTDocumentLocation4@102"file:///Users/twoods0129/Documents/SkyDrive/2014%20Spring%20Quarter/CPE%20476/MyGame/476_Lab1/main.cpp0000000000000000^3230"CompileC build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o 476_Lab1/main.cpp normal x86_64 c++ com.apple.compilers.llvm.clang.1_0.compiler    cd "/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame"    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x c++ -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu++11 -stdlib=libc++ -fmodules -fmodules-cache-path=/Users/twoods0129/Library/Developer/Xcode/DerivedData/ModuleCache -Wno-trigraphs -fpascal-strings -O0 -Wno-missing-field-initializers -Wno-missing-prototypes -Werror=return-type -Werror=deprecated-objc-isa-usage -Werror=objc-root-class -Wno-non-virtual-dtor -Wno-overloaded-virtual -Wno-exit-time-destructors -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wconditional-uninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wno-newline-eof -Wno-c++11-extensions -DDEBUG=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -fasm-blocks -fstrict-aliasing -Wdeprecated-declarations -Winvalid-offsetof -mmacosx-version-min=10.9 -g -fvisibility-inlines-hidden -Wno-sign-conversion -iquote /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-generated-files.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-own-target-headers.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-all-target-headers.hmap -iquote /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/MyGame-project-headers.hmap -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug/include -I/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include -I/usr/local/include/GLFW -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/DerivedSources/x86_64 -I/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/DerivedSources -F/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug -MMD -MT dependencies -MF /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.d --serialize-diagnostics /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.dia -c /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/476_Lab1/main.cpp -o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o36"EE30C4E4-68CF-4416-BCDD-305914D84766-
+b3EE96DBD-AC33-4358-A2D6-D544D39B0847
+
+CLd /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug/MyGame normal x86_64
+s420851465.142341
+e420851469.402992
+r1
+xLd
+x/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/Debug/MyGame
+xnormal
+xx86_64
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/MyGame.LinkFileList
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/CMeshLoaderSimple.o
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/GLSL_helper.o
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/main.o
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/IOKit.framework/IOKit
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Cocoa.framework/Cocoa
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreVideo.framework/CoreVideo
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/OpenGL
+d/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/libglfw3.a
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/libc++.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/libSystem.dylib
+d/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/5.1/lib/darwin/libclang_rt.osx.a
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/AppKit.framework/AppKit
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreData.framework/CoreData
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libcache.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libcommonCrypto.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libcompiler_rt.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libcopyfile.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libcorecrypto.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libdispatch.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libdyld.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libkeymgr.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/liblaunch.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libmacho.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libquarantine.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libremovefile.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_asl.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_blocks.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_c.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_configuration.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_dnssd.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_info.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_kernel.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_m.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_malloc.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_network.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_notify.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_platform.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_pthread.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_sandbox.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libsystem_stats.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libunc.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libunwind.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/system/libxpc.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGLU.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Foundation.framework/Foundation
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreText.framework/CoreText
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ImageIO.framework/ImageIO
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ATS.framework/Versions/A/ATS
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/ColorSync.framework/Versions/A/ColorSync
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/CoreServices
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/HIServices
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/LangAnalysis.framework/Versions/A/LangAnalysis
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/PrintCore.framework/Versions/A/PrintCore
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/QD.framework/Versions/A/QD
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/SpeechSynthesis.framework/Versions/A/SpeechSynthesis
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/usr/lib/libobjc.A.dylib
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CFNetwork.framework/CFNetwork
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/CarbonCore
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Metadata
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/OSServices.framework/Versions/A/OSServices
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/SearchKit.framework/Versions/A/SearchKit
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/AE.framework/Versions/A/AE
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/LaunchServices
+d/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/DictionaryServices.framework/Versions/A/DictionaryServices
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection95"Link /Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame/build/Debug/MyGame35"Ld build/Debug/MyGame normal x86_64f08a2409af15b941^732c670daf15b941^---0#0#1#--1215"Ld build/Debug/MyGame normal x86_64    cd "/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/MyGame"    export MACOSX_DEPLOYMENT_TARGET=10.9    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -L/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug -L/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame -F/Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug -filelist /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/MyGame.LinkFileList -mmacosx-version-min=10.9 -stdlib=libc++ -framework IOKit -framework Cocoa -framework CoreVideo -framework OpenGL -lglfw3 -Xlinker -dependency_info -Xlinker /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/MyGame.build/Debug/MyGame.build/Objects-normal/x86_64/MyGame_dependency_info.dat -o /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/build/Debug/MyGame36"78D644C6-CB68-4524-AF82-1681F445F3C9-
+b3EE96DBD-AC33-4358-A2D6-D544D39B0847
+
