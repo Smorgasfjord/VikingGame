@@ -19,7 +19,14 @@
 
 
 #include <GL\glew.h>
-#include <Windows.h>
+
+#define GLFW_INCLUDE_GLU
+#include "glfw3.h"
+
+#pragma comment (lib, "glfw3.lib")
+#pragma comment (lib, "glew32s.lib")
+
+
 
 //Std
 #include <stdlib.h>
@@ -32,9 +39,8 @@
 #include <stdio.h>
 #include <vector>
 
-#define GLFW_INCLUDE_GLU
-#include "glfw3.h"
 
+#include <Windows.h>
 
 //Models
 #include "Models/Model.h"
@@ -63,8 +69,6 @@
 #define PLANE_HEIGHT 1.25
 #define WALL_COLLISION_SIZE .63
 
-//Material selection constants
-#define GROUND_MAT 3
 
 using namespace std;
 
@@ -104,8 +108,8 @@ float camDistance = 3;
 glm::vec3 eye = glm::vec3(g_groundSize / 2, firstPersonHeight, g_groundSize / 2);
 glm::vec3 lookAt = glm::vec3(g_groundSize / 2 + 1, firstPersonHeight, g_groundSize / 2 + 1);
 glm::vec3 upV = glm::vec3(0, 1, 0);
-float pitch = -pi/4;
-float yaw = pi/2;
+float pitch = (float)(-pi/4);
+float yaw = (float)(pi / 2);
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
@@ -132,7 +136,7 @@ void SetView() {
 //Generates a random float within the range min-max
 float randomFloat(float min, float max)
 {
-   return (max - min) * (rand() / (double) RAND_MAX) + min;
+   return (float)((max - min) * (rand() / (double) RAND_MAX) + min);
 }
 
 int diffMs(timeval t1, timeval t2)
@@ -448,6 +452,14 @@ int main( int argc, char *argv[] )
    glfwSetWindowSizeCallback(window, ReshapeGL);
    glfwSetWindowPos(window, 20, 20);
    
+   unsigned int Error = glewInit();
+   if (Error != GLEW_OK)
+   {
+	   std::cerr << "Error initializing glew! " << glewGetErrorString(Error) << std::endl;
+	   system("PAUSE");
+	   exit(33);
+   }
+
    //test the openGL version
    getGLversion();
    //install the shader

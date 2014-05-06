@@ -18,6 +18,7 @@
 #endif
 
 #include <glew.h>
+#include "glfw3.h""
 
 #include <stdlib.h>
 #include <stdio.h>

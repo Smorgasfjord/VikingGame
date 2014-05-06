@@ -7,7 +7,14 @@
 //
 
 #include "Bjorn.h"
+
+
+#ifdef __WIN32__
+#include <time.h>
+#endif
+#ifdef __APPLE__
 #include <sys/time.h>
+#endif
 #include "Mountain.h"
 #include "../Utils/World.h"
 #include "../glm/glm.hpp"
@@ -44,9 +51,8 @@ int diff_ms(timeval t1, timeval t2)
 
 void Bjorn::step()
 {
-   timeval curtime;
-   gettimeofday(&curtime, NULL);
-   float deltaT = (float)(diff_ms(curtime, lastUpdated));
+	double curtime = glfwGetTime();
+   float deltaT = (float)(curtime -  lastUpdated);
    //Fall due to gravity if not colliding with anything
    position += (deltaT / 500.0f) * GameObject::velocity;
    if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)

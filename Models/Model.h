@@ -10,6 +10,7 @@
 #define __levelBuilder__Model__
 
 #include <iostream>
+#include <GL\glew.h>
 #ifdef __APPLE__
 #include <OPENGL/gl.h>
 #endif

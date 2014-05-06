@@ -2,15 +2,19 @@
 #define _CMESHLOADER_C
 #include "CMeshLoaderSimple.h"
 
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <string>
 #include <streambuf>
 #include "../glm/glm.hpp"
+
+using namespace std;
 
 class SColor
 {
@@ -472,8 +476,8 @@ void CMesh::resizeMesh(SVector3 const & Scale)
 	}
    
 	SVector3 Extent = (Max - Min);
-	SVector3 Resize = Scale / std::max(Extent.X, std::max(Extent.Y, Extent.Z));
-	for (std::vector<SVertex>::iterator it = Vertices.begin(); it != Vertices.end(); ++ it)
+	SVector3 Resize = Scale / max(Extent.X, max(Extent.Y, Extent.Z));
+	for (vector<SVertex>::iterator it = Vertices.begin(); it != Vertices.end(); ++ it)
 		it->Position *= Resize;
 }
 #endif

@@ -14,6 +14,7 @@
 
 #ifdef _WIN32
 #include <GL\glew.h>
+#include "glfw3.h"
 #endif
 
 

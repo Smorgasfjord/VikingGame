@@ -11,6 +11,14 @@
 
 #include <iostream>
 
+#include <GL\glew.h>
+
+#define GLFW_INCLUDE_GLU
+#include "glfw3.h"
+
+#pragma comment (lib, "glfw3.lib")
+#pragma comment (lib, "glew32.lib")
+
 #include "GameObject.hpp"
 #include "../Utils/World.h"
 #include "../Models/Model.h"
@@ -33,7 +41,7 @@ class Bjorn : public GameObject
       World world;
       Model mod;
       float mass = 100;
-      float gravity = -.8;
+      float gravity = (float)(-.8);
 };
 
 #endif /* defined(__MyGame__Bjorn__) */

@@ -7,7 +7,7 @@
 //
 
 #include "Model.h"
-#include "CMeshLoaderSimple.h"
+#include "..\Utils\CMeshLoaderSimple.h"
 
  Model Model::init_Ground(float g_groundY)
 {
