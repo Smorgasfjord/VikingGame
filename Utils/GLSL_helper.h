@@ -17,6 +17,8 @@
 #include <GL/glut.h>
 #endif
 
+#include <glew.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

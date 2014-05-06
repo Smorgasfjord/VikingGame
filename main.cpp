@@ -16,14 +16,25 @@
 #include <GL/glut.h>
 #endif
 
-#define GLFW_INCLUDE_GLU
-#include "glfw3.h"
+
+
+#include <GL\glew.h>
+#include <Windows.h>
 
 //Std
 #include <stdlib.h>
+#ifdef __WIN32__
+#include <time.h>
+#endif
+#ifdef __APPLE__
 #include <sys/time.h>
+#endif
 #include <stdio.h>
 #include <vector>
+
+#define GLFW_INCLUDE_GLU
+#include "glfw3.h"
+
 
 //Models
 #include "Models/Model.h"
@@ -81,7 +92,7 @@ Hammer hammer;
 
 //Text
 int playerScore = 0;
-timeval lastUpdated;
+double lastUpdated;
 float frameRate;
 
 //Light
@@ -130,7 +141,7 @@ int diffMs(timeval t1, timeval t2)
            (t1.tv_usec - t2.tv_usec))/1000;
 }
 
-/* Initialization of objects in the world */
+/* Initialization of objects in the world. Only occurs Once */
 void setWorld()
 {
    //Mountain
@@ -176,7 +187,8 @@ void setWorld()
    bjorn = Bjorn(lookAt, handles, bjornMod, world);
    hammer = Hammer(handles, hammerMod, world, &bjorn);
    
-   gettimeofday(&lastUpdated, NULL);
+   glfwSetTime(0);
+   lastUpdated = glfwGetTime();
 }
 
 /* Set up matrices to place model in the world */
@@ -395,9 +407,8 @@ bool detectCollision(glm::vec3 eye, glm::vec3 delta)
 
 void Animate()
 {
-   timeval curTime;
-   gettimeofday(&curTime, NULL);
-   frameRate = 1000 / (diffMs(curTime, lastUpdated) + 1);
+   double curTime = glfwGetTime();
+   frameRate = 1000 / (curTime - lastUpdated + 1);
    /*
    cout << "Update @ " << curTime.tv_sec << "\n";
    cout << "\tCurrent score: " << playerScore << "\n";
