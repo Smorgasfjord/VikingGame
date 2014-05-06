@@ -22,7 +22,7 @@ public:
    Hammer();
    Hammer(GLHandles hand, Model model, World world, Bjorn *character);
    void updatePos(float dx, float dy);
-   void updateAngle(float dx, float dy);
+   void updateAngle(float x, float y);
 private:
    void SetModel(glm::vec3 loc, glm::vec3 size, float rotation);
    World world;

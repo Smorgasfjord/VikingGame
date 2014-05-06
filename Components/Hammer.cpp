@@ -38,43 +38,29 @@ void Hammer::updatePos(float x, float y)
    position.y = y;
 }
 
-void Hammer::updateAngle(float dx, float dy)
+void Hammer::updateAngle(float x, float y)
 {
-   glm::vec2 hammerTip = glm::vec2(position.x, position.y);
-   hammerTip.y += sin(d2r(-rotation)) * (LENGTH / 2.0f);
-   hammerTip.x -= cos(d2r(-rotation)) * (LENGTH / 2.0f);
    glm::vec2 bjornVec = glm::vec2(bjorn->getPos().x, bjorn->getPos().y);
-   glm::vec2 desiredHammerTip = glm::vec2(hammerTip.x - dx, hammerTip.y + dy);
-   glm::vec2 desiredToBjorn = bjornVec - desiredHammerTip;
-   glm::vec2 currentToBjorn = bjornVec - hammerTip;
-   float dotP = glm::dot(desiredToBjorn, currentToBjorn);
-   float angle = acos( dotP / (currentToBjorn.length() * desiredToBjorn.length()));
+   glm::vec2 desiredHammerTip = glm::vec2(x, y);
+   //Vector along which the hammer should end upt
+   glm::vec2 desiredToBjorn = glm::normalize(bjornVec - desiredHammerTip);
+   //Angle between desired vector and neutral hammer position (straight forward)
+   float angle = acos(glm::dot(desiredToBjorn, glm::vec2(-1, 0)));
    if(!isnan(angle))
    {
-      cout << "Current Rotation: " << rotation << "\n";
-      cout << "\tdx/dy: (" << dx << ", " << dy << ")\n";
-      cout << "\tHammer Position: (" << position.x << ", " << position.y << ")\n";
-      cout << "\tHammer Tip: (" << hammerTip.x << ", " << hammerTip.y << ")\n";
-      cout << "\tBjorn: (" << bjornVec.x << ", " << bjornVec.y << ")\n";
-      cout << "\tDesired Hammer Tip: (" << desiredHammerTip.x << ", " << desiredHammerTip.y << ")\n";
-      cout << "\tDesired to Bjorn: (" << desiredToBjorn.x << ", " << desiredToBjorn.y << ")\n";
-      cout << "\tCurrent to Bjorn: (" << currentToBjorn.x << ", " << currentToBjorn.y << ")\n";
-      cout << "\tDotP: " << dotP << "\n";
-      cout << "\tangle " << angle * (180 / pi) << "\n";
       //Move hammer so it is centered on bjorn
-      position.y -= sin(d2r(-rotation)) * (LENGTH / 2.0f);
-      position.x += cos(d2r(-rotation)) * (LENGTH / 2.0f);
-      //Rotate by angle
-      if(angle < 180)
-         rotation += angle * (180 / pi);
+      position.y -= sin(d2r(rotation)) * (LENGTH / 2.0f);
+      position.x += cos(d2r(rotation)) * (LENGTH / 2.0f);
+      
+      //Set the rotation
+      if(y > bjornVec.y)
+         rotation = -angle  * (180 / pi);
       else
-         rotation -= angle * (180 / pi);
-      if (rotation > 180) {
-         rotation -= 360;
-      }
+         rotation = angle  * (180 / pi);
+
       //Move out along new vector
-      position.y += sin(d2r(-rotation)) * (LENGTH / 2.0f);
-      position.x -= cos(d2r(-rotation)) * (LENGTH / 2.0f);
+      position.y += sin(d2r(rotation)) * (LENGTH / 2.0f);
+      position.x -= cos(d2r(rotation)) * (LENGTH / 2.0f);
    }
    
 }
@@ -101,7 +87,6 @@ void Hammer::step()
    hammerTip.x -= cos(d2r(-rotation)) * (LENGTH / 2.0f);
    if(world.detectCollision(glm::vec3(hammerTip.x, hammerTip.y, position.z)) == 1 && !collision)
    {
-      cout << "Hit a platform";
       bjorn->launch(45);
       collision = true;
    }

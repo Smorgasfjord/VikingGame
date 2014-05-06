@@ -315,57 +315,34 @@ void ReshapeGL (GLFWwindow* window, int width, int height)
 	glViewport (0, 0, (GLsizei)(width), (GLsizei)(height));
 }
 
-/* Convert pixel x coordinates into world space */
-float p2wx(int in_x) {
-   //fill in with the correct return value
-   float l, r;
-   float c, d;
-   
-   if(g_width > g_height)
-   {
-      l = -1 *(g_width) / (g_height);
-      r = g_width / g_height;
+float p2wx(double in_x) {
+   if (g_width > g_height) {
+      return g_width / g_height * (2.0 * in_x / g_width - 1.0);
    }
-   else{
-      l = -1;
-      r = 1;
+   else {
+      return 2.0 * in_x / g_width - 1.0;
    }
-   
-   c = (1 - g_width) / (l - r);
-   d = ((g_width - 1) / (l - r)) * l;
-   
-   return (in_x - d) / c;
 }
 
-/* Convert pixel y coordinates into world space */
-float p2wy(int in_y) {
-   float b, t;
-   float e, f;
+float p2wy(double in_y) {
    //flip glut y
    in_y = g_height - in_y;
-   
-   if(g_width > g_height)
-   {
-      b = -1;
-      t = 1;
+   if (g_width < g_height) {
+      return g_height / g_width * (2.0 * in_y / g_height - 1.0);
    }
-   else{
-      b = -1 * (g_height) / (g_width);
-      t = g_height / g_width;
+   else {
+      return 2.0 * in_y / g_height - 1.0;
    }
-   e = (1 - g_height) / (b - t);
-   f = ((g_height - 1) / (b - t)) * b;
-   
-   return (in_y - f) / e;
 }
 
 /* Tracks mouse movement for the camera */
 void mouse(GLFWwindow* window, double x, double y)
 {
-   glm::vec2 currentPos = glm::vec2(x, y);
-   glm::vec2 delta = currentPos - prevMouseLoc;
+   glm::vec2 currentPos = glm::vec2(p2wx(x), p2wy(y));
+   currentPos.x += bjorn.getPos().x;
+   currentPos.y += bjorn.getPos().y;
    
-   hammer.updateAngle(delta.x, delta.y);
+   hammer.updateAngle(currentPos.x, currentPos.y);
    
    prevMouseLoc = currentPos;
 }
@@ -456,7 +433,7 @@ int main( int argc, char *argv[] )
    glfwMakeContextCurrent(window);
    glfwSetKeyCallback(window, key_callback);
    glfwSetCursorPosCallback(window, mouse);
-   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+   //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
    glfwSetWindowPos(window, 20, 20);
    

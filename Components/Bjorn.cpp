@@ -50,9 +50,7 @@ void Bjorn::step()
    //Fall due to gravity if not colliding with anything
    position += (deltaT / 500.0f) * GameObject::velocity;
    if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)
-   {
       velocity.y += ((mass * gravity) * .002f);
-   }
    else
    {
       position.y = world.getY(position);
