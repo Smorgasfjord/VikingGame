@@ -1,6 +1,7 @@
 dependencies: \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/Bjorn.cpp \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/Bjorn.h \
+  /usr/local/include/GLFW/glfw3.h \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/GameObject.hpp \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../glm/glm.hpp \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../glm/core/_fixes.hpp \

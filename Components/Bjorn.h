@@ -11,13 +11,14 @@
 
 #include <iostream>
 
+#ifdef __WIN32__
 #include <GL\glew.h>
+#pragma comment (lib, "glfw3.lib")
+#pragma comment (lib, "glew32.lib")
+#endif
 
 #define GLFW_INCLUDE_GLU
 #include "glfw3.h"
-
-#pragma comment (lib, "glfw3.lib")
-#pragma comment (lib, "glew32.lib")
 
 #include "GameObject.hpp"
 #include "../Utils/World.h"

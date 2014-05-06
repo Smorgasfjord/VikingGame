@@ -9,10 +9,15 @@
 #ifndef GAME_OBJ
 #define GAME_OBJ
 
+#ifdef __APPLE__
+#include <sys/time.h>
+#endif
+#ifdef __WIN32__
 #include <GL\glew.h>
-#include <Time.h>
-
 #include <Windows.h>
+#include <time.h>
+#endif
+
 #include "../glm/glm.hpp"
 #include "../Utils/GLHandles.h"
 using namespace std;

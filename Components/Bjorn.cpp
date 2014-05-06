@@ -8,13 +8,13 @@
 
 #include "Bjorn.h"
 
-
 #ifdef __WIN32__
 #include <time.h>
 #endif
 #ifdef __APPLE__
 #include <sys/time.h>
 #endif
+
 #include "Mountain.h"
 #include "../Utils/World.h"
 #include "../glm/glm.hpp"
@@ -53,8 +53,10 @@ void Bjorn::step()
 {
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
+   cout << deltaT << "\n";
+   //Update position based on velocity
+   position += deltaT * GameObject::velocity;
    //Fall due to gravity if not colliding with anything
-   position += (deltaT / 500.0f) * GameObject::velocity;
    if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)
       velocity.y += ((mass * gravity) * .002f);
    else

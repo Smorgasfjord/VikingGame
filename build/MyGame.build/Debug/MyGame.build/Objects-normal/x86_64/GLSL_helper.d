@@ -1,3 +1,4 @@
 dependencies: \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Utils/GLSL_helper.cpp \
-  /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Utils/GLSL_helper.h
+  /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Utils/GLSL_helper.h \
+  /usr/local/include/GLFW/glfw3.h

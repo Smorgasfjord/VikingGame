@@ -10,37 +10,29 @@
 #define MAIN
 
 #ifdef __APPLE__
+#include <glew.h>
 #include <OPENGL/gl.h>
+#include <sys/time.h>
 #endif
 #ifdef __unix__
+#include <GL/glew.h>
 #include <GL/glut.h>
 #endif
-
-
-
+#ifdef __WIN32__
+#include <time.h>
 #include <GL\glew.h>
+#include <Windows.h>
+#pragma comment (lib, "glfw3.lib")
+#pragma comment (lib, "glew32s.lib")
+#endif
 
 #define GLFW_INCLUDE_GLU
 #include "glfw3.h"
 
-#pragma comment (lib, "glfw3.lib")
-#pragma comment (lib, "glew32s.lib")
-
-
-
 //Std
 #include <stdlib.h>
-#ifdef __WIN32__
-#include <time.h>
-#endif
-#ifdef __APPLE__
-#include <sys/time.h>
-#endif
 #include <stdio.h>
 #include <vector>
-
-
-#include <Windows.h>
 
 //Models
 #include "Models/Model.h"

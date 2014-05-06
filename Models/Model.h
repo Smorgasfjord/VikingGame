@@ -9,11 +9,14 @@
 #ifndef __levelBuilder__Model__
 #define __levelBuilder__Model__
 
-#include <iostream>
+#ifdef __WIN32__
 #include <GL\glew.h>
+#endif
 #ifdef __APPLE__
 #include <OPENGL/gl.h>
 #endif
+
+#include <iostream>
 
 class Model
 {

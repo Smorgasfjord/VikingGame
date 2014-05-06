@@ -70,7 +70,6 @@ void World::draw()
       glDrawElements(GL_TRIANGLES, grndMod.iboLen, GL_UNSIGNED_SHORT, 0);
    }
    
-   
    SetMaterial(2);
    mount.draw();
    

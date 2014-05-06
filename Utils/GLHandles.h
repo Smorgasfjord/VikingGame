@@ -15,8 +15,6 @@
 #include <OPENGL/gl.h>
 #endif
 
-#include <glew.h>
-
 class GLHandles
 {
    public:
