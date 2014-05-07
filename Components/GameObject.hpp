@@ -22,7 +22,7 @@
 #include "../Utils/GLHandles.h"
 using namespace std;
 
-class GameObject
+class pGameObject
 {
    protected:
       glm::vec3 position;

@@ -9,17 +9,24 @@
 #ifndef __MyGame__Hammer__
 #define __MyGame__Hammer__
 
+
+#ifdef __WIN32__
+#include "../glm/glm.hpp"
+#else
+#include "../glm/glm.hpp"
+#endif
+
 #include <iostream>
 #include "GameObject.hpp"
 #include "Bjorn.h"
-#include "../glm/glm.hpp"
 
-class Hammer : public GameObject
+class Hammer : public pGameObject
 {
 public:
    void step();
    void draw();
    Hammer();
+   ~Hammer();
    Hammer(GLHandles hand, Model model, World world, Bjorn *character);
    void updatePos(float dx, float dy);
    void updateAngle(float x, float y);
@@ -28,8 +35,8 @@ private:
    World world;
    Model mod;
    Bjorn *bjorn;
-   bool collision = false;
-   float mass = 100;
+   bool collision;
+   float mass;
    float previousAngle;
 };
 

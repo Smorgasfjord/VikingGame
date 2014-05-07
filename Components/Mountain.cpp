@@ -30,7 +30,7 @@ Mountain::Mountain(glm::vec3 pos, GLHandles hand, Model model)
    position = pos;
    size = glm::vec3(1.0f);
    rotation = 0;
-   GameObject::handles = hand;
+   pGameObject::handles = hand;
    velocity = glm::vec3(0);
    mod = model;
 }
@@ -47,8 +47,8 @@ void Mountain::SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
    glm::mat4 Rotate = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 0, 1));
    
    glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(GameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(GameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
+   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
+   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
 

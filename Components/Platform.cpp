@@ -36,7 +36,7 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, Model model)
 {
    position = glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos));
    this->size = glm::vec3(1.0f);
-   GameObject::handles = hand;
+   pGameObject::handles = hand;
    velocity = glm::vec3(0);
    mod = model;
    rotation = 0;
@@ -60,7 +60,7 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
    this->size = size;
    this->rotation = rotation;
    mountainSide = mountSide;
-   GameObject::handles = hand;
+   pGameObject::handles = hand;
    velocity = glm::vec3(0);
    mod = model;
 }
@@ -90,9 +90,9 @@ string Platform::toString()
 }
 
 //Read in a .lvl file of the given name
-vector<Platform> Platform::importLevel(std::string const & fileName, GLHandles handles, Model platMod)
+std::vector<Platform> Platform::importLevel(std::string const & fileName, GLHandles handles, Model platMod)
 {
-   vector<Platform> plats;
+   std::vector<Platform> plats;
    std::ifstream File;
 	File.open(fileName.c_str());
    
@@ -105,7 +105,7 @@ vector<Platform> Platform::importLevel(std::string const & fileName, GLHandles h
 	{
 		string ReadString;
       string pos, size, rot, side;
-      glm::vec3 position, sizeVec;
+      glm::vec3 position = glm::vec3(1.0f), sizeVec = glm::vec3(1.0f);
       float rotation;
       int mountainSide;
 		getline(File, ReadString);
@@ -239,8 +239,8 @@ void Platform::SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
       Rotate *= glm::rotate(glm::mat4(1.0f), rotation / 2, glm::vec3(0, 1, 0));
    
    glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(GameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(GameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
+   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
+   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
 void Platform::draw()

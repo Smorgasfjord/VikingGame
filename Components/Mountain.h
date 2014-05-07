@@ -15,7 +15,7 @@
 #include "../Models/Model.h"
 #include "../glm/glm.hpp"
 
-class Mountain : public GameObject
+class Mountain : public pGameObject
 {
    public:
       void step();

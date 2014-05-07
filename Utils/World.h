@@ -13,6 +13,7 @@
 #include <OPENGL/gl.h>
 #endif
 #ifdef __unix__
+#include <GL/glew.h>
 #include <GL/glut.h>
 #endif
 
@@ -36,7 +37,8 @@ class World
    public:
       void draw();
       World();
-      World(vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles handles, int shadeProg);
+      ~World();
+      World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles handles, int shadeProg);
       int detectCollision(glm::vec3 pos);
       float getY(glm::vec3 pos);
    private:
@@ -44,9 +46,9 @@ class World
       void setGround(glm::vec3 loc);
       void SetMaterial(int i);
       Model grndMod;
-      vector<Platform> platforms;
+      std::vector<Platform> platforms;
       Mountain mount;
-      vector<glm::vec3> groundTiles;
+      std::vector<glm::vec3> groundTiles;
       GLHandles handles;
 };
 

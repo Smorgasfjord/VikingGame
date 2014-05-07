@@ -25,6 +25,10 @@
 #define MAX_SPEED .8
 #define HEIGHT 0.5
 
+Bjorn::~Bjorn()
+{
+}
+
 Bjorn::Bjorn()
 {
    
@@ -37,7 +41,7 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, Model model, World world)
    position.z += .5f;
    size = glm::vec3(1.0f);
    rotation = 0;
-   GameObject::handles = hand;
+   pGameObject::handles = hand;
    velocity = glm::vec3(0);
    mod = model;
    this->world = world;
@@ -54,7 +58,7 @@ void Bjorn::step()
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
    //Update position based on velocity
-   position += deltaT * GameObject::velocity;
+   position += deltaT * pGameObject::velocity;
    //Fall due to gravity if not colliding with anything
    if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)
       velocity.y += ((mass * gravity) * .002f);
@@ -74,7 +78,7 @@ void Bjorn::step()
    position.z = Mountain::getZ(position);
    lastUpdated = curtime;
    
-   //cout << "(" << GameObject::position.x << ", " << GameObject::position.y << ", " << GameObject::position.z << ")\n" << "Last Updated: " << lastUpdated.tv_usec << "\n";
+   //cout << "(" << pGameObject::position.x << ", " << pGameObject::position.y << ", " << pGameObject::position.z << ")\n" << "Last Updated: " << lastUpdated.tv_usec << "\n";
    return;
 }
 
@@ -91,8 +95,8 @@ void Bjorn::SetModel(glm::vec3 loc, glm::vec3 size) {
    
    
    glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(GameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(GameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
+   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
+   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
 void Bjorn::moveRight()

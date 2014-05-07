@@ -15,6 +15,10 @@
 #ifdef __APPLE__
 #include <OPENGL/gl.h>
 #endif
+#ifdef __unix__
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
 
 #include <iostream>
 

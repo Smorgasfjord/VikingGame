@@ -18,19 +18,26 @@
 #endif
 
 #define GLFW_INCLUDE_GLU
+#ifdef __unix__
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GLFW/glfw3.h>
+#else
 #include "glfw3.h"
+#endif
 
 #include "GameObject.hpp"
 #include "../Utils/World.h"
 #include "../Models/Model.h"
 
 
-class Bjorn : public GameObject
+class Bjorn : public pGameObject
 {
    public:
       void step();
       void draw();
       Bjorn();
+      ~Bjorn();
       Bjorn(glm::vec3 pos, GLHandles hand, Model model, World world);
       glm::vec3 getPos();
       void moveRight();
@@ -41,8 +48,8 @@ class Bjorn : public GameObject
       void SetModel(glm::vec3 loc, glm::vec3 size);
       World world;
       Model mod;
-      float mass = 100;
-      float gravity = (float)(-.8);
+      float mass;
+      float gravity;
 };
 
 #endif /* defined(__MyGame__Bjorn__) */

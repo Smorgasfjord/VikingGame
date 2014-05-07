@@ -22,7 +22,7 @@
 #define MOUNT_LEFT 3
 #define STEP .05
 
-class Platform : public GameObject
+class Platform : public pGameObject
 {
    public:
       void step();

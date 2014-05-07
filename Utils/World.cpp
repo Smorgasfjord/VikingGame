@@ -8,12 +8,16 @@
 
 #include "World.h"
 
+World::~World()
+{
+}
+
 World::World()
 {
    
 }
 
-World::World(vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles handles, int shadeProg)
+World::World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles handles, int shadeProg)
 {
    platforms = plats;
    mount = mnt;

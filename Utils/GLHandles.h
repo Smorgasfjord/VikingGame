@@ -14,12 +14,19 @@
 #ifdef __APPLE__
 #include <OPENGL/gl.h>
 #endif
+#ifdef __unix__
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
 
 class GLHandles
 {
    public:
+      int ShadeProg;
       GLint aPosition;
       GLint aNormal;
+      GLuint aUV;
+      GLuint uTexUnit;
       GLint uModelMatrix;
       GLint uViewMatrix;
       GLint uProjMatrix;

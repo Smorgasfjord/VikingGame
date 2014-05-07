@@ -18,7 +18,7 @@
 #endif
 
 
-#include "glfw3.h"
+//#include "glfw3.h"
 
 #include <stdlib.h>
 #include <stdio.h>

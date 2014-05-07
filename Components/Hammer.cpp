@@ -10,6 +10,10 @@
 #define LENGTH 1.0
 #define pi 3.14159
 
+Hammer::~Hammer()
+{
+   
+}
 Hammer::Hammer()
 {
    
@@ -81,8 +85,8 @@ void Hammer::SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
    
    
    glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(GameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(GameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
+   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
+   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
 void Hammer::step()

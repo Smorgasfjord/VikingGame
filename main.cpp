@@ -27,7 +27,7 @@
 #endif
 
 #define GLFW_INCLUDE_GLU
-#include "glfw3.h"
+#include <GLFW/glfw3.h>
 
 //Std
 #include <stdlib.h>
@@ -36,9 +36,11 @@
 
 //Models
 #include "Models/Model.h"
+#include "GameModel.h"
 
 //Components
 #include "Components/GameObject.hpp"
+#include "GameObject.h"
 #include "Components/Platform.h"
 #include "Components/Mountain.h"
 #include "Components/Hammer.h"
@@ -75,6 +77,10 @@ static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
 
 
+//Test
+GameModel OModl;
+GameObject Orange;
+
 //World
 World world;
 
@@ -95,13 +101,13 @@ float frameRate;
 glm::vec3 lightPos;
 
 //Camera
-float firstPersonHeight = 1;
-float camDistance = 3;
-glm::vec3 eye = glm::vec3(g_groundSize / 2, firstPersonHeight, g_groundSize / 2);
-glm::vec3 lookAt = glm::vec3(g_groundSize / 2 + 1, firstPersonHeight, g_groundSize / 2 + 1);
-glm::vec3 upV = glm::vec3(0, 1, 0);
-float pitch = (float)(-pi/4);
-float yaw = (float)(pi / 2);
+float firstPersonHeight = 1.0f;
+float camDistance = 3.0f;
+glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize / 2.0);
+glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
+glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
+float pitch = -pi/4.0f;
+float yaw = pi/2.0f;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
@@ -145,10 +151,10 @@ void setWorld()
    Mountain mount;
    //Platforms
    Model platMod;
-   vector<Platform> platforms;
+   std::vector<Platform> platforms;
    //Ground
    Model grndMod;
-   vector<glm::vec3> groundTiles;
+   std::vector<glm::vec3> groundTiles;
    
    //Initialize models
    grndMod = Model::init_Ground(g_groundY);
@@ -167,7 +173,7 @@ void setWorld()
    lightPos= glm::vec3(5, 5, 0);
    
    //Send light data to shader
-   safe_glUniform3f(handles.uLightColor, lightPos.x, lightPos.y, lightPos.z);
+   safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    
@@ -183,6 +189,11 @@ void setWorld()
    bjorn = Bjorn(lookAt, handles, bjornMod, world);
    hammer = Hammer(handles, hammerMod, world, &bjorn);
    
+   OModl = loadModel("Models/Orange.dae", handles);
+   Orange = GameObject("arnge");
+   Orange.initialize(&OModl, 0, 0, handles);
+   Orange.trans(lookAt.x+1.0,lookAt.y+1.0,lookAt.z);
+   //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -243,17 +254,19 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    printProgramInfoLog(ShadeProg);
    
    glUseProgram(ShadeProg);
-   
+   handles.ShadeProg = ShadeProg;
    /* get handles to attribute and uniform data in shader */
    handles.aPosition = safe_glGetAttribLocation(ShadeProg, "aPosition");
    handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
+   handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
+   handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
    handles.uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
    handles.uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
-   handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormalMatrix");
+   handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
    handles.uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
    handles.uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
-   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uEyePos");
+   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uCamPos");
    handles.uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
    handles.uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
    handles.uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");
@@ -289,6 +302,7 @@ void Initialize ()
 	// Start Of User Initialization
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 	// Black Background
+   //
  	glClearDepth (1.0f);	// Depth Buffer Setup
  	glDepthFunc (GL_LEQUAL);	// The Type Of Depth Testing
 	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
@@ -309,8 +323,8 @@ void Draw (void)
    world.draw();
    SetMaterial(1);
    bjorn.draw();
+   Orange.draw();
    hammer.draw();
-   
 	//Disable the shader
 	glUseProgram(0);
 }
@@ -438,11 +452,19 @@ int main( int argc, char *argv[] )
    }
    
    glfwMakeContextCurrent(window);
+   glewExperimental = GL_TRUE;
+   GLenum err = glewInit();
+   if (GLEW_OK != err)
+   {
+        /* Problem: glewInit failed, something is seriously wrong. */
+        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+   }
+
    glfwSetKeyCallback(window, key_callback);
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
-   glfwSetWindowPos(window, 20, 20);
+   glfwSetWindowPos(window, 1800, 800);
    
    unsigned int Error = glewInit();
    if (Error != GLEW_OK)
@@ -455,7 +477,7 @@ int main( int argc, char *argv[] )
    //test the openGL version
    getGLversion();
    //install the shader
-   if (!InstallShader(textFileRead((char *)"Phong_vert.glsl"), textFileRead((char *)"Phong_frag.glsl"))) {
+   if (!InstallShader(textFileRead((char *)"Lab1_vert.glsl"), textFileRead((char *)"Lab1_frag.glsl"))) {
       printf("Error installing shader!\n");
       return 0;
    }
@@ -463,6 +485,7 @@ int main( int argc, char *argv[] )
    Initialize();
    setWorld();
    
+   glm::vec3 diffy = bjorn.getPos() - lookAt;
    while (!glfwWindowShouldClose(window))
    {
       Animate();
