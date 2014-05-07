@@ -24,7 +24,7 @@ Hammer::Hammer(GLHandles hand, Model model, World world, Bjorn *character)
    mod = model;
    this->world = world;
    bjorn = character;
-   rotation = 0;
+   rotation = previousAngle = 0;
 }
 
 float d2r(float val)
@@ -51,12 +51,20 @@ void Hammer::updateAngle(float x, float y)
       //Move hammer so it is centered on bjorn
       position.y -= sin(d2r(rotation)) * (LENGTH / 2.0f);
       position.x += cos(d2r(rotation)) * (LENGTH / 2.0f);
-      
+      //Save the last angle
+      previousAngle = rotation;
       //Set the rotation
       if(y > bjornVec.y)
          rotation = -angle  * (180 / pi);
-      else
+      //Make sure we aren't hitting a platform, this is pretty fakey
+      else if (y <= bjornVec.y  && (angle < (pi / 6) || angle > (5 * pi / 6)))
          rotation = angle  * (180 / pi);
+      //Hammer is infront of bjorn
+      else if (x > bjornVec.x)
+         rotation = 30;
+      //Hammer is behind bjorn
+      else
+         rotation = 150;
 
       //Move out along new vector
       position.y += sin(d2r(rotation)) * (LENGTH / 2.0f);
@@ -85,7 +93,7 @@ void Hammer::step()
    glm::vec2 hammerTip = glm::vec2(position.x, position.y);
    hammerTip.y += sin(d2r(-rotation)) * (LENGTH / 2.0f);
    hammerTip.x -= cos(d2r(-rotation)) * (LENGTH / 2.0f);
-   if(world.detectCollision(glm::vec3(hammerTip.x, hammerTip.y, position.z)) == 1 && !collision)
+   if(world.detectCollision(glm::vec3(hammerTip.x, hammerTip.y, position.z)) == 1 && abs(previousAngle - rotation) > 4)
    {
       bjorn->launch(45);
       collision = true;

@@ -22,7 +22,7 @@
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 #include "../Utils/GLSL_helper.h"
 
-#define MAX_SPEED .4
+#define MAX_SPEED .8
 #define HEIGHT 0.5
 
 Bjorn::Bjorn()
@@ -53,7 +53,6 @@ void Bjorn::step()
 {
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
-   cout << deltaT << "\n";
    //Update position based on velocity
    position += deltaT * GameObject::velocity;
    //Fall due to gravity if not colliding with anything
@@ -115,8 +114,8 @@ void Bjorn::jump()
 
 void Bjorn::launch(float angle)
 {
-   velocity.x -= 2 * cos(angle);
-   velocity.y += 2 * sin(angle);
+   velocity.x -= 4 * cos(angle);
+   velocity.y += 3 * sin(angle);
 }
 
 void Bjorn::draw()

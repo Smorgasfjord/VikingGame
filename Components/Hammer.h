@@ -30,6 +30,7 @@ private:
    Bjorn *bjorn;
    bool collision = false;
    float mass = 100;
+   float previousAngle;
 };
 
 #endif /* defined(__MyGame__Hammer__) */
