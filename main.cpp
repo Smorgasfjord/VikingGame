@@ -89,7 +89,7 @@ Model bjornMod;
 Bjorn bjorn;
 
 //Hammer
-Model hammerMod;
+GameModel hammerMod;
 Hammer hammer;
 
 //Text
@@ -161,7 +161,7 @@ void setWorld()
    mountMod = Model::init_Mountain();
    platMod = Model:: init_Platform();
    bjornMod = Model::init_Bjorn();
-   hammerMod = Model::init_Hammer();
+   hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
    groundTiles.clear();
    for(int i = 0; i < g_groundSize; i++)
@@ -187,8 +187,9 @@ void setWorld()
    lookAt.y += .5;
    
    bjorn = Bjorn(lookAt, handles, bjornMod, world);
-   hammer = Hammer(handles, hammerMod, world, &bjorn);
-   
+   hammer = Hammer("homar");
+   hammer.initialize(&hammerMod, 0, 0, handles);
+   hammer.setInWorld(world, &bjorn);
    OModl = loadModel("Models/Orange.dae", handles);
    Orange = GameObject("arnge");
    Orange.initialize(&OModl, 0, 0, handles);

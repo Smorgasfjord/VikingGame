@@ -14,21 +14,19 @@ Hammer::~Hammer()
 {
    
 }
-Hammer::Hammer()
+Hammer::Hammer(std::string n)
+   :GameObject(n)
 {
    
 }
 
-Hammer::Hammer(GLHandles hand, Model model, World world, Bjorn *character)
+void Hammer::setInWorld(World world, Bjorn *character)
 {
-   position = character->getPos();
-   position.x -= .5;
-   handles = hand;
-   size = glm::vec3(1.0f);
-   mod = model;
+   trans(character->getPos().x - 0.5 - pos().x, character->getPos().y - pos().y, character->getPos().z - pos().z);
    this->world = world;
    bjorn = character;
-   rotation = previousAngle = 0;
+   rotation = previousAngle = 0.0;
+   flipped = 1;
 }
 
 float d2r(float val)
@@ -38,8 +36,7 @@ float d2r(float val)
 
 void Hammer::updatePos(float x, float y)
 {
-   position.x = x - .5;
-   position.y = y;
+   trans(-0.5,0.0,0.0);
 }
 
 void Hammer::updateAngle(float x, float y)
@@ -53,47 +50,36 @@ void Hammer::updateAngle(float x, float y)
    if(!isnan(angle))
    {
       //Move hammer so it is centered on bjorn
-      position.y -= sin(d2r(rotation)) * (LENGTH / 2.0f);
-      position.x += cos(d2r(rotation)) * (LENGTH / 2.0f);
+      trans(cos(d2r(rotation)) * (LENGTH / 2.0f), -sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
       //Save the last angle
       previousAngle = rotation;
       //Set the rotation
       if(y > bjornVec.y)
-         rotation = -angle  * (180 / pi);
+         rotation = -angle  * (180.0 / pi);
       //Make sure we aren't hitting a platform, this is pretty fakey
-      else if (y <= bjornVec.y  && (angle < (pi / 6) || angle > (5 * pi / 6)))
-         rotation = angle  * (180 / pi);
+      else if (y <= bjornVec.y  && (angle < (pi / 6.0) || angle > (5.0 * pi / 6.0)))
+         rotation = angle  * (180.0 / pi);
       //Hammer is infront of bjorn
       else if (x > bjornVec.x)
-         rotation = 30;
+         rotation = 30.0;
       //Hammer is behind bjorn
       else
-         rotation = 150;
-
+         rotation = 150.0;
+      rot(0.0,0.0,(flipped*2-1)*d2r(rotation-previousAngle));
       //Move out along new vector
-      position.y += sin(d2r(rotation)) * (LENGTH / 2.0f);
-      position.x -= cos(d2r(rotation)) * (LENGTH / 2.0f);
+      trans(-cos(d2r(rotation)) * (LENGTH / 2.0f), sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
    }
    
 }
 
-/* Set up matrices to place model in the world */
-void Hammer::SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
-   glm::mat4 Scale = glm::scale(glm::mat4(1.0f), size);
-   glm::mat4 Trans = glm::translate(glm::mat4(1.0f), loc);
-   glm::mat4 Rotate = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 0, 1));
-   
-   
-   glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
-}
 
 void Hammer::step()
 {
+   glm::vec3 position;
    position.y = bjorn->getPos().y + (sin(d2r(-rotation)) * (LENGTH / 2.0f));
    position.x = bjorn->getPos().x - (cos(d2r(-rotation)) * (LENGTH / 2.0f));
    position.z = Mountain::getZ(position);
+   trans(position.x - pos().x, position.y - pos().y, position.z - pos().z);
    glm::vec2 hammerTip = glm::vec2(position.x, position.y);
    hammerTip.y += sin(d2r(-rotation)) * (LENGTH / 2.0f);
    hammerTip.x -= cos(d2r(-rotation)) * (LENGTH / 2.0f);
@@ -104,30 +90,6 @@ void Hammer::step()
    }
    else
       collision = false;
-   return;
-}
-
-void Hammer::draw()
-{
-   //Enable handles
-   safe_glEnableVertexAttribArray(handles.aPosition);
-   safe_glEnableVertexAttribArray(handles.aNormal);
-   
-   SetModel(position, size, rotation);
-   
-   glBindBuffer(GL_ARRAY_BUFFER, mod.BuffObj);
-   safe_glVertexAttribPointer(handles.aPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-   
-   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod.IndxBuffObj);
-   safe_glEnableVertexAttribArray(handles.aNormal);
-   
-   glBindBuffer(GL_ARRAY_BUFFER, mod.NormalBuffObj);
-   safe_glVertexAttribPointer(handles.aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-   
-   glDrawElements(GL_TRIANGLES, mod.iboLen, GL_UNSIGNED_SHORT, 0);
-   //clean up
-	safe_glDisableVertexAttribArray(handles.aPosition);
-	safe_glDisableVertexAttribArray(handles.aNormal);
    return;
 }
 

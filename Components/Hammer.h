@@ -17,26 +17,28 @@
 #endif
 
 #include <iostream>
-#include "GameObject.hpp"
+#include "../GameObject.h"
 #include "Bjorn.h"
 
-class Hammer : public pGameObject
+class Hammer : public GameObject
 {
 public:
    void step();
-   void draw();
-   Hammer();
+   Hammer() {}
+   Hammer(std::string name);
    ~Hammer();
-   Hammer(GLHandles hand, Model model, World world, Bjorn *character);
+   //Hammer(GLHandles hand, Model model, World world, Bjorn *character);
+   void setInWorld(World world, Bjorn *character);
    void updatePos(float dx, float dy);
    void updateAngle(float x, float y);
 private:
-   void SetModel(glm::vec3 loc, glm::vec3 size, float rotation);
    World world;
    Model mod;
    Bjorn *bjorn;
+   float rotation;
+   int flipped;
    bool collision;
-   float mass;
+   //float mass;
    float previousAngle;
 };
 
