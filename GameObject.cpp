@@ -2,41 +2,11 @@
 #define GAME_OBJECT_CPP
 
 #include "GameObject.h"
+#include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
 
 using namespace glm;
 
-/* helper function to set up material for shading /
-void SetMaterial(int i, int ShadeProg, GLHandles handle) {
-  glUseProgram(ShadeProg);
-  switch (i) {
-    case 0:
-        safe_glUniform3f(handle.uMatAmb, 0.4, 0.4, 0.6);
-        safe_glUniform3f(handle.uMatDif, 0.6, 0.6, 0.6);
-        safe_glUniform3f(handle.uMatSpec, 0.4, 0.4, 0.3);
-        safe_glUniform1f(handle.uMatShine, 1.0);
-        break;
-    case 1:
-        safe_glUniform3f(handle.uMatAmb, 0.2, 0.2, 0.2);
-        safe_glUniform3f(handle.uMatDif, 0.2, 0.3, 0.3);
-        safe_glUniform3f(handle.uMatSpec, 0.4, 0.4, 0.4);
-        safe_glUniform1f(handle.uMatShine, 200.0);
-        break;
-    case 2:
-    / TO DO fill in another material that is greenish /
-        //slime cube
-        safe_glUniform3f(handle.uMatAmb, 0.1, 0.7, 0.1);
-        safe_glUniform3f(handle.uMatDif, 0.3, 0.4, 0.3);
-        safe_glUniform3f(handle.uMatSpec, 0.3, 0.5, 0.3);
-        safe_glUniform1f(handle.uMatShine, 10.0);
-        break;
-    case 3:
-        safe_glUniform3f(handle.uMatAmb, 0.1, 0.1, 0.1);
-        safe_glUniform3f(handle.uMatDif, 0.2, 0.2, 0.2);
-        safe_glUniform3f(handle.uMatSpec, 0.3, 0.3, 0.3);
-        safe_glUniform1f(handle.uMatShine, 20.0);
-        break;
-  }
-}*/
 
 void initGameObjState(Transform_t *state) {
    state->pos = state->orient = vec3(0.0);
@@ -69,7 +39,7 @@ void GameObject::trans(float x, float y, float z) {
 
    inmesh = model.state.translate;
    outmesh = &model.state.translate;
-
+   
    *outmesh = inmesh * translate(mat4(1.0f), vec3(x,y,z));
    model.state.transform = (*outmesh) * model.state.rotation * model.state.scaling;
 }
