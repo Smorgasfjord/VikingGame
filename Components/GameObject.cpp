@@ -2,8 +2,11 @@
 #define GAME_OBJECT_CPP
 
 #include "GameObject.h"
+
+#ifdef __WIN32__
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
+#endif
 
 using namespace glm;
 

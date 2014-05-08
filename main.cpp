@@ -481,7 +481,7 @@ int main( int argc, char *argv[] )
    //test the openGL version
    getGLversion();
    //install the shader
-   if (!InstallShader(textFileRead((char *)"Phong_vert.glsl"), textFileRead((char *)"Phong_frag.glsl"))) {
+   if (!InstallShader(textFileRead((char *)"Lab1_vert.glsl"), textFileRead((char *)"Lab1_frag.glsl"))) {
       printf("Error installing shader!\n");
       return 0;
    }
