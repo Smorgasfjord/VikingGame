@@ -5,6 +5,13 @@
 
 using namespace glm;
 
+#ifdef _WIN32
+#include <GL\glew.h>
+#include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
+#endif
+
+
 void initGameObjState(Transform_t *state) {
    state->pos = state->orient = vec3(0.0);
    state->scale = vec3(1.0);
@@ -26,7 +33,7 @@ void GameObject::translateBy(float x, float y, float z) {
 
    inmesh = model.state.translate;
    outmesh = &model.state.translate;
-
+   
    *outmesh = inmesh * translate(mat4(1.0f), vec3(x,y,z));
 
    model.state.pos += vec3(x,y,z);
@@ -198,16 +205,10 @@ void ObjectNode::render(GLHandles handle, mat4 cumulative) {
    for (int j = 0; j < children.size(); j++) {
       children[j].render(handle, current);
    }
-
 }
 
 void ObjectMesh::render(GLHandles handle) {
-   static int stuff = 0;
-   if (stuff < 5) std::cout << "using buffer " << buffDat.ibo << "\n";
-   stuff++;
   //Enable handles
-
-
    safe_glEnableVertexAttribArray(handle.aNormal);
    glBindBuffer(GL_ARRAY_BUFFER, buffDat.nbo);
    safe_glVertexAttribPointer(handle.aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);

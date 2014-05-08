@@ -1,5 +1,6 @@
-
 #include "GameModel.h"
+
+#define PI 3.14157
 
 // Uniform Buffer for Matrices
 // this buffer will contain 3 matrices: projection, view and model
@@ -27,7 +28,7 @@ std::map<std::string, GLuint> textureIdMap;
 static inline float
 DegToRad(float degrees)
 {
-   return (float)(degrees * (M_PI / 180.0f));
+   return (float)(degrees * (PI / 180.0f));
 };
 
 // Frame counting and FPS computation
@@ -48,8 +49,8 @@ int printOglError(char *file, int line)
     glErr = glGetError();
     if (glErr != GL_NO_ERROR)
     {
-        printf("glError in file %s @ line %d: %s\n",
-              file, line, gluErrorString(glErr));
+        printf("glError in file %s @ line %d\n",
+              file, line);
         retCode = 1;
     }
     return retCode;
@@ -319,7 +320,6 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
 
       // buffer for faces
       glGenBuffers(1, &(aMesh.ibo));
-      std::cout << aMesh.ibo << "\n";
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aMesh.ibo);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, faceArray, GL_STATIC_DRAW);
 

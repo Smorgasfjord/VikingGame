@@ -2,25 +2,24 @@
 #ifndef __GAME_OBJECT_H__
 #define __GAME_OBJECT_H__
 
-//Don't ask me why; I had to do this to make X-code happy
 #ifdef __APPLE__
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
-#include "glm/gtc/type_ptr.hpp" //value_ptr
-#include "glm/gtx/vector_query.hpp" //
+#include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
+#include "../glm/gtc/type_ptr.hpp" //value_ptr
+#include "../glm/gtx/vector_query.hpp" //
 #endif
 
 #ifdef __unix__
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
-#include "glm/gtc/type_ptr.hpp" //value_ptr
-#include "glm/gtx/vector_query.hpp" //
+#include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
+#include "../glm/gtc/type_ptr.hpp" //value_ptr
+#include "../glm/gtx/vector_query.hpp" //
 #endif
 
-#include "GameModel.h"
-#include "Utils/GLSL_helper.h"
-#include "Utils/GLHandles.h"
-#include "Utils/CMeshLoaderSimple.h"
+#include "../Models/GameModel.h"
+#include "../Utils/GLSL_helper.h"
+#include "../Utils/GLHandles.h"
+#include "../Utils/CMeshLoaderSimple.h"
 #include <stdlib.h>
 #include <string>
 
@@ -85,7 +84,6 @@ class GameObject {
    public:
       ObjectNode model;
       string name;
-//      SBoundingBox bounds;
       int modelIdx;
       int collisionGroup;
       int grounded;

@@ -13,21 +13,24 @@
 #include <glew.h>
 #include <OPENGL/gl.h>
 #include <sys/time.h>
+#define GLFW_INCLUDE_GLU
+#include <glfw3.h>
 #endif
 #ifdef __unix__
 #include <GL/glew.h>
 #include <GL/glut.h>
+#define GLFW_INCLUDE_GLU
+#include <GLFW/glfw3.h>
 #endif
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <time.h>
 #include <GL\glew.h>
 #include <Windows.h>
 #pragma comment (lib, "glfw3.lib")
 #pragma comment (lib, "glew32s.lib")
+#pragma comment (lib, "assimp.lib")
+#pragma comment (lib, "DevIL.lib")
 #endif
-
-#define GLFW_INCLUDE_GLU
-#include <GLFW/glfw3.h>
 
 //Std
 #include <stdlib.h>
@@ -36,11 +39,11 @@
 
 //Models
 #include "Models/Model.h"
-#include "GameModel.h"
+#include "Models/GameModel.h"
 
 //Components
 #include "Components/GameObject.hpp"
-#include "GameObject.h"
+#include "Components/GameObject.h"
 #include "Components/Platform.h"
 #include "Components/Mountain.h"
 #include "Components/Hammer.h"
@@ -301,7 +304,7 @@ void SetMaterial(int i) {
 void Initialize ()
 {
 	// Start Of User Initialization
-	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(.5, .5, .5, 1.0); // 1.0f, 1.0f, 1.0f, 1.0f);
 	// Black Background
    //
  	glClearDepth (1.0f);	// Depth Buffer Setup
@@ -465,7 +468,7 @@ int main( int argc, char *argv[] )
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
-   glfwSetWindowPos(window, 1800, 800);
+   glfwSetWindowPos(window, 100, 100);
    
    unsigned int Error = glewInit();
    if (Error != GLEW_OK)
@@ -486,7 +489,6 @@ int main( int argc, char *argv[] )
    Initialize();
    setWorld();
    
-   glm::vec3 diffy = bjorn.getPos() - lookAt;
    while (!glfwWindowShouldClose(window))
    {
       Animate();

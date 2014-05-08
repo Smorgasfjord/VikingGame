@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B256D83191BF27700616E09 /* libassimp.3.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */; };
+		7B256D85191BF31800616E09 /* libIL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B256D84191BF31800616E09 /* libIL.a */; };
+		7B35597B191B0DAA005FAD21 /* GameModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7B355979191B0DAA005FAD21 /* GameModel.cpp */; };
 		7BCD4971191995B200576A2E /* Bjorn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD4879191995B100576A2E /* Bjorn.cpp */; };
 		7BCD4972191995B200576A2E /* Hammer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD487C191995B100576A2E /* Hammer.cpp */; };
 		7BCD4973191995B200576A2E /* Mountain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD487E191995B100576A2E /* Mountain.cpp */; };
@@ -17,6 +20,7 @@
 		7BCD4978191995B200576A2E /* GLSL_helper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD496D191995B200576A2E /* GLSL_helper.cpp */; };
 		7BCD4979191995B200576A2E /* World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD496F191995B200576A2E /* World.cpp */; };
 		7BCD497B19199AAD00576A2E /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BCD497A19199AAD00576A2E /* libGLEW.a */; };
+		7BCD4989191ADB6600576A2E /* GameObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD4987191ADB6600576A2E /* GameObject.cpp */; };
 		7BE396A01915AD6C005A026B /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE396991915AD6C005A026B /* libglfw3.a */; };
 		7BE396A21915ADCF005A026B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE396A11915ADCF005A026B /* OpenGL.framework */; };
 		7BE396A41915ADDA005A026B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE396A31915ADDA005A026B /* CoreVideo.framework */; };
@@ -37,6 +41,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.0.0.dylib; path = ../../../../../../../opt/local/lib/libassimp.3.0.0.dylib; sourceTree = "<group>"; };
+		7B256D84191BF31800616E09 /* libIL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIL.a; path = ../../../../../../../opt/local/lib/libIL.a; sourceTree = "<group>"; };
+		7B256D86191BF7F500616E09 /* Color.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Color.jpg; sourceTree = "<group>"; };
+		7B256D87191BF80400616E09 /* bjorn_hammer.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = bjorn_hammer.dae; sourceTree = "<group>"; };
+		7B256D88191BF80400616E09 /* Orange.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = Orange.dae; sourceTree = "<group>"; };
+		7B355979191B0DAA005FAD21 /* GameModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameModel.cpp; sourceTree = "<group>"; };
+		7B35597A191B0DAA005FAD21 /* GameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameModel.h; sourceTree = "<group>"; };
 		7BCD4879191995B100576A2E /* Bjorn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bjorn.cpp; sourceTree = "<group>"; };
 		7BCD487A191995B100576A2E /* Bjorn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bjorn.h; sourceTree = "<group>"; };
 		7BCD487B191995B100576A2E /* GameObject.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GameObject.hpp; sourceTree = "<group>"; };
@@ -279,6 +290,8 @@
 		7BCD496F191995B200576A2E /* World.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = World.cpp; sourceTree = "<group>"; };
 		7BCD4970191995B200576A2E /* World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = World.h; sourceTree = "<group>"; };
 		7BCD497A19199AAD00576A2E /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEW.a; sourceTree = "<group>"; };
+		7BCD4987191ADB6600576A2E /* GameObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameObject.cpp; sourceTree = "<group>"; };
+		7BCD4988191ADB6600576A2E /* GameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameObject.h; sourceTree = "<group>"; };
 		7BE3959B1915ACE1005A026B /* MyGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MyGame; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BE396991915AD6C005A026B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
 		7BE396A11915ADCF005A026B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -292,7 +305,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B256D83191BF27700616E09 /* libassimp.3.0.0.dylib in Frameworks */,
 				7BE396A81915AE05005A026B /* IOKit.framework in Frameworks */,
+				7B256D85191BF31800616E09 /* libIL.a in Frameworks */,
 				7BE396A61915ADE0005A026B /* Cocoa.framework in Frameworks */,
 				7BCD497B19199AAD00576A2E /* libGLEW.a in Frameworks */,
 				7BE396A41915ADDA005A026B /* CoreVideo.framework in Frameworks */,
@@ -307,6 +322,8 @@
 		7BCD4878191995B100576A2E /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				7BCD4987191ADB6600576A2E /* GameObject.cpp */,
+				7BCD4988191ADB6600576A2E /* GameObject.h */,
 				7BCD4879191995B100576A2E /* Bjorn.cpp */,
 				7BCD487A191995B100576A2E /* Bjorn.h */,
 				7BCD487B191995B100576A2E /* GameObject.hpp */,
@@ -584,6 +601,10 @@
 		7BCD4966191995B200576A2E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				7B256D87191BF80400616E09 /* bjorn_hammer.dae */,
+				7B256D88191BF80400616E09 /* Orange.dae */,
+				7B355979191B0DAA005FAD21 /* GameModel.cpp */,
+				7B35597A191B0DAA005FAD21 /* GameModel.h */,
 				7BCD4967191995B200576A2E /* Model.cpp */,
 				7BCD4968191995B200576A2E /* Model.h */,
 			);
@@ -607,6 +628,9 @@
 		7BE395921915ACE1005A026B = {
 			isa = PBXGroup;
 			children = (
+				7B256D86191BF7F500616E09 /* Color.jpg */,
+				7B256D84191BF31800616E09 /* libIL.a */,
+				7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */,
 				7BCD4878191995B100576A2E /* Components */,
 				7BCD4882191995B100576A2E /* glm */,
 				7BCD4965191995B200576A2E /* main.cpp */,
@@ -685,6 +709,8 @@
 				7BCD4978191995B200576A2E /* GLSL_helper.cpp in Sources */,
 				7BCD4979191995B200576A2E /* World.cpp in Sources */,
 				7BCD4972191995B200576A2E /* Hammer.cpp in Sources */,
+				7BCD4989191ADB6600576A2E /* GameObject.cpp in Sources */,
+				7B35597B191B0DAA005FAD21 /* GameModel.cpp in Sources */,
 				7BCD4974191995B200576A2E /* Platform.cpp in Sources */,
 				7BCD4976191995B200576A2E /* Model.cpp in Sources */,
 				7BCD4977191995B200576A2E /* CMeshLoaderSimple.cpp in Sources */,
@@ -774,11 +800,13 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/include/GLFW/,
 					/usr/include/GL/,
+					/opt/local/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					/usr/lib,
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -792,11 +820,13 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/local/include/GLFW/,
 					/usr/include/GL/,
+					/opt/local/include/,
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					/usr/lib,
+					/opt/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

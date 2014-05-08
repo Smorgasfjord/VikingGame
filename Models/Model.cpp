@@ -15,9 +15,10 @@
 #include "../Utils/CMeshLoaderSimple.h"
 #endif
 
-#ifdef __WIN32__
-#include "..\Utils\CMeshLoaderSimple.h"
+#ifdef _WIN32
+#include "../Utils/CMeshLoaderSimple.h"
 #endif
+
 
  Model Model::init_Ground(float g_groundY)
 {
@@ -183,7 +184,7 @@ Model Model::init_Mountain()
       1, 1
    };
    
-   mod.iboLen = 36;
+   mod.iboLen = 18;
    glGenBuffers(1, &mod.BuffObj);
    glBindBuffer(GL_ARRAY_BUFFER, mod.BuffObj);
    glBufferData(GL_ARRAY_BUFFER, sizeof(Pos), Pos, GL_STATIC_DRAW);

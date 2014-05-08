@@ -16,7 +16,9 @@
 #ifdef __unix__
 #include <GL/glut.h>
 #endif
-
+#ifdef _WIN32
+#include <GL\glew.h>
+#endif
 
 //#include "glfw3.h"
 
