@@ -5,49 +5,11 @@
 
 using namespace glm;
 
-/* helper function to set up material for shading /
-void SetMaterial(int i, int ShadeProg, GLHandles handle) {
-  glUseProgram(ShadeProg);
-  switch (i) {
-    case 0:
-        safe_glUniform3f(handle.uMatAmb, 0.4, 0.4, 0.6);
-        safe_glUniform3f(handle.uMatDif, 0.6, 0.6, 0.6);
-        safe_glUniform3f(handle.uMatSpec, 0.4, 0.4, 0.3);
-        safe_glUniform1f(handle.uMatShine, 1.0);
-        break;
-    case 1:
-        safe_glUniform3f(handle.uMatAmb, 0.2, 0.2, 0.2);
-        safe_glUniform3f(handle.uMatDif, 0.2, 0.3, 0.3);
-        safe_glUniform3f(handle.uMatSpec, 0.4, 0.4, 0.4);
-        safe_glUniform1f(handle.uMatShine, 200.0);
-        break;
-    case 2:
-    / TO DO fill in another material that is greenish /
-        //slime cube
-        safe_glUniform3f(handle.uMatAmb, 0.1, 0.7, 0.1);
-        safe_glUniform3f(handle.uMatDif, 0.3, 0.4, 0.3);
-        safe_glUniform3f(handle.uMatSpec, 0.3, 0.5, 0.3);
-        safe_glUniform1f(handle.uMatShine, 10.0);
-        break;
-    case 3:
-        safe_glUniform3f(handle.uMatAmb, 0.1, 0.1, 0.1);
-        safe_glUniform3f(handle.uMatDif, 0.2, 0.2, 0.2);
-        safe_glUniform3f(handle.uMatSpec, 0.3, 0.3, 0.3);
-        safe_glUniform1f(handle.uMatShine, 20.0);
-        break;
-  }
-}*/
-
 void initGameObjState(Transform_t *state) {
    state->pos = state->orient = vec3(0.0);
    state->scale = vec3(1.0);
    state->translate = state->scaling = state->rotation = state->transform
       = mat4(1.0);
-}
-
-bool containedIn(vec3 pt, vec3 min, vec3 max) {
-   return pt.x >= min.x && pt.y >= min.y && pt.z >= min.z
-          && pt.x <= max.x && pt.y <= max.y && pt.z <= max.z;
 }
 
 vec3 GameObject::pos() {
@@ -58,33 +20,28 @@ vec3 GameObject::vel() {
    return model.state.velocity;
 }
 
-void GameObject::trans(float x, float y, float z) {
+void GameObject::translateBy(float x, float y, float z) {
    int i;
    mat4 inmesh, *outmesh;
-   vec4 newPos;
-
-   model.state.pos.x += x;
-   model.state.pos.y += y;
-   model.state.pos.z += z;
 
    inmesh = model.state.translate;
    outmesh = &model.state.translate;
 
    *outmesh = inmesh * translate(mat4(1.0f), vec3(x,y,z));
+
+   model.state.pos += vec3(x,y,z);
    model.state.transform = (*outmesh) * model.state.rotation * model.state.scaling;
 }
 
-void GameObject::rot(float x, float y, float z) {
+void GameObject::addRotation(float x, float y, float z) {
    int i;
    vec3 center;
-   vec4 newPos;
    mat4 movTrans, rotTrans, retTrans, inmesh, *outmesh;
 
    center = model.state.pos;
    inmesh = model.state.rotation;
    outmesh = &model.state.rotation;
 
-//   updateRotation(x,y);
    movTrans = translate(mat4(1.0f), -center);
    retTrans = translate(mat4(1.0f), center);
    rotTrans = rotate(mat4(1.0f), x, vec3(0.0f, 1.0f, 0.0f));
@@ -92,18 +49,16 @@ void GameObject::rot(float x, float y, float z) {
    rotTrans = rotate(mat4(1.0f), z, vec3(0.0f, 0.0f, 1.0f))*rotTrans;
    *outmesh = retTrans * rotTrans * movTrans * inmesh;
 
+   model.state.orient += vec3(x,y,z);
    model.state.transform = model.state.translate * (*outmesh) * model.state.scaling;
 }
 
-void GameObject::rescale(float x, float y, float z) {
+void GameObject::scaleBy(float x, float y, float z) {
    int i;
-   vec3 center, vScale, currScale;
-   vec4 newPos;
+   vec3 center, vScale;
    mat4 movTrans, sTrans, retTrans, inmesh, *outmesh;
-   //SBoundingBox temp;
    center = model.state.pos;
    vScale = vec3(x,y,z);
-   currScale = model.state.scale;
 
    inmesh = model.state.scaling;
    outmesh = &model.state.scaling;
@@ -111,34 +66,65 @@ void GameObject::rescale(float x, float y, float z) {
    movTrans = translate(mat4(1.0f), -center);
    retTrans = translate(mat4(1.0f), center);
    *outmesh = retTrans * scale(mat4(1.0f), vScale) * movTrans * inmesh;
-   model.state.transform = model.state.translate * model.state.rotation * (*outmesh);
 
-   currScale.x *= vScale.x;
-   currScale.y *= vScale.y;
-   currScale.z *= vScale.z;
-   //temp = SBoundingBox(bounds.left * x, bounds.bottom * y, bounds.back * z);
-   //temp.update(bounds.right * x, bounds.top * y, bounds.front * z);
-   //bounds = temp;
+   model.state.scale *= vScale;
+   model.state.transform = model.state.translate * model.state.rotation * (*outmesh);
 }
+
+void GameObject::setTranslate(float x, float y, float z) {
+   int i;
+   mat4 *outmesh;
+
+   model.state.pos = vec3(x,y,z);
+
+   outmesh = &model.state.translate;
+
+   *outmesh = translate(mat4(1.0f), vec3(x,y,z));
+   model.state.transform = (*outmesh) * model.state.rotation * model.state.scaling;
+}
+
+void GameObject::setRotation(float x, float y, float z) {
+   int i;
+   vec3 center;
+   mat4 movTrans, rotTrans, retTrans, *outmesh;
+
+   center = model.state.pos;
+   outmesh = &model.state.rotation;
+
+   movTrans = translate(mat4(1.0f), -center);
+   retTrans = translate(mat4(1.0f), center);
+   rotTrans = rotate(mat4(1.0f), x, vec3(0.0f, 1.0f, 0.0f));
+   rotTrans = rotate(mat4(1.0f), y, vec3(1.0f, 0.0f, 0.0f))*rotTrans;
+   rotTrans = rotate(mat4(1.0f), z, vec3(0.0f, 0.0f, 1.0f))*rotTrans;
+   *outmesh = retTrans * rotTrans * movTrans;
+
+   model.state.orient = vec3(x,y,z);
+   model.state.transform = model.state.translate * (*outmesh) * model.state.scaling;
+}
+
+void GameObject::setScale(float x, float y, float z) {
+   int i;
+   vec3 center, vScale, currScale;
+   mat4 movTrans, sTrans, retTrans, *outmesh;
+   center = model.state.pos;
+   vScale = vec3(x,y,z);
+
+   outmesh = &model.state.scaling;
+   
+   movTrans = translate(mat4(1.0f), -center);
+   retTrans = translate(mat4(1.0f), center);
+   *outmesh = retTrans * scale(mat4(1.0f), vScale) * movTrans;
+
+   model.state.scale = vScale;
+   model.state.transform = model.state.translate * model.state.rotation * (*outmesh);
+}
+
+
 
 void GameObject::setPhysProps(float mass, int gravAffect) {
    this->mass = mass;
    this->gravityAffected = gravAffect;
 }
-/*
-vec3 GameObject::checkCollision(GameObject other) {
-   vec3 min = vec3(bounds.left, bounds.bottom, bounds.back) + model.state.pos;
-   vec3 max = vec3(bounds.right, bounds.top, bounds.front) + model.state.pos;
-   vec3 otherMin = vec3(other.bounds.left, other.bounds.bottom, other.bounds.back) + other.model.state.pos;
-   vec3 otherMax = vec3(other.bounds.right, other.bounds.top, other.bounds.front) + other.model.state.pos;
-
-   if (max.x > otherMin.x && min.x < otherMax.x && max.y > otherMin.y && 
-         min.y < otherMax.y && max.z > otherMin.z && min.z < otherMax.z) {
-      return model.state.velocity - other.model.state.velocity;
-   }
-
-   return vec3(0.0);
-}*/
 
 vec3 GameObject::applyForce(vec3 force) {
    vec3 deltaV;
@@ -164,8 +150,10 @@ vec3 GameObject::applyTransform(mat4 tran) {
    return forceApplied;
 }
 
-float GameObject::scaleMass(float scale) {
-   return 1.0;
+float GameObject::setMass(float newMass) {
+   float scale = newMass / mass;
+   mass = newMass;
+   return scale;
 }
 
 void ObjectNode::initialize(ModelNode *modNod) {
@@ -202,12 +190,6 @@ void ObjectNode::render(GLHandles handle, mat4 cumulative) {
    mat4 current = state.transform * cumulative;
    safe_glUniformMatrix4fv(handle.uModelMatrix, value_ptr(current));
    safe_glUniformMatrix4fv(handle.uNormMatrix, value_ptr(transpose(inverse(current))));
-   //glBindBuffer(GL_UNIFORM_BUFFER,handle.uMatricesBuff);
-   //glBufferSubData(GL_UNIFORM_BUFFER,
-   //                  ModelMatrixOffset, MatrixSize, value_ptr(current));
-   //glBufferSubData(GL_UNIFORM_BUFFER, NormMatrixOffset, MatrixSize, 
-   //                 value_ptr(transpose(inverse(current))));
-   //glBindBuffer(GL_UNIFORM_BUFFER,0);
 
    for (int i = 0; i < meshes.size(); i++) {
       meshes[i].render(handle);
@@ -266,6 +248,6 @@ void GameObject::update(double timeStep) {
       model.state.velocity += vec3(0.0, -20.0, 0.0);
    }
    vec3 mov = model.state.velocity * (float)timeStep;
-   trans(mov.x,mov.y,mov.z);
+   translateBy(mov.x,mov.y,mov.z);
 }
 #endif

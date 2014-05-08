@@ -115,11 +115,14 @@ class GameObject {
       glm::vec3 addVelocity(glm::vec3 vel);
       glm::vec3 setVelocity(glm::vec3 vel);
       glm::vec3 applyTransform(glm::mat4 tran);
-      float scaleMass(float scale);
-      void trans(float x, float y, float z);
-      void rescale(float x, float y, float z);
-      void rot(float x, float y, float z);
-      void draw();
+      float setMass(float scale);
+      void translateBy(float x, float y, float z);
+      void scaleBy(float x, float y, float z);
+      void addRotation(float x, float y, float z);
+      void setTranslate(float x, float y, float z);
+      void setScale(float x, float y, float z);
+      void setRotation(float x, float y, float z);
+      virtual void draw();
       virtual void update(double timeStep);
 };
 

@@ -193,7 +193,7 @@ void setWorld()
    OModl = loadModel("Models/Orange.dae", handles);
    Orange = GameObject("arnge");
    Orange.initialize(&OModl, 0, 0, handles);
-   Orange.trans(lookAt.x+1.0,lookAt.y+1.0,lookAt.z);
+   Orange.translateBy(lookAt.x+1.0,lookAt.y+1.0,lookAt.z);
    //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();

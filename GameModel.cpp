@@ -278,14 +278,13 @@ GameModel loadModel(std::string fName, GLHandles handle) {
       return GameModel();
    }
    LoadGLTextures();
-   mod.meshData = genVAOsAndUniformBuffer(scene, handle);
+   mod.genVAOsAndUniformBuffer(scene, handle);
    mod.rootNode = genModel(scene, mod.meshData);
    return mod;
 }
 
-std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
+void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
 
-   std::vector<MeshBufferData> myMeshes;
    MeshBufferData aMesh;
    struct MyMaterial aMat;
    GLsizei stride = (3 + 3 + 2) * sizeof(float);
@@ -302,15 +301,16 @@ std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles
       faceArray = (unsigned int *)malloc(sizeof(unsigned int) * mesh->mNumFaces * 3);
       unsigned int faceIndex = 0;
 
+      conts = BufferContents(mesh->mNumVertices,mesh->mNumFaces);
       firstComp = 0;
       for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
          const aiFace* face = &mesh->mFaces[t];
 
          memcpy(&faceArray[faceIndex], face->mIndices,3 * sizeof(unsigned int));
+         conts.faces.push_back(glm::vec3(face->mIndices[0],face->mIndices[1],face->mIndices[2]));
+
          faceIndex += 3;
       }
-      //conts = BufferContents(mesh->mNumVertices,mesh->mNumFaces);
-      //memcpy(conts.faces, faceArray, mesh->mNumFaces * 3 * sizeof(unsigned int));
       aMesh.numFaces = sc->mMeshes[n]->mNumFaces*3;
 
       // generate Vertex Array for mesh
@@ -328,7 +328,9 @@ std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles
          glGenBuffers(1, &(aMesh.vbo));
          glBindBuffer(GL_ARRAY_BUFFER, aMesh.vbo);
          glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*mesh->mNumVertices, mesh->mVertices, GL_STATIC_DRAW);
-         //memcpy(conts.verts, mesh->mVertices, mesh->mNumVertices * 3 * sizeof(float));
+         for (int i = 0; i < mesh->mNumVertices; i++) {
+            conts.verts.push_back(glm::vec3(mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z));
+         }
       }
 
       // buffer for vertex normals
@@ -336,7 +338,9 @@ std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles
          glGenBuffers(1, &(aMesh.nbo));
          glBindBuffer(GL_ARRAY_BUFFER, aMesh.nbo);
          glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*mesh->mNumVertices, mesh->mNormals, GL_STATIC_DRAW);
-         //memcpy(conts.norms, mesh->mNormals, mesh->mNumVertices * 3 * sizeof(float));
+         for (int i = 0; i < mesh->mNumVertices; i++) {
+            conts.verts.push_back(glm::vec3(mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z));
+         }
       }
 
       // buffer for vertex texture coordinates
@@ -346,12 +350,12 @@ std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles
 
             texCoords[k*2]   = mesh->mTextureCoords[0][k].x;
             texCoords[k*2+1] = mesh->mTextureCoords[0][k].y;
+            conts.texes.push_back(glm::vec2(mesh->mTextureCoords[0][k].x,mesh->mTextureCoords[0][k].y));
 
          }
          glGenBuffers(1, &(aMesh.tbo));
          glBindBuffer(GL_ARRAY_BUFFER, aMesh.tbo);
          glBufferData(GL_ARRAY_BUFFER, sizeof(float)*2*mesh->mNumVertices, texCoords, GL_STATIC_DRAW);
-         //memcpy(conts.texes, texCoords, mesh->mNumVertices * 2 * sizeof(float));
       }
 
       // unbind buffers
@@ -406,9 +410,9 @@ std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles
       //glBindBuffer(GL_UNIFORM_BUFFER,aMesh.uniformBlockIndex);
       //glBufferData(GL_UNIFORM_BUFFER, sizeof(aMat), (void *)(&aMat), GL_STATIC_DRAW);
 
-      myMeshes.push_back(aMesh);
+      meshData.push_back(aMesh);
+      contents.push_back(conts);
    }
-   return myMeshes;
 }
 
 

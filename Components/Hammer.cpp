@@ -22,7 +22,7 @@ Hammer::Hammer(std::string n)
 
 void Hammer::setInWorld(World world, Bjorn *character)
 {
-   trans(character->getPos().x - 0.5 - pos().x, character->getPos().y - pos().y, character->getPos().z - pos().z);
+   translateBy(character->getPos().x - 0.5 - pos().x, character->getPos().y - pos().y, character->getPos().z - pos().z);
    this->world = world;
    bjorn = character;
    rotation = previousAngle = 0.0;
@@ -36,7 +36,7 @@ float d2r(float val)
 
 void Hammer::updatePos(float x, float y)
 {
-   trans(-0.5,0.0,0.0);
+   translateBy(-0.5,0.0,0.0);
 }
 
 void Hammer::updateAngle(float x, float y)
@@ -50,7 +50,7 @@ void Hammer::updateAngle(float x, float y)
    if(!isnan(angle))
    {
       //Move hammer so it is centered on bjorn
-      trans(cos(d2r(rotation)) * (LENGTH / 2.0f), -sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
+      translateBy(cos(d2r(rotation)) * (LENGTH / 2.0f), -sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
       //Save the last angle
       previousAngle = rotation;
       //Set the rotation
@@ -65,9 +65,9 @@ void Hammer::updateAngle(float x, float y)
       //Hammer is behind bjorn
       else
          rotation = 150.0;
-      rot(0.0,0.0,(flipped*2-1)*d2r(rotation-previousAngle));
+      addRotation(0.0,0.0,(flipped*2-1)*d2r(rotation-previousAngle));
       //Move out along new vector
-      trans(-cos(d2r(rotation)) * (LENGTH / 2.0f), sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
+      translateBy(-cos(d2r(rotation)) * (LENGTH / 2.0f), sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
    }
    
 }
@@ -79,7 +79,7 @@ void Hammer::step()
    position.y = bjorn->getPos().y + (sin(d2r(-rotation)) * (LENGTH / 2.0f));
    position.x = bjorn->getPos().x - (cos(d2r(-rotation)) * (LENGTH / 2.0f));
    position.z = Mountain::getZ(position);
-   trans(position.x - pos().x, position.y - pos().y, position.z - pos().z);
+   translateBy(position.x - pos().x, position.y - pos().y, position.z - pos().z);
    glm::vec2 hammerTip = glm::vec2(position.x, position.y);
    hammerTip.y += sin(d2r(-rotation)) * (LENGTH / 2.0f);
    hammerTip.x -= cos(d2r(-rotation)) * (LENGTH / 2.0f);
