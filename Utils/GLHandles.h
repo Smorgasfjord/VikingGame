@@ -18,8 +18,9 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #endif
-
-//#include <GL\glew.h>
+#ifdef _WIN32
+#include <GL\glew.h>
+#endif
 
 class GLHandles
 {

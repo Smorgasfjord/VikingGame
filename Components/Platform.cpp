@@ -14,7 +14,7 @@
 #include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 #include "../Utils/GLSL_helper.h"
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <time.h>
 #endif
 #ifdef __APPLE__

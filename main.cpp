@@ -22,7 +22,7 @@
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 #endif
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <time.h>
 #include <GL\glew.h>
 #include <Windows.h>
@@ -39,11 +39,11 @@
 
 //Models
 #include "Models/Model.h"
-#include "GameModel.h"
+#include "Models/GameModel.h"
 
 //Components
 #include "Components/GameObject.hpp"
-#include "GameObject.h"
+#include "Components/GameObject.h"
 #include "Components/Platform.h"
 #include "Components/Mountain.h"
 #include "Components/Hammer.h"
@@ -304,7 +304,7 @@ void SetMaterial(int i) {
 void Initialize ()
 {
 	// Start Of User Initialization
-	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(.5, .5, .5, 1.0); // 1.0f, 1.0f, 1.0f, 1.0f);
 	// Black Background
    //
  	glClearDepth (1.0f);	// Depth Buffer Setup

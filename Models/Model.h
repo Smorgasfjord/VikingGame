@@ -9,7 +9,7 @@
 #ifndef __levelBuilder__Model__
 #define __levelBuilder__Model__
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <GL\glew.h>
 #endif
 #ifdef __APPLE__

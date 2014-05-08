@@ -16,7 +16,7 @@
 #include "../glm/gtx/vector_query.hpp" //
 #endif
 
-#include "GameModel.h"
+#include "../Models/GameModel.h"
 #include "../Utils/GLSL_helper.h"
 #include "../Utils/GLHandles.h"
 #include "../Utils/CMeshLoaderSimple.h"

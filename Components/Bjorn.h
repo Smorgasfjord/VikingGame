@@ -11,8 +11,9 @@
 
 #include <iostream>
 
-#ifdef __WIN32__
-#include "GL\glew.h"
+#ifdef _WIN32
+#include <time.h>
+#include <GL\glew.h>
 #endif
 
 #define GLFW_INCLUDE_GLU

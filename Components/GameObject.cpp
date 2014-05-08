@@ -3,12 +3,14 @@
 
 #include "GameObject.h"
 
-#ifdef __WIN32__
+using namespace glm;
+
+#ifdef _WIN32
+#include <GL\glew.h>
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
 #endif
 
-using namespace glm;
 
 void initGameObjState(Transform_t *state) {
    state->pos = state->orient = vec3(0.0);
