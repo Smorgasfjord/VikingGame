@@ -15,9 +15,10 @@
 #include "../Utils/CMeshLoaderSimple.h"
 #endif
 
-#ifdef __WIN32__
-#include "..\Utils\CMeshLoaderSimple.h"
-#endif
+//#ifdef __WIN32__
+#include "../Utils/CMeshLoaderSimple.h"
+//#endif
+
 
  Model Model::init_Ground(float g_groundY)
 {

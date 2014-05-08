@@ -2,6 +2,8 @@
 #define GAME_OBJECT_CPP
 
 #include "GameObject.h"
+#include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
 
 using namespace glm;
 
@@ -36,7 +38,7 @@ void GameObject::trans(float x, float y, float z) {
 
    inmesh = model.state.translate;
    outmesh = &model.state.translate;
-
+   
    *outmesh = inmesh * translate(mat4(1.0f), vec3(x,y,z));
    model.state.transform = (*outmesh) * model.state.rotation * model.state.scaling;
 }

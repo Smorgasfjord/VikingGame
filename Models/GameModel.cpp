@@ -1,5 +1,7 @@
 #include "GameModel.h"
 
+#define PI 3.14157
+
 // Uniform Buffer for Matrices
 // this buffer will contain 3 matrices: projection, view and model
 // each matrix is a float array with 16 components
@@ -26,7 +28,7 @@ std::map<std::string, GLuint> textureIdMap;
 static inline float
 DegToRad(float degrees)
 {
-   return (float)(degrees * (M_PI / 180.0f));
+   return (float)(degrees * (PI / 180.0f));
 };
 
 // Frame counting and FPS computation
@@ -47,8 +49,8 @@ int printOglError(char *file, int line)
     glErr = glGetError();
     if (glErr != GL_NO_ERROR)
     {
-        printf("glError in file %s @ line %d: %s\n",
-              file, line, gluErrorString(glErr));
+        printf("glError in file %s @ line %d\n",
+              file, line);
         retCode = 1;
     }
     return retCode;

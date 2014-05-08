@@ -47,11 +47,6 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, Model model, World world)
    this->world = world;
 }
 
-int diff_ms(timeval t1, timeval t2)
-{
-   return (((t1.tv_sec - t2.tv_sec) * 1000000) +
-           (t1.tv_usec - t2.tv_usec))/1000;
-}
 
 void Bjorn::step()
 {

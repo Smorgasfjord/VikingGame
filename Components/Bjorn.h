@@ -12,9 +12,7 @@
 #include <iostream>
 
 #ifdef __WIN32__
-#include <GL\glew.h>
-#pragma comment (lib, "glfw3.lib")
-#pragma comment (lib, "glew32.lib")
+#include "GL\glew.h"
 #endif
 
 #define GLFW_INCLUDE_GLU

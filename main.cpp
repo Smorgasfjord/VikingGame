@@ -28,6 +28,8 @@
 #include <Windows.h>
 #pragma comment (lib, "glfw3.lib")
 #pragma comment (lib, "glew32s.lib")
+#pragma comment (lib, "assimp.lib")
+#pragma comment (lib, "DevIL.lib")
 #endif
 
 //Std
@@ -479,7 +481,7 @@ int main( int argc, char *argv[] )
    //test the openGL version
    getGLversion();
    //install the shader
-   if (!InstallShader(textFileRead((char *)"Lab1_vert.glsl"), textFileRead((char *)"Lab1_frag.glsl"))) {
+   if (!InstallShader(textFileRead((char *)"Phong_vert.glsl"), textFileRead((char *)"Phong_frag.glsl"))) {
       printf("Error installing shader!\n");
       return 0;
    }
