@@ -5,39 +5,6 @@
 
 using namespace glm;
 
-/* helper function to set up material for shading /
-void SetMaterial(int i, int ShadeProg, GLHandles handle) {
-  glUseProgram(ShadeProg);
-  switch (i) {
-    case 0:
-        safe_glUniform3f(handle.uMatAmb, 0.4, 0.4, 0.6);
-        safe_glUniform3f(handle.uMatDif, 0.6, 0.6, 0.6);
-        safe_glUniform3f(handle.uMatSpec, 0.4, 0.4, 0.3);
-        safe_glUniform1f(handle.uMatShine, 1.0);
-        break;
-    case 1:
-        safe_glUniform3f(handle.uMatAmb, 0.2, 0.2, 0.2);
-        safe_glUniform3f(handle.uMatDif, 0.2, 0.3, 0.3);
-        safe_glUniform3f(handle.uMatSpec, 0.4, 0.4, 0.4);
-        safe_glUniform1f(handle.uMatShine, 200.0);
-        break;
-    case 2:
-    / TO DO fill in another material that is greenish /
-        //slime cube
-        safe_glUniform3f(handle.uMatAmb, 0.1, 0.7, 0.1);
-        safe_glUniform3f(handle.uMatDif, 0.3, 0.4, 0.3);
-        safe_glUniform3f(handle.uMatSpec, 0.3, 0.5, 0.3);
-        safe_glUniform1f(handle.uMatShine, 10.0);
-        break;
-    case 3:
-        safe_glUniform3f(handle.uMatAmb, 0.1, 0.1, 0.1);
-        safe_glUniform3f(handle.uMatDif, 0.2, 0.2, 0.2);
-        safe_glUniform3f(handle.uMatSpec, 0.3, 0.3, 0.3);
-        safe_glUniform1f(handle.uMatShine, 20.0);
-        break;
-  }
-}*/
-
 void initGameObjState(Transform_t *state) {
    state->pos = state->orient = vec3(0.0);
    state->scale = vec3(1.0);
@@ -125,20 +92,6 @@ void GameObject::setPhysProps(float mass, int gravAffect) {
    this->mass = mass;
    this->gravityAffected = gravAffect;
 }
-/*
-vec3 GameObject::checkCollision(GameObject other) {
-   vec3 min = vec3(bounds.left, bounds.bottom, bounds.back) + model.state.pos;
-   vec3 max = vec3(bounds.right, bounds.top, bounds.front) + model.state.pos;
-   vec3 otherMin = vec3(other.bounds.left, other.bounds.bottom, other.bounds.back) + other.model.state.pos;
-   vec3 otherMax = vec3(other.bounds.right, other.bounds.top, other.bounds.front) + other.model.state.pos;
-
-   if (max.x > otherMin.x && min.x < otherMax.x && max.y > otherMin.y && 
-         min.y < otherMax.y && max.z > otherMin.z && min.z < otherMax.z) {
-      return model.state.velocity - other.model.state.velocity;
-   }
-
-   return vec3(0.0);
-}*/
 
 vec3 GameObject::applyForce(vec3 force) {
    vec3 deltaV;
@@ -202,12 +155,6 @@ void ObjectNode::render(GLHandles handle, mat4 cumulative) {
    mat4 current = state.transform * cumulative;
    safe_glUniformMatrix4fv(handle.uModelMatrix, value_ptr(current));
    safe_glUniformMatrix4fv(handle.uNormMatrix, value_ptr(transpose(inverse(current))));
-   //glBindBuffer(GL_UNIFORM_BUFFER,handle.uMatricesBuff);
-   //glBufferSubData(GL_UNIFORM_BUFFER,
-   //                  ModelMatrixOffset, MatrixSize, value_ptr(current));
-   //glBufferSubData(GL_UNIFORM_BUFFER, NormMatrixOffset, MatrixSize, 
-   //                 value_ptr(transpose(inverse(current))));
-   //glBindBuffer(GL_UNIFORM_BUFFER,0);
 
    for (int i = 0; i < meshes.size(); i++) {
       meshes[i].render(handle);
@@ -216,16 +163,10 @@ void ObjectNode::render(GLHandles handle, mat4 cumulative) {
    for (int j = 0; j < children.size(); j++) {
       children[j].render(handle, current);
    }
-
 }
 
 void ObjectMesh::render(GLHandles handle) {
-   static int stuff = 0;
-   if (stuff < 5) std::cout << "using buffer " << buffDat.ibo << "\n";
-   stuff++;
   //Enable handles
-
-
    safe_glEnableVertexAttribArray(handle.aNormal);
    glBindBuffer(GL_ARRAY_BUFFER, buffDat.nbo);
    safe_glVertexAttribPointer(handle.aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);

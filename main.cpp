@@ -13,10 +13,14 @@
 #include <glew.h>
 #include <OPENGL/gl.h>
 #include <sys/time.h>
+#define GLFW_INCLUDE_GLU
+#include <glfw3.h>
 #endif
 #ifdef __unix__
 #include <GL/glew.h>
 #include <GL/glut.h>
+#define GLFW_INCLUDE_GLU
+#include <GLFW/glfw3.h>
 #endif
 #ifdef __WIN32__
 #include <time.h>
@@ -25,9 +29,6 @@
 #pragma comment (lib, "glfw3.lib")
 #pragma comment (lib, "glew32s.lib")
 #endif
-
-#define GLFW_INCLUDE_GLU
-#include <GLFW/glfw3.h>
 
 //Std
 #include <stdlib.h>
@@ -465,7 +466,7 @@ int main( int argc, char *argv[] )
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
-   glfwSetWindowPos(window, 1800, 800);
+   glfwSetWindowPos(window, 100, 100);
    
    unsigned int Error = glewInit();
    if (Error != GLEW_OK)
@@ -486,7 +487,6 @@ int main( int argc, char *argv[] )
    Initialize();
    setWorld();
    
-   glm::vec3 diffy = bjorn.getPos() - lookAt;
    while (!glfwWindowShouldClose(window))
    {
       Animate();

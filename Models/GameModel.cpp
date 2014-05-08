@@ -1,4 +1,3 @@
-
 #include "GameModel.h"
 
 // Uniform Buffer for Matrices
@@ -319,7 +318,6 @@ std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles
 
       // buffer for faces
       glGenBuffers(1, &(aMesh.ibo));
-      std::cout << aMesh.ibo << "\n";
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aMesh.ibo);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, faceArray, GL_STATIC_DRAW);
 

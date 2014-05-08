@@ -34,35 +34,43 @@
 
 // Have Fun :-)
 
-#ifdef _WIN32
-#pragma comment(lib,"assimp.lib")
-#pragma comment(lib,"devil.lib")
-#pragma comment(lib,"glew32.lib")
 
-#endif
-
+#include <cmath>
 
 // include DevIL for image loading
 #include <IL/il.h>
 
 // include GLEW to access OpenGL 3.3 functions
+#ifdef __unix__
 #include <GL/glew.h>
+#endif
+
+#ifdef __APPLE__
+#include <glew.h>
+#endif
+
+#ifdef _WIN32
+#pragma comment(lib,"assimp.lib")
+#pragma comment(lib,"devil.lib")
+#pragma comment(lib,"glew32.lib")
+#endif
 
 // assimp include files. These three are usually needed.
 #include <assimp/Importer.hpp>   //OO version Header!
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "../glm/glm.hpp"
+#include "../glm/gtc/type_ptr.hpp"
 
-#include <math.h>
+using namespace std;
+
 #include <fstream>
 #include <map>
 #include <string>
 #include <vector>
 #include <stdlib.h>
-#include "Utils/GLHandles.h"
+#include "../Utils/GLHandles.h"
 
 // This is for a shader uniform block
 struct MyMaterial{

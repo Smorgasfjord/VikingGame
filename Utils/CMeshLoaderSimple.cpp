@@ -9,12 +9,13 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+using namespace std;
 #include <iomanip>
 #include <string>
 #include <streambuf>
 #include "../glm/glm.hpp"
 
-using namespace std;
+
 
 class SColor
 {

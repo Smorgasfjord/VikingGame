@@ -65,7 +65,7 @@ void Hammer::updateAngle(float x, float y)
       //Hammer is behind bjorn
       else
          rotation = 150.0;
-      rot(0.0,0.0,(flipped*2-1)*d2r(rotation-previousAngle));
+      this->rot(0.0,0.0,(flipped*2-1)*d2r(rotation-previousAngle));
       //Move out along new vector
       trans(-cos(d2r(rotation)) * (LENGTH / 2.0f), sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
    }

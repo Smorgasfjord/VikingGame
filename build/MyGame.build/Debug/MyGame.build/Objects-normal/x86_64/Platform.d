@@ -73,5 +73,4 @@ dependencies: \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../glm/gtc/../gtc/quaternion.hpp \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../glm/gtc/quaternion.inl \
   /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../glm/gtc/type_ptr.inl \
-  /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../Utils/GLSL_helper.h \
-  /usr/local/include/GLFW/glfw3.h
+  /Users/twoods0129/Documents/SkyDrive/2014\ Spring\ Quarter/CPE\ 476/MyGame/Components/../Utils/GLSL_helper.h

@@ -17,7 +17,7 @@
 #endif
 
 #include <iostream>
-#include "../GameObject.h"
+#include "../Components/GameObject.h"
 #include "Bjorn.h"
 
 class Hammer : public GameObject
