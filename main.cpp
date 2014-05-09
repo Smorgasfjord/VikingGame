@@ -195,8 +195,8 @@ void setWorld()
    hammer.setInWorld(world, &bjorn);
    OModl = loadModel("Models/Orange.dae", handles);
    Orange = GameObject("arnge");
-   Orange.initialize(&OModl, 0, 0, handles);
-   Orange.trans(lookAt.x+1.0,lookAt.y+1.0,lookAt.z);
+   //Orange.initialize(&OModl, 0, 0, handles);
+   //Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
    //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();

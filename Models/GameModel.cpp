@@ -248,7 +248,6 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData)
 
    for (int k = 0; k < 16; k++) {
       arr[k] = *(node->mTransformation[k]);
-      printf("%f,\n",arr[k]);
    }
    //trans = glm::make_mat4x4(arr);
    trans = glm::mat4(1.0f);

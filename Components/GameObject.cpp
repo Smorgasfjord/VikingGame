@@ -17,81 +17,105 @@ void initGameObjState(Transform_t *state) {
       = mat4(1.0);
 }
 
+void ObjectNode::initialize(ModelNode *modNod) {
+   ObjectMesh mesh;
+   ObjectNode nod;
+   for (int i = 0; i < modNod->meshes.size(); i++) {
+      mesh = ObjectMesh(i, modNod->meshes[i].buffDat);
+      meshes.push_back(mesh);
+   }
+   for (int j = 0; j < modNod->children.size(); j++) {
+      nod = ObjectNode(modNod->name);
+      nod.initialize(&modNod->children[j]);
+      children.push_back(nod);
+   }
+   state.transform = modNod->transform;
+}
+
+void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandles handles) {
+   ObjectNode nod;
+   this->handles = handles;
+   this->collisionGroup = collGroup;
+   this->modelIdx = modIdx;
+   nod = ObjectNode(model->rootNode.name);
+   nod.initialize(&model->rootNode);
+   this->model = nod;
+}
+
 bool containedIn(vec3 pt, vec3 min, vec3 max) {
    return pt.x >= min.x && pt.y >= min.y && pt.z >= min.z
           && pt.x <= max.x && pt.y <= max.y && pt.z <= max.z;
 }
 
-vec3 GameObject::pos() {
+//------------------------------Get-ers-------------------------------
+
+vec3 GameObject::getPos() {
    return model.state.pos;
 }
 
-vec3 GameObject::vel() {
+vec3 GameObject::getVel() {
    return model.state.velocity;
 }
 
-void GameObject::trans(float x, float y, float z) {
-   int i;
-   mat4 inmesh, *outmesh;
-   vec4 newPos;
+vec3 GameObject::getRot() {
+   return model.state.orient;
+}
 
-   model.state.pos.x += x;
-   model.state.pos.y += y;
-   model.state.pos.z += z;
+//------------------------------Set-ers------------------------------
 
-   inmesh = model.state.translate;
-   outmesh = &model.state.translate;
+void GameObject::setPos(glm::vec3 pos)
+{
+   model.state.pos = pos;
+   model.state.translate = translate(mat4(1.0f), pos);
+   updateTransformMatrix();
+}
+
+void GameObject::setScale(glm::vec3 scale)
+{
+   model.state.scale = scale;
+   model.state.scaling = glm::scale(mat4(1.0f), model.state.scale);
+   updateTransformMatrix();
+}
+
+void GameObject::setRotation(glm::vec3 rot)
+{
+   model.state.orient = rot;
+   model.state.rotation = rotate(mat4(1.0f), rot.x, vec3(1.0f, 0.0f, 0.0f));
+   model.state.rotation *= rotate(mat4(1.0f), rot.y, vec3(0.0f, 1.0f, 0.0f));
+   model.state.rotation *= rotate(mat4(1.0f), rot.z, vec3(0.0f, 0.0f, 1.0f));
+   updateTransformMatrix();
+}
+
+//-----------------------------Updaters------------------------------
+
+//Move the object by the amount specified
+void GameObject::moveBy(glm::vec3 amount) {
+   model.state.pos += amount;
    
-   *outmesh = inmesh * translate(mat4(1.0f), vec3(x,y,z));
-   model.state.transform = (*outmesh) * model.state.rotation * model.state.scaling;
+   model.state.translate *= translate(mat4(1.0f), amount);
+   updateTransformMatrix();
 }
 
-void GameObject::rot(float x, float y, float z) {
-   int i;
-   vec3 center;
-   vec4 newPos;
-   mat4 movTrans, rotTrans, retTrans, inmesh, *outmesh;
-
-   center = model.state.pos;
-   inmesh = model.state.rotation;
-   outmesh = &model.state.rotation;
-
-//   updateRotation(x,y);
-   movTrans = translate(mat4(1.0f), -center);
-   retTrans = translate(mat4(1.0f), center);
-   rotTrans = rotate(mat4(1.0f), x, vec3(0.0f, 1.0f, 0.0f));
-   rotTrans = rotate(mat4(1.0f), y, vec3(1.0f, 0.0f, 0.0f))*rotTrans;
-   rotTrans = rotate(mat4(1.0f), z, vec3(0.0f, 0.0f, 1.0f))*rotTrans;
-   *outmesh = retTrans * rotTrans * movTrans * inmesh;
-
-   model.state.transform = model.state.translate * (*outmesh) * model.state.scaling;
-}
-
-void GameObject::rescale(float x, float y, float z) {
-   int i;
-   vec3 center, vScale, currScale;
-   vec4 newPos;
-   mat4 movTrans, sTrans, retTrans, inmesh, *outmesh;
-   //SBoundingBox temp;
-   center = model.state.pos;
-   vScale = vec3(x,y,z);
-   currScale = model.state.scale;
-
-   inmesh = model.state.scaling;
-   outmesh = &model.state.scaling;
+//Rotate object by amount specified
+//amount.x about the x axis, etc
+void GameObject::rotateBy(glm::vec3 amount) {
+   model.state.orient += amount;
    
-   movTrans = translate(mat4(1.0f), -center);
-   retTrans = translate(mat4(1.0f), center);
-   *outmesh = retTrans * scale(mat4(1.0f), vScale) * movTrans * inmesh;
-   model.state.transform = model.state.translate * model.state.rotation * (*outmesh);
-
-   currScale.x *= vScale.x;
-   currScale.y *= vScale.y;
-   currScale.z *= vScale.z;
-   //temp = SBoundingBox(bounds.left * x, bounds.bottom * y, bounds.back * z);
-   //temp.update(bounds.right * x, bounds.top * y, bounds.front * z);
-   //bounds = temp;
+   model.state.rotation *= rotate(mat4(1.0f), amount.x, vec3(1.0f, 0.0f, 0.0f));
+   model.state.rotation *= rotate(mat4(1.0f), amount.y, vec3(0.0f, 1.0f, 0.0f));
+   model.state.rotation *= rotate(mat4(1.0f), amount.z, vec3(0.0f, 0.0f, 1.0f));
+   
+   updateTransformMatrix();
 }
+
+void GameObject::scaleBy(glm::vec3 amount) {
+   model.state.scale *= amount;
+   
+   model.state.scaling = glm::scale(mat4(1.0f), model.state.scale);
+   updateTransformMatrix();
+}
+
+//------------------------------------Physics Stuff---------------------------
 
 void GameObject::setPhysProps(float mass, int gravAffect) {
    this->mass = mass;
@@ -116,39 +140,22 @@ vec3 GameObject::setVelocity(vec3 vel) {
    return forceApplied;
 }
 
+float GameObject::scaleMass(float scale) {
+   return 1.0;
+}
+
+//------------------------------------Draw Stuff-------------------------------
+
 vec3 GameObject::applyTransform(mat4 tran) {
    vec3 forceApplied;
    model.state.transform *= tran;
    return forceApplied;
 }
 
-float GameObject::scaleMass(float scale) {
-   return 1.0;
-}
-
-void ObjectNode::initialize(ModelNode *modNod) {
-   ObjectMesh mesh;
-   ObjectNode nod;
-   for (int i = 0; i < modNod->meshes.size(); i++) {
-      mesh = ObjectMesh(i, modNod->meshes[i].buffDat);
-      meshes.push_back(mesh);
-   }
-   for (int j = 0; j < modNod->children.size(); j++) {
-      nod = ObjectNode(modNod->name);
-      nod.initialize(&modNod->children[j]);
-      children.push_back(nod);
-   }
-   state.transform = modNod->transform;
-}
-
-void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandles handles) {
-   ObjectNode nod;
-   this->handles = handles;
-   this->collisionGroup = collGroup;
-   this->modelIdx = modIdx;
-   nod = ObjectNode(model->rootNode.name);
-   nod.initialize(&model->rootNode);
-   this->model = nod;
+//Re-calculate the transform matrix
+void GameObject::updateTransformMatrix()
+{
+   model.state.transform = model.state.translate * model.state.rotation * model.state.scaling;
 }
 
 void GameObject::draw() {
@@ -212,6 +219,6 @@ void GameObject::update(double timeStep) {
       model.state.velocity += vec3(0.0, -20.0, 0.0);
    }
    vec3 mov = model.state.velocity * (float)timeStep;
-   trans(mov.x,mov.y,mov.z);
+   moveBy(mov);
 }
 #endif

@@ -105,20 +105,32 @@ class GameObject {
       }
      
       void initialize(GameModel *gMod, int modIdx, int collGroup, GLHandles handle);
+      //Physics
       void setPhysProps(float mass, int gravAffect);
-      glm::vec3 pos();
-      glm::vec3 vel();
+   
       glm::vec3 checkCollision(GameObject other);
       glm::vec3 applyForce(glm::vec3 force);
       glm::vec3 addVelocity(glm::vec3 vel);
       glm::vec3 setVelocity(glm::vec3 vel);
-      glm::vec3 applyTransform(glm::mat4 tran);
       float scaleMass(float scale);
-      void trans(float x, float y, float z);
-      void rescale(float x, float y, float z);
-      void rot(float x, float y, float z);
+      //Get object properties
+      glm::vec3 getPos();
+      glm::vec3 getVel();
+      glm::vec3 getRot();
+      //Update object
+      void moveBy(glm::vec3 amount);
+      void scaleBy(glm::vec3 amount);
+      void rotateBy(glm::vec3 amount);
+      //Set object
+      void setPos(glm::vec3 pos);
+      void setScale(glm::vec3 scale);
+      void setRotation(glm::vec3 rot);
+      //Drawing
       void draw();
       virtual void update(double timeStep);
+      glm::vec3 applyTransform(glm::mat4 tran);
+   private:
+      void updateTransformMatrix();
 };
 
 #endif
