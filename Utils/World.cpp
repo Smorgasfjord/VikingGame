@@ -24,6 +24,7 @@ World::World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles 
    grndMod = gndMod;
    this->handles = handles;
    ShadeProg = shadeProg;
+   space = ChunkWorld(50,50,50);
 }
 
 /* Set up matrices for ground plane */
@@ -108,4 +109,20 @@ int World::detectCollision(glm::vec3 pos)
             return PLATFORM_COLLISION;
    }
    return 0;
+}
+
+CollisionData World::checkCollision(GameObject *obj, int objIndex) {
+   return space.checkForCollision(obj, objIndex);
+}
+
+int World::placeObject(GameObject *obj, GameModel *mod) {
+   return space.populate(obj, mod->contents);
+}
+
+void World::updateObject(GameObject *obj, int objIndex) {
+   space.repopulate(obj, objIndex);
+}
+
+void World::removeObject(int objIndex) {
+   space.depopulate(objIndex);
 }
