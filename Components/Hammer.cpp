@@ -51,6 +51,8 @@ void Hammer::updateAngle(float x, float y)
    float angle = acos(glm::dot(desiredToBjorn, glm::vec2(-1, 0)));
    if(!isnan(angle))
    {
+      //Move hammer so it is centered on bjorn
+      //translateBy(cos(d2r(rotation)) * (LENGTH / 2.0f), -sin(d2r(rotation)) * (LENGTH / 2.0f),0.0);
       //Save the last angle
       previousAngle = currentAngle.z;
       //Set the rotation theres some weird offsets in here but i don't care enough
@@ -78,6 +80,7 @@ void Hammer::step()
    hammerTip.x -= cos(d2r(getRot().z + 90));
    if(world.detectCollision(hammerTip) == 1 && abs(previousAngle - getRot().z) > 4)
    {
+      cout << "COllision\n";
       bjorn->launch(45);
       collision = true;
    }

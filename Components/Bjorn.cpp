@@ -42,8 +42,8 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, Model model, World world)
    pGameObject::handles = hand;
    velocity = glm::vec3(0);
    mod = model;
-   gravity = -6;
-   mass = 40;
+   gravity = -3;
+   mass = 20;
    this->world = world;
 }
 
@@ -53,6 +53,7 @@ void Bjorn::step()
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
    //Update position based on velocity
+   cout << "Updating position\n";
    position += deltaT * pGameObject::velocity;
    //Fall due to gravity if not colliding with anything
    if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)

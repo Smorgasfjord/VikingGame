@@ -118,7 +118,6 @@ void GameObject::scaleBy(glm::vec3 amount) {
 }
 
 //------------------------------------Physics Stuff---------------------------
-
 void GameObject::setPhysProps(float mass, int gravAffect) {
    this->mass = mass;
    this->gravityAffected = gravAffect;

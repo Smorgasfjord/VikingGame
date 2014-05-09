@@ -66,7 +66,6 @@
 #define PLANE_HEIGHT 1.25
 #define WALL_COLLISION_SIZE .63
 
-
 using namespace std;
 
 //GL basics
@@ -78,7 +77,6 @@ GLHandles handles;
 
 static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
-
 
 //Test
 GameModel OModl;
@@ -179,7 +177,6 @@ void setWorld()
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
-   
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
    
    platforms = Platform::importLevel("mountain.lvl", handles, platMod);
@@ -195,23 +192,11 @@ void setWorld()
    hammer.setInWorld(world, &bjorn);
    OModl = loadModel("Models/Orange.dae", handles);
    Orange = GameObject("arnge");
-   //Orange.initialize(&OModl, 0, 0, handles);
-   //Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
+   Orange.initialize(&OModl, 0, 0, handles);
+   Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
    //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
-}
-
-/* Set up matrices to place model in the world */
-void SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
-   glm::mat4 Scale = glm::scale(glm::mat4(1.0f), size);
-   glm::mat4 Trans = glm::translate(glm::mat4(1.0f), loc);
-   glm::mat4 Rotate = glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 1, 0));
-   
-   glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(handles.uModelMatrix, glm::value_ptr(ortho));
-   safe_glUniformMatrix4fv(handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
 /*function to help load the shaders (both vertex and fragment */
@@ -324,11 +309,11 @@ void Draw (void)
    SetView();
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+   Orange.draw();
    world.draw();
-//   SetMaterial(1);
-//   bjorn.draw();
-//   Orange.draw();
-//   hammer.draw();
+   SetMaterial(1);
+   bjorn.draw();
+   hammer.draw();
 	//Disable the shader
 	glUseProgram(0);
 }
@@ -401,22 +386,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
       }
    }
-}
-
-/*Given a position and a distance from that position calculates
- *If that position would be in the world
- *False if no collision*/
-bool detectCollision(glm::vec3 eye, glm::vec3 delta)
-{
-   float moveX = eye.x + (.1) * delta.x;
-   float moveZ = eye.z + (.1) * delta.z;
-   
-   //Keep the player inside the world
-   if ((moveX <= g_groundSize - .5) && (moveX >= .5) && (moveZ <= g_groundSize - .5) && (moveZ >= .5))
-   {
-      return false;
-   }
-   return true;
 }
 
 void Animate()
@@ -494,13 +463,12 @@ int main( int argc, char *argv[] )
    }
 #endif
 
-   
    Initialize();
    setWorld();
    
    while (!glfwWindowShouldClose(window))
    {
-//      Animate();
+      Animate();
       Draw();
       glfwSwapBuffers(window);
       glfwPollEvents();
