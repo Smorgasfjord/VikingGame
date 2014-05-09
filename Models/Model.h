@@ -29,6 +29,8 @@ class Model
       GLuint BuffObj;
       GLuint IndxBuffObj;
       GLuint TexBuffObj;
+	  GLuint Framebuff;
+	  GLuint rendText;
       int iboLen;
       static Model init_Ground(float g_groundY);
       static Model init_Mountain();
