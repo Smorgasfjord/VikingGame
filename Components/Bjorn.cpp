@@ -8,9 +8,7 @@
 
 #include "Bjorn.h"
 
-#ifdef __WIN32__
-#include <time.h>
-#endif
+
 #ifdef __APPLE__
 #include <sys/time.h>
 #endif

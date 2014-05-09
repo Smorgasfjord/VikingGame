@@ -9,7 +9,7 @@
 #ifndef __levelBuilder__Model__
 #define __levelBuilder__Model__
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <GL\glew.h>
 #endif
 #ifdef __APPLE__
@@ -29,6 +29,8 @@ class Model
       GLuint BuffObj;
       GLuint IndxBuffObj;
       GLuint TexBuffObj;
+	  GLuint Framebuff;
+	  GLuint rendText;
       int iboLen;
       static Model init_Ground(float g_groundY);
       static Model init_Mountain();

@@ -162,14 +162,13 @@ void set_float4(float f[4], float a, float b, float c, float d);
 void color4_to_float4(const aiColor4D *c, float f[4]);
 
 
-std::vector<MeshBufferData> genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle); 
 
 class BufferContents {
    public:
-      float *verts;
-      float *norms;
-      float *texes;
-      unsigned int *faces;
+      std::vector<glm::vec3> verts;
+      std::vector<glm::vec3> norms;
+      std::vector<glm::vec2> texes;
+      std::vector<glm::vec3> faces;
       unsigned int numVerts;
       unsigned int numFaces;
 
@@ -181,19 +180,10 @@ class BufferContents {
          numVerts(nv),
          numFaces(nf)
       {
-         verts = (float*)malloc(sizeof(float)*3*nv);
-         norms = (float*)malloc(sizeof(float)*3*nv);
-         texes = (float*)malloc(sizeof(float)*2*nv);
-         faces = (unsigned int*)malloc(sizeof(unsigned int)*3*nf);
-      }
-      void print() {
-         for (int i = 0; i < numVerts; i++) {
-            printf("vert %d: {%.3f,%.3f,%.3f}, norm %d: {%.3f,%.3f,%.3f}, tex %d: {%.3f,%.3f}\n",i,
-                  verts[i*3],verts[i*3+1],verts[i*3+2],i,norms[i*3],norms[i*3+1],norms[i*3+2],i,texes[i*2],texes[i*2+1]);
-         }
-         for (int j = 0; j < numFaces; j++) {
-            printf("face %d: {%i,%i,%i}\n",j,faces[j*3],faces[j*3+1],faces[j*3+2]);
-         }
+         verts.reserve(nv);
+         norms.reserve(nv);
+         texes.reserve(nv);
+         faces.reserve(nf);
       }
 };
 
@@ -239,6 +229,7 @@ class GameModel {
       glm::vec3 min;
       glm::vec3 max;
       std::vector<MeshBufferData> meshData;
+      std::vector<BufferContents> contents;
 
       GameModel()
       {
@@ -250,6 +241,7 @@ class GameModel {
       }
 
       void updateBounds();
+      void genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle); 
 };
 
 ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> meshData);

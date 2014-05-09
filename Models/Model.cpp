@@ -15,9 +15,9 @@
 #include "../Utils/CMeshLoaderSimple.h"
 #endif
 
-//#ifdef __WIN32__
+#ifdef _WIN32
 #include "../Utils/CMeshLoaderSimple.h"
-//#endif
+#endif
 
 
  Model Model::init_Ground(float g_groundY)
@@ -70,6 +70,19 @@
    glBindBuffer(GL_ARRAY_BUFFER, mod.TexBuffObj);
    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
 
+   
+#ifdef _WIN32
+   glGenFramebuffers(1, &(mod.Framebuff));
+   glBindFramebuffer(GL_FRAMEBUFFER, mod.Framebuff);
+
+   glGenTextures(1, &(mod.rendText));
+   glBindTexture(GL_TEXTURE_2D, mod.rendText);
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+#endif
+   
    return mod;
 }
 
@@ -184,7 +197,7 @@ Model Model::init_Mountain()
       1, 1
    };
    
-   mod.iboLen = 36;
+   mod.iboLen = 18;
    glGenBuffers(1, &mod.BuffObj);
    glBindBuffer(GL_ARRAY_BUFFER, mod.BuffObj);
    glBufferData(GL_ARRAY_BUFFER, sizeof(Pos), Pos, GL_STATIC_DRAW);

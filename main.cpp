@@ -22,7 +22,7 @@
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
 #endif
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <time.h>
 #include <GL\glew.h>
 #include <Windows.h>
@@ -39,11 +39,11 @@
 
 //Models
 #include "Models/Model.h"
-#include "GameModel.h"
+#include "Models/GameModel.h"
 
 //Components
 #include "Components/GameObject.hpp"
-#include "GameObject.h"
+#include "Components/GameObject.h"
 #include "Components/Platform.h"
 #include "Components/Mountain.h"
 #include "Components/Hammer.h"
@@ -304,7 +304,7 @@ void SetMaterial(int i) {
 void Initialize ()
 {
 	// Start Of User Initialization
-	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(.5, .5, .5, 1.0); // 1.0f, 1.0f, 1.0f, 1.0f);
 	// Black Background
    //
  	glClearDepth (1.0f);	// Depth Buffer Setup
@@ -325,10 +325,10 @@ void Draw (void)
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    world.draw();
-   SetMaterial(1);
-   bjorn.draw();
-   Orange.draw();
-   hammer.draw();
+//   SetMaterial(1);
+//   bjorn.draw();
+//   Orange.draw();
+//   hammer.draw();
 	//Disable the shader
 	glUseProgram(0);
 }
@@ -481,17 +481,26 @@ int main( int argc, char *argv[] )
    //test the openGL version
    getGLversion();
    //install the shader
+
    if (!InstallShader(textFileRead((char *)"Lab1_vert.glsl"), textFileRead((char *)"Lab1_frag.glsl"))) {
+	   printf("Error installing shader!\n");
+	   return 0;
+   }
+
+#ifdef _WIN32
+   if (!InstallShader(textFileRead((char *)"Phong_vert.glsl"), textFileRead((char *)"Phong_frag.glsl"))) {
       printf("Error installing shader!\n");
       return 0;
    }
+#endif
+
    
    Initialize();
    setWorld();
    
    while (!glfwWindowShouldClose(window))
    {
-      Animate();
+//      Animate();
       Draw();
       glfwSwapBuffers(window);
       glfwPollEvents();
