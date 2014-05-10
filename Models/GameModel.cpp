@@ -305,9 +305,11 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
       firstComp = 0;
       for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
          const aiFace* face = &mesh->mFaces[t];
-
          memcpy(&faceArray[faceIndex], face->mIndices,3 * sizeof(unsigned int));
-         conts.faces.push_back(glm::vec3(face->mIndices[0],face->mIndices[1],face->mIndices[2]));
+         if (face->mIndices[2] > mesh->mNumVertices || face->mIndices[2] < 0) {
+            faceArray[faceIndex+2] = faceArray[faceIndex+1]+1;
+         }
+         conts.faces.push_back(glm::vec3((float)faceArray[faceIndex],(float)faceArray[faceIndex+1],(float)faceArray[faceIndex+2]));
 
          faceIndex += 3;
       }

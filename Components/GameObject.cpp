@@ -44,11 +44,6 @@ void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandl
    this->model = nod;
 }
 
-bool containedIn(vec3 pt, vec3 min, vec3 max) {
-   return pt.x >= min.x && pt.y >= min.y && pt.z >= min.z
-          && pt.x <= max.x && pt.y <= max.y && pt.z <= max.z;
-}
-
 //------------------------------Get-ers-------------------------------
 
 vec3 GameObject::getPos() {

@@ -79,6 +79,7 @@ static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
 
 //Test
+int orangeRange;
 GameModel OModl;
 GameObject Orange;
 
@@ -90,6 +91,7 @@ Model bjornMod;
 Bjorn bjorn;
 
 //Hammer
+int hammerTime;
 GameModel hammerMod;
 Hammer hammer;
 
@@ -190,10 +192,12 @@ void setWorld()
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
+   hammerTime = world.placeObject(&hammer, &hammerMod);
    OModl = loadModel("Models/Orange.dae", handles);
    Orange = GameObject("arnge");
    Orange.initialize(&OModl, 0, 0, handles);
    Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
+   orangeRange = world.placeObject(&Orange,&OModl);
    //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
@@ -391,6 +395,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime();
+   static int wat = 0; //helps make updates only 30 times a second or so
    frameRate = 1000 / (curTime - lastUpdated + 1);
    /*
    cout << "Update @ " << curTime.tv_sec << "\n";
@@ -400,6 +405,15 @@ void Animate()
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step();
    hammer.step();
+  
+   //updates the spatial data structure 
+   if (wat % 10 == 0) {
+      if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
+         printf("hammer hit the orange\n");
+      }
+      world.updateObject(&hammer, hammerTime);
+   }
+   wat++;
    eye = lookAt = bjorn.getPos();
    eye.z -= camDistance;
    lastUpdated = curTime;
