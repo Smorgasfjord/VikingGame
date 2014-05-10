@@ -248,7 +248,6 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData)
 
    for (int k = 0; k < 16; k++) {
       arr[k] = *(node->mTransformation[k]);
-      printf("%f,\n",arr[k]);
    }
    //trans = glm::make_mat4x4(arr);
    trans = glm::mat4(1.0f);
@@ -306,9 +305,11 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
       firstComp = 0;
       for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
          const aiFace* face = &mesh->mFaces[t];
-
          memcpy(&faceArray[faceIndex], face->mIndices,3 * sizeof(unsigned int));
-         conts.faces.push_back(glm::vec3(face->mIndices[0],face->mIndices[1],face->mIndices[2]));
+         if (face->mIndices[2] > mesh->mNumVertices || face->mIndices[2] < 0) {
+            faceArray[faceIndex+2] = faceArray[faceIndex+1]+1;
+         }
+         conts.faces.push_back(glm::vec3((float)faceArray[faceIndex],(float)faceArray[faceIndex+1],(float)faceArray[faceIndex+2]));
 
          faceIndex += 3;
       }
