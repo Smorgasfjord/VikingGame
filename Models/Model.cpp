@@ -70,31 +70,7 @@
    glBindBuffer(GL_ARRAY_BUFFER, mod.TexBuffObj);
    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
 
-   
-#ifdef _WIN32
-   glGenFramebuffers(1, &(mod.frameBuff));
-   glBindFramebuffer(GL_FRAMEBUFFER, mod.frameBuff);
-
-   glGenTextures(1, &(mod.rendText));
-   glBindTexture(GL_TEXTURE_2D, mod.rendText);
-   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 768, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-   glGenRenderbuffers(1, &(mod.depthBuff));
-   glBindRenderbuffer(GL_RENDERBUFFER, mod.depthBuff);
-   glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
-   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mod.depthBuff);
-   glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mod.rendText, 0);
-
-
-   // Set the list of draw buffers.
-   //Hmmm, figure out where to put this guy
-   GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-   glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-   
-
-#endif
+ 
    
    return mod;
 }
