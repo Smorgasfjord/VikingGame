@@ -180,7 +180,7 @@ void setWorld()
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
    
    platforms = Platform::importLevel("mountain.lvl", handles, platMod);
-   world = World(platforms, mount, grndMod, handles, ShadeProg);
+   world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
    eye.y += .5;
    eye.z -= camDistance;
@@ -456,12 +456,6 @@ int main( int argc, char *argv[] )
 	   return 0;
    }
 
-#ifdef _WIN32
-   if (!InstallShader(textFileRead((char *)"Phong_vert.glsl"), textFileRead((char *)"Phong_frag.glsl"))) {
-      printf("Error installing shader!\n");
-      return 0;
-   }
-#endif
 
    Initialize();
    setWorld();

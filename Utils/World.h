@@ -38,7 +38,7 @@ class World
       void draw();
       World();
       ~World();
-      World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles handles, int shadeProg);
+      World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles* handles, int shadeProg);
       int detectCollision(glm::vec3 pos);
       float getY(glm::vec3 pos);
    private:
@@ -49,7 +49,7 @@ class World
       std::vector<Platform> platforms;
       Mountain mount;
       std::vector<glm::vec3> groundTiles;
-      GLHandles handles;
+      GLHandles* handles;
 };
 
 #endif /* defined(__MyGame__World__) */
