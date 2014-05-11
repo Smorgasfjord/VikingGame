@@ -20,7 +20,7 @@
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 #include "../Utils/GLSL_helper.h"
 
-#define MAX_SPEED .8
+#define MAX_SPEED 2
 #define HEIGHT 0.5
 
 Bjorn::~Bjorn()
@@ -112,8 +112,8 @@ void Bjorn::jump()
 
 void Bjorn::launch(float angle)
 {
-   velocity.x -= 2.5 * cos(angle);
-   velocity.y += 2.5 * sin(angle);
+   velocity.x = -6 * cos(angle);
+   velocity.y = 6 * sin(angle);
 }
 
 void Bjorn::draw()

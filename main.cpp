@@ -346,6 +346,11 @@ float p2wy(double in_y) {
    }
 }
 
+static void error_callback(int error, const char* description)
+{
+   fputs(description, stderr);
+}
+
 /* Tracks mouse movement for the camera */
 void mouse(GLFWwindow* window, double x, double y)
 {
@@ -358,9 +363,10 @@ void mouse(GLFWwindow* window, double x, double y)
    prevMouseLoc = currentPos;
 }
 
-static void error_callback(int error, const char* description)
+void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   fputs(description, stderr);
+   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+      hammer.flip();
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -444,6 +450,7 @@ int main( int argc, char *argv[] )
    }
 
    glfwSetKeyCallback(window, key_callback);
+   glfwSetMouseButtonCallback(window, mouseClick);
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
