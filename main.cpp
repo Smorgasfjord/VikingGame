@@ -253,6 +253,8 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
    handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
+   handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
+   handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
    handles.uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
    handles.uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
