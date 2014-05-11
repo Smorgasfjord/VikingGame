@@ -40,18 +40,7 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
    setScale(glm::vec3(1.0f, 0.4, 0.5));
    setVelocity(glm::vec3(0));
    rotation = 0;
-   float fl = Mountain::testLeftDiagonal(pos);
-   float fr = Mountain::testRightDiagonal(pos);
-   
-   //Determine which mountain side we're on
-   if(fr > 0 && fl < 0)
-      mountainSide = MOUNT_RIGHT;
-   else if(fr < 0 && fl > 0)
-      mountainSide = MOUNT_LEFT;
-   else if(fr > 0 && fl > 0)
-      mountainSide = MOUNT_FRONT;
-   else
-      mountainSide = MOUNT_BACK;
+   mountainSide = Mountain::getSide(pos);
 }
 
 Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model) :
@@ -214,49 +203,4 @@ void Platform::shrink()
    scaleBy(glm::vec3(0.95));
 }
 
-/* Set up matrices to place model in the world */
-void Platform::SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
-   glm::mat4 Scale = glm::scale(glm::mat4(1.0f), size);
-   glm::mat4 Trans = glm::translate(glm::mat4(1.0f), loc);
-   glm::mat4 Rotate;
-   
-   //Spin 90 degrees sideways then apply rotation
-   if(mountainSide == MOUNT_LEFT || mountainSide == MOUNT_RIGHT)
-      Rotate = glm::rotate(glm::mat4(1.0f), 90.0f, glm::vec3(0, 1, 0));
-   
-   Rotate *= glm::rotate(glm::mat4(1.0f), rotation, glm::vec3(0, 0, 1));
-   
-   if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_RIGHT)
-      Rotate *= glm::rotate(glm::mat4(1.0f), -rotation / 2, glm::vec3(0, 1, 0));
-   else
-      Rotate *= glm::rotate(glm::mat4(1.0f), rotation / 2, glm::vec3(0, 1, 0));
-   
-   glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
-}
-
-/*void Platform::draw()
-{
-   //Enable handles
-   safe_glEnableVertexAttribArray(handles.aPosition);
-   safe_glEnableVertexAttribArray(handles.aNormal);
-   
-   SetModel(position, size, rotation);
-   
-   glBindBuffer(GL_ARRAY_BUFFER, mod.BuffObj);
-   safe_glVertexAttribPointer(handles.aPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod.IndxBuffObj);
-   safe_glEnableVertexAttribArray(handles.aNormal);
-   
-   glBindBuffer(GL_ARRAY_BUFFER, mod.NormalBuffObj);
-   safe_glVertexAttribPointer(handles.aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-   
-   glDrawElements(GL_TRIANGLES, mod.iboLen, GL_UNSIGNED_SHORT, 0);
-   //clean up
-	safe_glDisableVertexAttribArray(handles.aPosition);
-	safe_glDisableVertexAttribArray(handles.aNormal);
-   return;
-}*/
 #endif

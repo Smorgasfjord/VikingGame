@@ -68,6 +68,24 @@ float Mountain::testRightDiagonal(glm::vec3 pos)
    return (-1 * pos.x) + (-1 * pos.y) + (-.5 * pos.z) + frd;
 }
 
+int Mountain::getSide(glm::vec3 pos)
+{
+   int side;
+   float fl = Mountain::testLeftDiagonal(pos);
+   float fr = Mountain::testRightDiagonal(pos);
+   
+   //Determine which mountain side we're on
+   if(fr > 0 && fl < 0)
+      side = MOUNT_RIGHT;
+   else if(fr < 0 && fl > 0)
+      side = MOUNT_LEFT;
+   else if(fr > 0 && fl > 0)
+      side = MOUNT_FRONT;
+   else
+      side = MOUNT_BACK;
+   return side;
+}
+
 //Given a vector position determine the proper x
 float Mountain::getX(glm::vec3 pos)
 {
