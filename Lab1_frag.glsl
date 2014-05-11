@@ -22,6 +22,9 @@ void main() {
   vec3 rVec = reflect(-light, norm);
   vec3 view = normalize(uCamPos - vPos);
   vec4 texColor = texture2D(uTexUnit, vTexCoord);
+  if (length(texColor.xyz) < 0.01) {
+     texColor = vec4(1.0);
+  }
   diffuse = uLColor*max(dot(vNorm,light),0.0)*uMat.dColor;
   specular = uLColor*pow(max(dot(rVec,view),0.0),uMat.shine)*uMat.sColor;
   ambient = uLColor*uMat.aColor;

@@ -83,7 +83,7 @@ World world;
 std::vector<int> platIdxs;
 
 //Bjorn
-Model bjornMod;
+GameModel bjornMod;
 Bjorn bjorn;
 
 //Hammer
@@ -159,7 +159,7 @@ void setWorld()
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
    platMod = loadModel("Models/Platform.dae", handles);
-   bjornMod = Model::init_Bjorn();
+   bjornMod = loadModel("Models/bjorn_v1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
    groundTiles.clear();
@@ -189,7 +189,7 @@ void setWorld()
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
 
-   bjorn = Bjorn(lookAt, handles, bjornMod, world);
+   bjorn = Bjorn(lookAt, handles, &bjornMod, world);
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);

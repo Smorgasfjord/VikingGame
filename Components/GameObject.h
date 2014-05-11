@@ -89,6 +89,8 @@ class GameObject {
       int grounded;
       int gravityAffected;
       float mass;
+      float lastUpdated;
+      float deltaT;
       GLHandles handles;
 
       GameObject()

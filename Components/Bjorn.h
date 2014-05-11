@@ -25,20 +25,17 @@
 #include "glfw3.h"
 #endif
 
-#include "GameObject.hpp"
+#include "GameObject.h"
 #include "../Utils/World.h"
-#include "../Models/Model.h"
 
 
-class Bjorn : public pGameObject
+class Bjorn : public GameObject
 {
    public:
       void step();
-      void draw();
       Bjorn();
       ~Bjorn();
-      Bjorn(glm::vec3 pos, GLHandles hand, Model model, World world);
-      glm::vec3 getPos();
+      Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World world);
       void moveRight();
       void moveLeft();
       void jump();
@@ -49,6 +46,7 @@ class Bjorn : public pGameObject
       Model mod;
       float mass;
       float gravity;
+      int mountainSide;
 };
 
 #endif /* defined(__MyGame__Bjorn__) */
