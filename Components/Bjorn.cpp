@@ -20,8 +20,8 @@
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 #include "../Utils/GLSL_helper.h"
 
-#define MAX_SPEED .8
 #define HEIGHT 1.0
+#define MAX_SPEED 2
 
 Bjorn::~Bjorn()
 {
@@ -51,7 +51,6 @@ void Bjorn::step()
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
    //Update position based on velocity
-   //cout << "Updating position\n";
    moveBy(deltaT * getVel());
    //Fall due to gravity if not colliding with anything
    if(world.detectCollision(glm::vec3(getPos().x, getPos().y - (HEIGHT / 2), getPos().z)) == 0)
@@ -72,7 +71,6 @@ void Bjorn::step()
    setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos())));
    lastUpdated = curtime;
    
-   //cout << "(" << pGameObject::position.x << ", " << pGameObject::position.y << ", " << pGameObject::position.z << ")\n" << "Last Updated: " << lastUpdated.tv_usec << "\n";
    return;
 }
 
@@ -97,3 +95,4 @@ void Bjorn::launch(float angle)
 {
    addVelocity(glm::vec3(-2.5 * cos(angle), 2.5 * sin(angle), 0.0));
 }
+

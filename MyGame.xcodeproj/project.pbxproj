@@ -44,9 +44,7 @@
 /* Begin PBXFileReference section */
 		7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.0.0.dylib; path = ../../../../../../../opt/local/lib/libassimp.3.0.0.dylib; sourceTree = "<group>"; };
 		7B256D84191BF31800616E09 /* libIL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIL.a; path = ../../../../../../../opt/local/lib/libIL.a; sourceTree = "<group>"; };
-		7B256D86191BF7F500616E09 /* Color.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Color.jpg; sourceTree = "<group>"; };
 		7B256D87191BF80400616E09 /* bjorn_hammer.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = bjorn_hammer.dae; sourceTree = "<group>"; };
-		7B256D88191BF80400616E09 /* Orange.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = Orange.dae; sourceTree = "<group>"; };
 		7B355979191B0DAA005FAD21 /* GameModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameModel.cpp; sourceTree = "<group>"; };
 		7B35597A191B0DAA005FAD21 /* GameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameModel.h; sourceTree = "<group>"; };
 		7BCD4879191995B100576A2E /* Bjorn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bjorn.cpp; sourceTree = "<group>"; };
@@ -605,7 +603,6 @@
 			isa = PBXGroup;
 			children = (
 				7B256D87191BF80400616E09 /* bjorn_hammer.dae */,
-				7B256D88191BF80400616E09 /* Orange.dae */,
 				7B355979191B0DAA005FAD21 /* GameModel.cpp */,
 				7B35597A191B0DAA005FAD21 /* GameModel.h */,
 				7BCD4967191995B200576A2E /* Model.cpp */,
@@ -633,7 +630,6 @@
 		7BE395921915ACE1005A026B = {
 			isa = PBXGroup;
 			children = (
-				7B256D86191BF7F500616E09 /* Color.jpg */,
 				7B256D84191BF31800616E09 /* libIL.a */,
 				7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */,
 				7BCD4878191995B100576A2E /* Components */,

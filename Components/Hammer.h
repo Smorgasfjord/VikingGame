@@ -31,12 +31,13 @@ public:
    void setInWorld(World world, Bjorn *character);
    void updatePos(float dx, float dy);
    void updateAngle(float x, float y);
+   void flip();
 private:
    World world;
    Model mod;
    Bjorn *bjorn;
    float rotation;
-   int flipped;
+   bool hammerSide;
    bool collision;
    //float mass;
    float previousAngle;

@@ -78,11 +78,6 @@ GLHandles handles;
 static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
 
-//Test
-int orangeRange;
-GameModel OModl;
-GameObject Orange;
-
 //World
 World world;
 std::vector<int> platIdxs;
@@ -181,8 +176,9 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
-   
+   cout << "Importing level\n";
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
+   cout << "Level imported\n";
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
    eye.y += .5;
@@ -198,7 +194,6 @@ void setWorld()
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
-   //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -315,7 +310,6 @@ void Draw (void)
    SetView();
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   Orange.draw();
    world.draw();
    SetMaterial(1);
    bjorn.draw();
@@ -352,6 +346,11 @@ float p2wy(double in_y) {
    }
 }
 
+static void error_callback(int error, const char* description)
+{
+   fputs(description, stderr);
+}
+
 /* Tracks mouse movement for the camera */
 void mouse(GLFWwindow* window, double x, double y)
 {
@@ -364,9 +363,10 @@ void mouse(GLFWwindow* window, double x, double y)
    prevMouseLoc = currentPos;
 }
 
-static void error_callback(int error, const char* description)
+void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   fputs(description, stderr);
+   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+      hammer.flip();
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -450,6 +450,7 @@ int main( int argc, char *argv[] )
    }
 
    glfwSetKeyCallback(window, key_callback);
+   glfwSetMouseButtonCallback(window, mouseClick);
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
@@ -471,7 +472,6 @@ int main( int argc, char *argv[] )
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-
 
    Initialize();
    setWorld();
