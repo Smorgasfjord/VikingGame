@@ -53,7 +53,6 @@ void Bjorn::step()
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
    //Update position based on velocity
-   cout << "Updating position\n";
    position += deltaT * pGameObject::velocity;
    //Fall due to gravity if not colliding with anything
    if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)
@@ -74,7 +73,6 @@ void Bjorn::step()
    position.z = Mountain::getZ(position);
    lastUpdated = curtime;
    
-   //cout << "(" << pGameObject::position.x << ", " << pGameObject::position.y << ", " << pGameObject::position.z << ")\n" << "Last Updated: " << lastUpdated.tv_usec << "\n";
    return;
 }
 

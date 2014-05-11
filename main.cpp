@@ -78,11 +78,6 @@ GLHandles handles;
 static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
 
-//Test
-int orangeRange;
-GameModel OModl;
-GameObject Orange;
-
 //World
 World world;
 std::vector<int> platIdxs;
@@ -181,8 +176,9 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
-   
+   cout << "Importing level\n";
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
+   cout << "Level imported\n";
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
    eye.y += .5;
@@ -198,12 +194,6 @@ void setWorld()
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
-   OModl = loadModel("Models/Orange.dae", handles);
-   Orange = GameObject("arnge");
-   Orange.initialize(&OModl, 0, 0, handles);
-   Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
-   orangeRange = world.placeObject(&Orange,&OModl);
-   //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -320,7 +310,6 @@ void Draw (void)
    SetView();
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   Orange.draw();
    world.draw();
    SetMaterial(1);
    bjorn.draw();
@@ -476,7 +465,6 @@ int main( int argc, char *argv[] )
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-
 
    Initialize();
    setWorld();

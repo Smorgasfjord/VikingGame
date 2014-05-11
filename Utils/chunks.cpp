@@ -293,18 +293,27 @@ int ChunkWorld::traceNode(ObjectNode *node, const vector<BufferContents> & geom,
 
 void ChunkWorld::depopulate(int objIndex) {
    MicroChunk temp;
+   bool done = false;
    glm::vec3 indx;
    ChunkData dat;
+   map<ObjData,glm::vec3>::iterator it;
+   
    for (int i = 0; i < objectMap[objIndex].size(); i++) {
       indx = objectMap[objIndex][i];
       dat.x = (int)indx.x;
       dat.y = (int)indx.y;
       dat.z = (int)indx.z;
       temp = uChunkMap[dat];
-      for (map<ObjData,glm::vec3>::iterator it=temp.objects.begin(); it!=temp.objects.end(); ++it) {
-         if (it->first.obj == objIndex) {
-            temp.objects.erase(it);
+      while(!done)
+      {
+         for (it=temp.objects.begin(); it != temp.objects.end(); ++it) {
+            if (it->first.obj == objIndex) {
+               temp.objects.erase(it);
+               break;
+            }
          }
+         if(it == temp.objects.end())
+            done = true;
       }
    }
    objectMap[objIndex].clear();

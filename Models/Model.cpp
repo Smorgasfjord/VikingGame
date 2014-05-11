@@ -211,7 +211,7 @@ Model Model::init_Bjorn()
 {
    Model mod;
    GLuint colBuffObj;
-   CMeshLoader::loadVertexBufferObjectFromMesh("gameguy1k.m", mod.iboLen,
+   CMeshLoader::loadVertexBufferObjectFromMesh("Models/gameguy1k.m", mod.iboLen,
                                                mod.BuffObj, colBuffObj, mod.NormalBuffObj);
    return mod;
 }
