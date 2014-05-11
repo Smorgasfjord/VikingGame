@@ -43,13 +43,13 @@ struct coll_data {
 
 // for mapping purposes
 
-/*bool operator==(const ChunkData a, const ChunkData b);
+bool operator==(const ChunkData a, const ChunkData b);
 bool operator!=(const ChunkData a, const ChunkData b);
 bool operator<(const ChunkData a, const ChunkData b);
 bool operator==(const ObjData a, const ObjData b);
 bool operator!=(const ObjData a, const ObjData b);
 bool operator<(const ObjData a, const ObjData b);
-*/
+
 glm::vec3 nextChunk(glm::vec3 pos, glm::vec3 ray, float scale);
 
 class MicroChunk {
