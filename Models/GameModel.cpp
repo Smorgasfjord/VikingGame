@@ -390,7 +390,7 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
          color4_to_float4(&ambient, c);
       memcpy(aMat.ambient, c, sizeof(c));
 
-      set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
+      set_float4(c, 0.1f, 0.1f, 0.15f, 1.0f);
       aiColor4D specular;
       if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_SPECULAR, &specular))
          color4_to_float4(&specular, c);

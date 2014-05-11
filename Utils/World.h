@@ -53,7 +53,7 @@ class World
       Model grndMod;
       std::vector<Platform> platforms;
       Mountain mount;
-      std::vector<glm::vec3> groundTiles;
+      //std::vector<glm::vec3> groundTiles;
       ChunkWorld space; //rename
       GLHandles* handles;
 };

@@ -85,6 +85,7 @@ GameObject Orange;
 
 //World
 World world;
+std::vector<int> platIdxs;
 
 //Bjorn
 Model bjornMod;
@@ -153,7 +154,7 @@ void setWorld()
    Model mountMod;
    Mountain mount;
    //Platforms
-   Model platMod;
+   GameModel platMod;
    std::vector<Platform> platforms;
    //Ground
    Model grndMod;
@@ -162,7 +163,7 @@ void setWorld()
    //Initialize models
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
-   platMod = Model:: init_Platform();
+   platMod = loadModel("Models/Platform.dae", handles);
    bjornMod = Model::init_Bjorn();
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
@@ -181,13 +182,17 @@ void setWorld()
    
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
    
-   platforms = Platform::importLevel("mountain.lvl", handles, platMod);
+   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
    eye.y += .5;
    eye.z -= camDistance;
    lookAt.y += .5;
    
+   for (int i = 0; i < platforms.size(); i++) {
+      platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
+   }
+
    bjorn = Bjorn(lookAt, handles, bjornMod, world);
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
@@ -411,7 +416,7 @@ void Animate()
    //updates the spatial data structure 
    if (wat % 10 == 0) {
       if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
-         printf("hammer hit the orange\n");
+         printf("hammer hit the platform\n");
       }
       world.updateObject(&hammer, hammerTime);
    }

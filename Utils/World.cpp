@@ -118,7 +118,7 @@ void World::draw()
 	safe_glEnableVertexAttribArray(handles->aNormal);
    SetMaterial(GROUND_MAT);
    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-   for (std::vector<glm::vec3>::iterator it = groundTiles.begin(); it != groundTiles.end(); ++ it) {
+   /*for (std::vector<glm::vec3>::iterator it = groundTiles.begin(); it != groundTiles.end(); ++ it) {
       setGround(glm::vec3(it->x, it->y, it->z));
       
       glBindBuffer(GL_ARRAY_BUFFER, grndMod.BuffObj);
@@ -130,7 +130,7 @@ void World::draw()
 	  safe_glVertexAttribPointer(handles->aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);
       
       glDrawElements(GL_TRIANGLES, grndMod.iboLen, GL_UNSIGNED_SHORT, 0);
-   }
+   }*/
    
    SetMaterial(2);
    mount.draw();

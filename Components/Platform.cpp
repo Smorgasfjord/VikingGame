@@ -32,13 +32,13 @@ Platform::Platform()
    //This needs to be here for C++ to be happy, even though it doesn't seem to do anything
 }
 
-Platform::Platform(glm::vec3 pos, GLHandles hand, Model model)
+Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
+   GameObject("platform")
 {
-   position = glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos));
-   this->size = glm::vec3(1.0f);
-   pGameObject::handles = hand;
-   velocity = glm::vec3(0);
-   mod = model;
+   initialize(model, 0, 1, hand);
+   setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
+   setScale(glm::vec3(1.0f, 0.4, 0.5));
+   setVelocity(glm::vec3(0));
    rotation = 0;
    float fl = Mountain::testLeftDiagonal(pos);
    float fr = Mountain::testRightDiagonal(pos);
@@ -54,20 +54,15 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, Model model)
       mountainSide = MOUNT_BACK;
 }
 
-Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, Model model)
+Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model) :
+   GameObject("platform")
 {
-   position = pos;
-   this->size = size;
-   this->rotation = rotation;
    mountainSide = mountSide;
-   pGameObject::handles = hand;
-   velocity = glm::vec3(0);
-   mod = model;
-}
-
-glm::vec3 Platform::getPos()
-{
-   return position;
+   initialize(model, 0, 1, hand);
+   setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
+   setScale(size * glm::vec3(1.0, 0.4, 0.5));
+   this->rotation = rotation;
+   setVelocity(glm::vec3(0));
 }
 
 string Platform::toString()
@@ -78,8 +73,8 @@ string Platform::toString()
    char side[15];
    string str = "Platform: \n";
    sprintf(side, "\t%d\n", mountainSide);
-   sprintf(pos, "\t%f %f %f\n", position.x, position.y, position.z);
-   sprintf(sizeStr, "\t%f %f %f\n", size.x, size.y, size.z);
+   sprintf(pos, "\t%f %f %f\n", getPos().x, getPos().y, getPos().z);
+   sprintf(sizeStr, "\t%f %f %f\n", model.state.scale.x, model.state.scale.y, model.state.scale.z);
    sprintf(rot, "\t%f\n", rotation);
    str.append(side);
    str.append(pos);
@@ -90,7 +85,7 @@ string Platform::toString()
 }
 
 //Read in a .lvl file of the given name
-std::vector<Platform> Platform::importLevel(std::string const & fileName, GLHandles handles, Model platMod)
+std::vector<Platform> Platform::importLevel(std::string const & fileName, GLHandles handles, GameModel *platMod)
 {
    std::vector<Platform> plats;
    std::ifstream File;
@@ -135,14 +130,14 @@ bool Platform::detectCollision(glm::vec3 test)
 {
    if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
    {
-      if(test.x <= position.x + size.x && test.x >= position.x - size.x &&
-         test.y <= position.y + .5 && test.y >= position.y - .5)
+      if(test.x <= getPos().x + getSize().x && test.x >= getPos().x - getSize().x &&
+         test.y <= getPos().y + .5 && test.y >= getPos().y - .5)
          return true;
    }
    else
    {
-      if(test.z <= position.z + size.x && test.z >= position.z - size.x &&
-         test.y <= position.y + .5 && test.y >= position.y - .5)
+      if(test.z <= getPos().z + getSize().x && test.z >= getPos().z - getSize().x &&
+         test.y <= getPos().y + .5 && test.y >= getPos().y - .5)
          return true;
    }
    
@@ -151,44 +146,42 @@ bool Platform::detectCollision(glm::vec3 test)
 
 void Platform::moveDown()
 {
-   position.y -= STEP;
    if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
-      position.z = Mountain::getZ(position);
+      setPos(glm::vec3(getPos().x, getPos().y - STEP, Mountain::getZ(getPos()-glm::vec3(0.0,STEP,0.0))));
    else
-      position.x = Mountain::getX(position);
+      setPos(glm::vec3(Mountain::getX(getPos()-glm::vec3(0.0,STEP,0.0)), getPos().y - STEP, getPos().z));
 }
 
 void Platform::moveUp()
 {
-   position.y += STEP;
    if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
-      position.z = Mountain::getZ(position);
+      setPos(glm::vec3(getPos().x, getPos().y + STEP, Mountain::getZ(getPos()+glm::vec3(0.0,STEP,0.0))));
    else
-      position.x = Mountain::getX(position);
+      setPos(glm::vec3(Mountain::getX(getPos()+glm::vec3(0.0,STEP,0.0)), getPos().y + STEP, getPos().z));
 }
 
 void Platform::moveLeft()
 {
    if(mountainSide == MOUNT_FRONT)
-      position.x += STEP;
+      setPos(getPos() + glm::vec3(STEP,0.0,0.0));
    else if(mountainSide == MOUNT_BACK)
-      position.x -= STEP;
+      setPos(getPos() - glm::vec3(STEP,0.0,0.0));
    else if(mountainSide == MOUNT_LEFT)
-      position.z += STEP;
+      setPos(getPos() + glm::vec3(0.0,0.0,STEP));
    else
-      position.z -= STEP;
+      setPos(getPos() - glm::vec3(0.0,0.0,STEP));
 }
 
 void Platform::moveRight()
 {
    if(mountainSide == MOUNT_FRONT)
-      position.x -= STEP;
+      setPos(getPos() - glm::vec3(STEP,0.0,0.0));
    else if(mountainSide == MOUNT_BACK)
-      position.x += STEP;
+      setPos(getPos() + glm::vec3(STEP,0.0,0.0));
    else if(mountainSide == MOUNT_LEFT)
-      position.z -= STEP;
+      setPos(getPos() - glm::vec3(0.0,0.0,STEP));
    else
-      position.z += STEP;
+      setPos(getPos() + glm::vec3(0.0,0.0,STEP));
 }
 
 float Platform::getRot()
@@ -208,17 +201,17 @@ void Platform::step()
 
 glm::vec3 Platform::getSize()
 {
-   return size;
+   return model.state.scale;
 }
 
 void Platform::stretch()
 {
-   size.x += .05;
+   scaleBy(glm::vec3(1.05));
 }
 
 void Platform::shrink()
 {
-   size.x -= .05;
+   scaleBy(glm::vec3(0.95));
 }
 
 /* Set up matrices to place model in the world */
@@ -239,11 +232,11 @@ void Platform::SetModel(glm::vec3 loc, glm::vec3 size, float rotation) {
       Rotate *= glm::rotate(glm::mat4(1.0f), rotation / 2, glm::vec3(0, 1, 0));
    
    glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
+   safe_glUniformMatrix4fv(handles.uModelMatrix, glm::value_ptr(final));
+   safe_glUniformMatrix4fv(handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
-void Platform::draw()
+/*void Platform::draw()
 {
    //Enable handles
    safe_glEnableVertexAttribArray(handles.aPosition);
@@ -265,5 +258,5 @@ void Platform::draw()
 	safe_glDisableVertexAttribArray(handles.aPosition);
 	safe_glDisableVertexAttribArray(handles.aNormal);
    return;
-}
+}*/
 #endif
