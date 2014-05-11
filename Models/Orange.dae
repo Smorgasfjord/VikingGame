@@ -47,7 +47,11 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
+<<<<<<< HEAD
+              <color sid="ambient">0.1 0.07 0.015 1</color>
+=======
               <color sid="ambient">0 0 0 1</color>
+>>>>>>> 4940df7cb3b6de136849bf394d4ab09d5408cc6d
             </ambient>
             <diffuse>
               <texture texture="Color_jpg-sampler" texcoord="UVMap"/>
