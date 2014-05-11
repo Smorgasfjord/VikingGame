@@ -88,7 +88,7 @@ World world;
 std::vector<int> platIdxs;
 
 //Bjorn
-Model bjornMod;
+GameModel bjornMod;
 Bjorn bjorn;
 
 //Hammer
@@ -164,7 +164,7 @@ void setWorld()
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
    platMod = loadModel("Models/Platform.dae", handles);
-   bjornMod = Model::init_Bjorn();
+   bjornMod = loadModel("Models/bjorn_v1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
    groundTiles.clear();
@@ -193,16 +193,11 @@ void setWorld()
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
 
-   bjorn = Bjorn(lookAt, handles, bjornMod, world);
+   bjorn = Bjorn(lookAt, handles, &bjornMod, world);
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
-   OModl = loadModel("Models/Orange.dae", handles);
-   Orange = GameObject("arnge");
-   Orange.initialize(&OModl, 0, 0, handles);
-   Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
-   orangeRange = world.placeObject(&Orange,&OModl);
    //Orange.rescale(50.0,50.0,50.0);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
