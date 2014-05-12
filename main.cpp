@@ -60,6 +60,9 @@
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
 
+//Audio
+#include "Audio/Sound.h"
+
 
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
@@ -194,11 +197,11 @@ void setWorld()
    eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
-   /* This freezes when placing new platforms
+   //This freezes when placing new platforms
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
-    */
+    
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, world);
    cout << "Bjorn bound\n";
@@ -207,6 +210,9 @@ void setWorld()
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
    cout << "Hammer held\n";
+   Sound::initialise();
+   Sound::load("Audio/NoEasyWayOut.mp3");
+   Sound::play();
    cout << "Lets play!\n";
    glfwSetTime(0);
    lastUpdated = glfwGetTime();

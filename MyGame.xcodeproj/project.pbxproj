@@ -27,6 +27,9 @@
 		7BE396A41915ADDA005A026B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE396A31915ADDA005A026B /* CoreVideo.framework */; };
 		7BE396A61915ADE0005A026B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE396A51915ADE0005A026B /* Cocoa.framework */; };
 		7BE396A81915AE05005A026B /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BE396A71915AE05005A026B /* IOKit.framework */; };
+		7BF7373919216DC90057AF67 /* libfmodex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF7373819216DC90057AF67 /* libfmodex.dylib */; };
+		7BF7374E19216E620057AF67 /* Sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7BF7374C19216E620057AF67 /* Sound.cpp */; };
+		7BF7375019216FA80057AF67 /* libfmodexL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF7374F19216FA70057AF67 /* libfmodexL.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -297,12 +300,24 @@
 		7BCD4988191ADB6600576A2E /* GameObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameObject.h; sourceTree = "<group>"; };
 		7BD073E8191ED2AC006327F3 /* chunks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chunks.cpp; sourceTree = "<group>"; };
 		7BD073E9191ED2AC006327F3 /* chunks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chunks.h; sourceTree = "<group>"; };
-		7BE3959B1915ACE1005A026B /* MyGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = MyGame; path = "/Users/twoods0129/Documents/SkyDrive/2014 Spring Quarter/CPE 476/VikingGame/build/Debug/MyGame"; sourceTree = "<absolute>"; };
 		7BE396991915AD6C005A026B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
 		7BE396A11915ADCF005A026B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		7BE396A31915ADDA005A026B /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		7BE396A51915ADE0005A026B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7BE396A71915AE05005A026B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		7BF7373719212C870057AF67 /* MyGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MyGame; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BF7373819216DC90057AF67 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../../../../../../usr/local/lib/libfmodex.dylib; sourceTree = "<group>"; };
+		7BF7374519216E380057AF67 /* fmod.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod.h; sourceTree = "<group>"; };
+		7BF7374619216E380057AF67 /* fmod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fmod.hpp; sourceTree = "<group>"; };
+		7BF7374719216E380057AF67 /* fmod_codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_codec.h; sourceTree = "<group>"; };
+		7BF7374819216E380057AF67 /* fmod_dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_dsp.h; sourceTree = "<group>"; };
+		7BF7374919216E380057AF67 /* fmod_errors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_errors.h; sourceTree = "<group>"; };
+		7BF7374A19216E380057AF67 /* fmod_memoryinfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_memoryinfo.h; sourceTree = "<group>"; };
+		7BF7374B19216E380057AF67 /* fmod_output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_output.h; sourceTree = "<group>"; };
+		7BF7374C19216E620057AF67 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
+		7BF7374D19216E620057AF67 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
+		7BF7374F19216FA70057AF67 /* libfmodexL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodexL.dylib; path = ../../../../../../../usr/local/lib/libfmodexL.dylib; sourceTree = "<group>"; };
+		7BF73751192178440057AF67 /* NoEasyWayOut.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = NoEasyWayOut.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -310,6 +325,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BF7373919216DC90057AF67 /* libfmodex.dylib in Frameworks */,
 				7B256D83191BF27700616E09 /* libassimp.3.0.0.dylib in Frameworks */,
 				7BE396A81915AE05005A026B /* IOKit.framework in Frameworks */,
 				7B256D85191BF31800616E09 /* libIL.a in Frameworks */,
@@ -317,6 +333,7 @@
 				7BCD497B19199AAD00576A2E /* libGLEW.a in Frameworks */,
 				7BE396A41915ADDA005A026B /* CoreVideo.framework in Frameworks */,
 				7BE396A21915ADCF005A026B /* OpenGL.framework in Frameworks */,
+				7BF7375019216FA80057AF67 /* libfmodexL.dylib in Frameworks */,
 				7BE396A01915AD6C005A026B /* libglfw3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -638,6 +655,9 @@
 		7BE395921915ACE1005A026B = {
 			isa = PBXGroup;
 			children = (
+				7BF7374F19216FA70057AF67 /* libfmodexL.dylib */,
+				7BF7374319216E380057AF67 /* Audio */,
+				7BF7373819216DC90057AF67 /* libfmodex.dylib */,
 				7B256D84191BF31800616E09 /* libIL.a */,
 				7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */,
 				7BCD4878191995B100576A2E /* Components */,
@@ -651,7 +671,33 @@
 				7BE396A11915ADCF005A026B /* OpenGL.framework */,
 				7BE396991915AD6C005A026B /* libglfw3.a */,
 				7BCD497A19199AAD00576A2E /* libGLEW.a */,
+				7BF7373719212C870057AF67 /* MyGame */,
 			);
+			sourceTree = "<group>";
+		};
+		7BF7374319216E380057AF67 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				7BF73751192178440057AF67 /* NoEasyWayOut.mp3 */,
+				7BF7374419216E380057AF67 /* inc */,
+				7BF7374C19216E620057AF67 /* Sound.cpp */,
+				7BF7374D19216E620057AF67 /* Sound.h */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		7BF7374419216E380057AF67 /* inc */ = {
+			isa = PBXGroup;
+			children = (
+				7BF7374519216E380057AF67 /* fmod.h */,
+				7BF7374619216E380057AF67 /* fmod.hpp */,
+				7BF7374719216E380057AF67 /* fmod_codec.h */,
+				7BF7374819216E380057AF67 /* fmod_dsp.h */,
+				7BF7374919216E380057AF67 /* fmod_errors.h */,
+				7BF7374A19216E380057AF67 /* fmod_memoryinfo.h */,
+				7BF7374B19216E380057AF67 /* fmod_output.h */,
+			);
+			path = inc;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -671,7 +717,7 @@
 			);
 			name = MyGame;
 			productName = MyGame;
-			productReference = 7BE3959B1915ACE1005A026B /* MyGame */;
+			productReference = 7BF7373719212C870057AF67 /* MyGame */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -717,6 +763,7 @@
 				7BCD4977191995B200576A2E /* CMeshLoaderSimple.cpp in Sources */,
 				7BCD4975191995B200576A2E /* main.cpp in Sources */,
 				7BCD4973191995B200576A2E /* Mountain.cpp in Sources */,
+				7BF7374E19216E620057AF67 /* Sound.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -808,6 +855,7 @@
 					"$(PROJECT_DIR)",
 					/usr/lib,
 					/opt/local/lib,
+					/usr/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -828,6 +876,7 @@
 					"$(PROJECT_DIR)",
 					/usr/lib,
 					/opt/local/lib,
+					/usr/local/lib,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
