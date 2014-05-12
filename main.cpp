@@ -170,7 +170,7 @@ void setWorld()
    //Initialize models
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
-   platMod = loadModel("Models/Platform.dae", handles);
+   platMod = loadModel("Models/platform_2.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
@@ -188,25 +188,28 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
-   cout << "Importing level\n";
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
-   cout << "Level imported\n";
+   cout << "Level loaded\n";
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
+   cout << "World worked\n";
    eye = lookAt = platforms[0].getPos();
    eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
-   
+   /* This freezes when placing new platforms
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
-
+    */
+   cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, world);
+   cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
-   cout << hammerTime;
+   cout << "Hammer held\n";
+   cout << "Lets play!\n";
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }

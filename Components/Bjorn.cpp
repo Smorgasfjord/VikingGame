@@ -55,7 +55,7 @@ void Bjorn::step()
    //Update position based on velocity
    moveBy(deltaT * getVel());
    //Fall due to gravity if not colliding with anything, this is a weird y offset, i don't get it
-   if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .09, getPos().z)) == 0 && !suspended)
+   if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .15, getPos().z)) == 0 && !suspended)
       addVelocity(glm::vec3(0.0, ((mass * gravity) * .002f), 0.0));
    else
    {

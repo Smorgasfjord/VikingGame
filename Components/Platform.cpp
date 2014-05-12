@@ -37,7 +37,7 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
 {
    initialize(model, 0, 1, hand);
    setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
-   setScale(glm::vec3(1.0f, 0.4, 0.5));
+   setScale(glm::vec3(1.0f, 1.0, 0.5));
    setVelocity(glm::vec3(0));
    setRotation(glm::vec3(0, 0, 0));
    mountainSide = Mountain::getSide(pos);
@@ -49,7 +49,7 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
    mountainSide = mountSide;
    initialize(model, 0, 1, hand);
    setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
-   setScale(size * glm::vec3(1.0, 0.4, 0.5));
+   setScale(size * glm::vec3(1.0,1.0, 0.5));
    setRotation(glm::vec3(-rotation/2, 0, rotation));
    setVelocity(glm::vec3(0));
 }
