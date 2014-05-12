@@ -54,12 +54,12 @@ void Bjorn::step()
    float deltaT = (float)(curtime -  lastUpdated);
    //Update position based on velocity
    moveBy(deltaT * getVel());
-   //Fall due to gravity if not colliding with anything
-   if(world.detectCollision(glm::vec3(getPos().x, getPos().y - .15, getPos().z)) == 0 && !suspended)
+   //Fall due to gravity if not colliding with anything, this is a weird y offset, i don't get it
+   if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .09, getPos().z)) == 0 && !suspended)
       addVelocity(glm::vec3(0.0, ((mass * gravity) * .002f), 0.0));
    else
    {
-      setPos(glm::vec3(getPos().x,world.getY(getPos()),getPos().z));
+      //setPos(glm::vec3(getPos().x,world.getY(getPos()),getPos().z));
       jumping = false;
       setVelocity(glm::vec3(getVel().x, 0, getVel().z));
       //Update X velocity due to friction

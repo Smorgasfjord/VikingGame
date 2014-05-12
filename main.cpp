@@ -147,7 +147,7 @@ int diffMs(timeval t1, timeval t2)
 static void reset()
 {
    eye = lookAt = world.getStart();
-   eye.y += .5;
+   eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
    bjorn.setPos(lookAt);
@@ -193,7 +193,7 @@ void setWorld()
    cout << "Level imported\n";
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
-   eye.y += .5;
+   eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
    
