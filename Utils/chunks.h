@@ -21,6 +21,7 @@ class Chunk;
 class MicroChunk;
 typedef struct chunk_data ChunkData;
 typedef struct obj_data ObjData;
+typedef struct coll_data CollisionData;
 
 struct chunk_data {
    int x; //x index
@@ -35,35 +36,19 @@ struct obj_data {
    int tri; //face index
 };
 
+struct coll_data {
+   ObjData obj;
+   glm::vec3 collisionPoint;
+};
+
 // for mapping purposes
-bool operator<(const ChunkData a, const ChunkData b) {
-   if (a.x != b.x)
-      return a.x < b.x;
-   if (a.y != b.y)
-      return a.y < b.y;
-   return a.z < b.z;
-}
-bool operator==(const ChunkData a, const ChunkData b) {
-   return a.x == b.x && a.y == b.y && a.z == b.z;
-}
-bool operator!=(const ChunkData a, const ChunkData b) {
-   return !(a==b);
-}
-bool operator<(const ObjData a, const ObjData b) {
-   if (a.obj != b.obj)
-      return a.obj < b.obj;
-   if (a.nod != b.nod)
-      return a.nod < b.nod;
-   if (a.mesh != b.mesh)
-      return a.mesh < b.mesh;
-   return a.tri < b.tri;
-}
-bool operator==(const ObjData a, const ObjData b) {
-   return a.obj == b.obj && a.nod == b.nod && a.mesh == b.mesh && a.tri == b.tri;
-}
-bool operator!=(const ObjData a, const ObjData b) {
-   return !(a==b);
-}
+
+bool operator==(const ChunkData a, const ChunkData b);
+bool operator!=(const ChunkData a, const ChunkData b);
+bool operator<(const ChunkData a, const ChunkData b);
+bool operator==(const ObjData a, const ObjData b);
+bool operator!=(const ObjData a, const ObjData b);
+bool operator<(const ObjData a, const ObjData b);
 
 glm::vec3 nextChunk(glm::vec3 pos, glm::vec3 ray, float scale);
 
@@ -123,6 +108,7 @@ class ChunkWorld {
    public:
       map<ChunkData, Chunk> chunkMap;
       map<ChunkData, MicroChunk> uChunkMap;
+      map<int, vector<glm::vec3> > objectMap;
       Chunk invalidC;
       MicroChunk invalidM;
       glm::vec3 scale;
@@ -153,7 +139,9 @@ class ChunkWorld {
       int traceNode(ObjectNode *nod, const vector<BufferContents> & geom, glm::mat4 trans, ObjData dat); 
       int populate(GameObject *obj, const std::vector<BufferContents> & geom);
       void repopulate(GameObject *obj, int objIndex);
-      int checkForCollision(GameObject *obj, int objIndex, glm::mat4 transform);
+      CollisionData checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
+      CollisionData checkNodeCollision(ObjectNode *newNod, ObjectNode *oldNod, const std::vector<BufferContents> & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
+      CollisionData checkForCollision(GameObject *newObj, int objIndex);
       void depopulate(int objIndex);
       //int addMaterial(mat_t mat);      
       //int addLight(LightSource light);

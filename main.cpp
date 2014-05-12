@@ -78,18 +78,16 @@ GLHandles handles;
 static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
 
-//Test
-GameModel OModl;
-GameObject Orange;
-
 //World
 World world;
+std::vector<int> platIdxs;
 
 //Bjorn
-Model bjornMod;
+GameModel bjornMod;
 Bjorn bjorn;
 
 //Hammer
+int hammerTime;
 GameModel hammerMod;
 Hammer hammer;
 
@@ -151,7 +149,7 @@ void setWorld()
    Model mountMod;
    Mountain mount;
    //Platforms
-   Model platMod;
+   GameModel platMod;
    std::vector<Platform> platforms;
    //Ground
    Model grndMod;
@@ -160,8 +158,8 @@ void setWorld()
    //Initialize models
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
-   platMod = Model:: init_Platform();
-   bjornMod = Model::init_Bjorn();
+   platMod = loadModel("Models/Platform.dae", handles);
+   bjornMod = loadModel("Models/bjorn_v1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
    groundTiles.clear();
@@ -178,23 +176,24 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
-   
-   platforms = Platform::importLevel("mountain.lvl", handles, platMod);
-   world = World(platforms, mount, grndMod, handles, ShadeProg);
+   cout << "Importing level\n";
+   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
+   cout << "Level imported\n";
+   world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
    eye.y += .5;
    eye.z -= camDistance;
    lookAt.y += .5;
    
-   bjorn = Bjorn(lookAt, handles, bjornMod, world);
+   for (int i = 0; i < platforms.size(); i++) {
+      platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
+   }
+
+   bjorn = Bjorn(lookAt, handles, &bjornMod, world);
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
-   OModl = loadModel("Models/Orange.dae", handles);
-   Orange = GameObject("arnge");
-   Orange.initialize(&OModl, 0, 0, handles);
-   Orange.setPos(glm::vec3(lookAt.x+1.0,lookAt.y+1.0,lookAt.z));
-   //Orange.rescale(50.0,50.0,50.0);
+   hammerTime = world.placeObject(&hammer, &hammerMod);
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -249,6 +248,8 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
    handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
+   handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
+   handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
    handles.uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
    handles.uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
@@ -309,7 +310,6 @@ void Draw (void)
    SetView();
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   Orange.draw();
    world.draw();
    SetMaterial(1);
    bjorn.draw();
@@ -346,6 +346,11 @@ float p2wy(double in_y) {
    }
 }
 
+static void error_callback(int error, const char* description)
+{
+   fputs(description, stderr);
+}
+
 /* Tracks mouse movement for the camera */
 void mouse(GLFWwindow* window, double x, double y)
 {
@@ -358,9 +363,10 @@ void mouse(GLFWwindow* window, double x, double y)
    prevMouseLoc = currentPos;
 }
 
-static void error_callback(int error, const char* description)
+void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   fputs(description, stderr);
+   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+      hammer.flip();
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -391,6 +397,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime();
+   static int wat = 0; //helps make updates only 30 times a second or so
    frameRate = 1000 / (curTime - lastUpdated + 1);
    /*
    cout << "Update @ " << curTime.tv_sec << "\n";
@@ -400,6 +407,15 @@ void Animate()
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step();
    hammer.step();
+  
+   //updates the spatial data structure 
+   if (wat % 10 == 0) {
+      if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
+         printf("hammer hit the platform\n");
+      }
+      world.updateObject(&hammer, hammerTime);
+   }
+   wat++;
    eye = lookAt = bjorn.getPos();
    eye.z -= camDistance;
    lastUpdated = curTime;
@@ -434,6 +450,7 @@ int main( int argc, char *argv[] )
    }
 
    glfwSetKeyCallback(window, key_callback);
+   glfwSetMouseButtonCallback(window, mouseClick);
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
@@ -455,13 +472,6 @@ int main( int argc, char *argv[] )
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-
-#ifdef _WIN32
-   if (!InstallShader(textFileRead((char *)"Phong_vert.glsl"), textFileRead((char *)"Phong_frag.glsl"))) {
-      printf("Error installing shader!\n");
-      return 0;
-   }
-#endif
 
    Initialize();
    setWorld();

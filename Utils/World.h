@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+#include "chunks.h"
 #include <vector>
 #include "GLHandles.h"
 #include "GLSL_helper.h"
@@ -38,9 +39,13 @@ class World
       void draw();
       World();
       ~World();
-      World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles handles, int shadeProg);
+      World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles* handles, int shadeProg);
       int detectCollision(glm::vec3 pos);
+      CollisionData checkCollision(GameObject *obj, int objIndex);
       float getY(glm::vec3 pos);
+      int placeObject(GameObject *obj, GameModel *mod);
+      void updateObject(GameObject *obj, int objIndex);
+      void removeObject(int objIndex);
    private:
       int ShadeProg;
       void setGround(glm::vec3 loc);
@@ -48,8 +53,9 @@ class World
       Model grndMod;
       std::vector<Platform> platforms;
       Mountain mount;
-      std::vector<glm::vec3> groundTiles;
-      GLHandles handles;
+      //std::vector<glm::vec3> groundTiles;
+      ChunkWorld space; //rename
+      GLHandles* handles;
 };
 
 #endif /* defined(__MyGame__World__) */

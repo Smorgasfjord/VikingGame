@@ -1,6 +1,35 @@
 
 #include "chunks.h"
 
+bool operator==(const ChunkData a, const ChunkData b) {
+   return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+bool operator!=(const ChunkData a, const ChunkData b) {
+   return !(a==b);
+}
+bool operator<(const ChunkData a, const ChunkData b) {
+   if (a.x != b.x)
+      return a.x < b.x;
+   if (a.y != b.y)
+      return a.y < b.y;
+   return a.z < b.z;
+}
+bool operator==(const ObjData a, const ObjData b) {
+   return a.obj == b.obj && a.nod == b.nod && a.mesh == b.mesh && a.tri == b.tri;
+}
+bool operator!=(const ObjData a, const ObjData b) {
+   return !(a==b);
+}
+bool operator<(const ObjData a, const ObjData b) {
+   if (a.obj != b.obj)
+      return a.obj < b.obj;
+   if (a.nod != b.nod)
+      return a.nod < b.nod;
+   if (a.mesh != b.mesh)
+      return a.mesh < b.mesh;
+   return a.tri < b.tri;
+}
+
 bool containedIn(glm::vec3 pt, glm::vec3 min, glm::vec3 max) {
    return pt.x >= min.x && pt.y >= min.y && pt.z >= min.z
           && pt.x <= max.x && pt.y <= max.y && pt.z <= max.z;
@@ -157,10 +186,62 @@ MicroChunk * ChunkWorld::addMicroChunk(float x, float y, float z) {
    return findMicroChunk(x,y,z);
 }
 
+CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat) {
+   MicroChunk *temp;
+   CollisionData ret;
+   glm::vec4 newTransVert;
+   glm::vec4 oldTransVert;
+   for (int i = 0; i < geom.verts.size(); i++) {
+      newTransVert = newTrans * glm::vec4(geom.verts[i],1.0f);
+      temp = findMicroChunk(newTransVert.x,newTransVert.y,newTransVert.z);
+      if (temp->isValid()) {
+         for (map<ObjData,glm::vec3>::iterator it=temp->objects.begin(); it!=temp->objects.end(); ++it) {
+            if (it->first.obj != dat.obj) {
+               ret.obj = it->first;
+               ret.collisionPoint = glm::vec3(newTransVert);
+               return ret;
+            }
+         }
+      }
+   }
+   ret.obj = dat;
+   ret.collisionPoint = glm::vec3(0.0f);
+   return ret;
+}
+
+CollisionData ChunkWorld::checkNodeCollision(ObjectNode *newNod, ObjectNode *oldNod, const vector<BufferContents> & geom, glm::mat4 newCumulative, glm::mat4 oldCumulative, ObjData & dat) {
+   glm::mat4 newCurrent = newNod->state.transform * newCumulative;
+   glm::mat4 oldCurrent = oldNod->state.transform * oldCumulative;
+   CollisionData ret;
+   for (int i = 0; i < newNod->meshes.size(); i++) {
+      dat.mesh = i;
+      ret = checkMeshCollision(geom[newNod->meshes[i].meshIdx], newCurrent, oldCurrent, dat);
+      if (ret.obj.obj != dat.obj) {
+         return ret;
+      }
+   }
+   dat.nod++;
+   for (int j = 0; j < newNod->children.size(); j++) { 
+      ret = checkNodeCollision(&(newNod->children[j]), &(oldNod->children[j]), geom, newCurrent, oldCurrent, dat);
+      if (ret.obj.obj != dat.obj) {
+         return ret;
+      }
+   }
+   return ret;
+}
+
+CollisionData ChunkWorld::checkForCollision(GameObject *obj, int objIndex) {
+   GameObject *old = &(objects[objIndex]);
+   ObjData dat;
+   dat.obj = objIndex;
+   dat.nod = 0;
+   return checkNodeCollision(&(obj->model), &(old->model), models[objIndex], glm::mat4(1.0f), glm::mat4(1.0f), dat);
+}
+
+
 void ChunkWorld::traceLine(glm::vec3 start, glm::vec3 end, ObjData dat) {
    glm::vec3 line = end - start;
    glm::vec3 iter = start;
-   glm::vec3 last = end - start;
    MicroChunk *step;
    //while iterator has not reached the end of the line
    while (glm::dot(line,end - iter) >= 0.0) {
@@ -170,6 +251,7 @@ void ChunkWorld::traceLine(glm::vec3 start, glm::vec3 end, ObjData dat) {
       }
       if (!step->objects.count(dat)) {
          step->objects.insert(std::pair<ObjData,glm::vec3>(dat, glm::vec3()));
+         objectMap[dat.obj].push_back(step->index);
       }
       //increment by normalized line in CHUNK_SIZE units
       iter = nextChunk(iter, line, CHUNK_SIZE);
@@ -179,7 +261,6 @@ void ChunkWorld::traceLine(glm::vec3 start, glm::vec3 end, ObjData dat) {
 void ChunkWorld::traceTriangle(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3, ObjData check) {
    glm::vec3 line = v2 - v1;
    glm::vec3 iter = v1;
-   glm::vec3 last = v2 - v1;
 
    while (glm::dot(line, v2 - iter) > 0.0) {
       traceLine(iter, v3, check);
@@ -208,6 +289,43 @@ int ChunkWorld::traceNode(ObjectNode *node, const vector<BufferContents> & geom,
       dat.nod = traceNode(&(node->children[j]), geom, current, dat);
    }
    return dat.nod;
+}
+
+void ChunkWorld::depopulate(int objIndex) {
+   MicroChunk temp;
+   bool done = false;
+   glm::vec3 indx;
+   ChunkData dat;
+   map<ObjData,glm::vec3>::iterator it;
+   
+   for (int i = 0; i < objectMap[objIndex].size(); i++) {
+      indx = objectMap[objIndex][i];
+      dat.x = (int)indx.x;
+      dat.y = (int)indx.y;
+      dat.z = (int)indx.z;
+      temp = uChunkMap[dat];
+      while(!done)
+      {
+         for (it=temp.objects.begin(); it != temp.objects.end(); ++it) {
+            if (it->first.obj == objIndex) {
+               temp.objects.erase(it);
+               break;
+            }
+         }
+         if(it == temp.objects.end())
+            done = true;
+      }
+   }
+   objectMap[objIndex].clear();
+}
+
+void ChunkWorld::repopulate(GameObject* obj, int objIndex) {
+   ObjData dat;
+   depopulate(objIndex);
+   dat.obj = objIndex;
+   dat.nod = 0;
+   traceNode(&(obj->model), models[objIndex], glm::mat4(1.0f), dat);
+   objects[objIndex] = *obj;
 }
 
 //returns the index of the object --KEEP THIS--

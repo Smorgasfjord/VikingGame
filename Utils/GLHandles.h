@@ -41,6 +41,9 @@ class GLHandles
       GLint uMatDif;
       GLint uMatSpec;
       GLint uMatShine;
+	  GLuint framBuff;
+	  GLuint depthBuff;
+	  GLint depthMatrixID;
 };
 
 #endif /* defined(___76_Lab1__GLHandles__) */

@@ -305,9 +305,11 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
       firstComp = 0;
       for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
          const aiFace* face = &mesh->mFaces[t];
-
          memcpy(&faceArray[faceIndex], face->mIndices,3 * sizeof(unsigned int));
-         conts.faces.push_back(glm::vec3(face->mIndices[0],face->mIndices[1],face->mIndices[2]));
+         if (face->mIndices[2] > mesh->mNumVertices || face->mIndices[2] < 0) {
+            faceArray[faceIndex+2] = faceArray[faceIndex+1]+1;
+         }
+         conts.faces.push_back(glm::vec3((float)faceArray[faceIndex],(float)faceArray[faceIndex+1],(float)faceArray[faceIndex+2]));
 
          faceIndex += 3;
       }
@@ -388,7 +390,7 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
          color4_to_float4(&ambient, c);
       memcpy(aMat.ambient, c, sizeof(c));
 
-      set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
+      set_float4(c, 0.1f, 0.1f, 0.15f, 1.0f);
       aiColor4D specular;
       if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_SPECULAR, &specular))
          color4_to_float4(&specular, c);

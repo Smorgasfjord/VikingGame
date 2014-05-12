@@ -46,7 +46,7 @@
 #endif
 
 #ifdef __APPLE__
-#include <glew.h>
+//#include <glew.h>
 #endif
 
 #ifdef _WIN32

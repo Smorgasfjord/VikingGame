@@ -20,8 +20,8 @@
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 #include "../Utils/GLSL_helper.h"
 
-#define MAX_SPEED .8
-#define HEIGHT 0.5
+#define HEIGHT 1.0
+#define MAX_SPEED 2
 
 Bjorn::~Bjorn()
 {
@@ -32,16 +32,14 @@ Bjorn::Bjorn()
    
 }
 
-Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, Model model, World world)
+Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World world) :
+   GameObject("Bjorn")
 {
-   position = pos;
-   position.y += 0.25f;
-   position.z += .5f;
-   size = glm::vec3(1.0f);
-   rotation = 0;
-   pGameObject::handles = hand;
-   velocity = glm::vec3(0);
-   mod = model;
+   initialize(model, 0, 0, hand);
+   setPos(pos + glm::vec3(0.0, 0.75f, 0.5f));
+   setScale(glm::vec3(0.1f));
+   setRotation(glm::vec3(0.0, -90.0, 0.0));
+   setVelocity(glm::vec3(0));
    gravity = -3;
    mass = 20;
    this->world = world;
@@ -53,88 +51,48 @@ void Bjorn::step()
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
    //Update position based on velocity
-   cout << "Updating position\n";
-   position += deltaT * pGameObject::velocity;
+   moveBy(deltaT * getVel());
    //Fall due to gravity if not colliding with anything
-   if(world.detectCollision(glm::vec3(position.x, position.y - (HEIGHT / 2), position.z)) == 0)
-      velocity.y += ((mass * gravity) * .002f);
+   if(world.detectCollision(glm::vec3(getPos().x, getPos().y - (HEIGHT / 2), getPos().z)) == 0)
+      addVelocity(glm::vec3(0.0, ((mass * gravity) * .002f), 0.0));
    else
    {
-      position.y = world.getY(position);
-      velocity.y = 0;
+      setPos(glm::vec3(getPos().x,world.getY(getPos()),getPos().z));
+      setVelocity(glm::vec3(getVel().x, 0, getVel().z));
       //Update X velocity due to friction
-      if(velocity.x > 0.1)
-         velocity.x -= .05;
-      else if (velocity.x < -0.1)
-         velocity.x += .05;
+      if(getVel().x > 0.1)
+         addVelocity(glm::vec3(-0.05,0.0,0.0));
+      else if (getVel().x < -0.1)
+         addVelocity(glm::vec3(0.05, 0.0,0.0));
       else
-         velocity.x = 0;
+         setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
    }
    
-   position.z = Mountain::getZ(position);
+   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos())));
    lastUpdated = curtime;
    
-   //cout << "(" << pGameObject::position.x << ", " << pGameObject::position.y << ", " << pGameObject::position.z << ")\n" << "Last Updated: " << lastUpdated.tv_usec << "\n";
    return;
-}
-
-glm::vec3 Bjorn::getPos()
-{
-   return position;
-}
-
-/* Set up matrices to place model in the world */
-void Bjorn::SetModel(glm::vec3 loc, glm::vec3 size) {
-   glm::mat4 Scale = glm::scale(glm::mat4(1.0f), size);
-   glm::mat4 Trans = glm::translate(glm::mat4(1.0f), loc);
-   glm::mat4 Rotate = glm::rotate(glm::mat4(1.0f), -90.0f, glm::vec3(0, 1, 0));
-   
-   
-   glm::mat4 final = Trans * Rotate * Scale;
-   safe_glUniformMatrix4fv(pGameObject::handles.uModelMatrix, glm::value_ptr(final));
-   safe_glUniformMatrix4fv(pGameObject::handles.uNormMatrix, glm::value_ptr(glm::vec4(1.0f)));
 }
 
 void Bjorn::moveRight()
 {
-   if(velocity.x > -MAX_SPEED)
-      velocity.x -= .5;
+   if(getVel().x > -MAX_SPEED)
+      addVelocity(glm::vec3(-0.5, 0.0, 0.0));
 }
 
 void Bjorn::moveLeft()
 {
-   if(velocity.x < MAX_SPEED)
-      velocity.x += .5f;
+   if(getVel().x < MAX_SPEED)
+      addVelocity(glm::vec3(0.5f,0.0,0.0));
 }
 
 void Bjorn::jump()
 {
-   velocity.y = 4;
+   setVelocity(glm::vec3(getVel().x,4.0,getVel().z));
 }
 
 void Bjorn::launch(float angle)
 {
-   velocity.x -= 2.5 * cos(angle);
-   velocity.y += 2.5 * sin(angle);
+   addVelocity(glm::vec3(-2.5 * cos(angle), 2.5 * sin(angle), 0.0));
 }
 
-void Bjorn::draw()
-{
-   //Enable handles
-   safe_glEnableVertexAttribArray(handles.aPosition);
-   safe_glEnableVertexAttribArray(handles.aNormal);
-   
-   SetModel(position, size);
-   
-   glBindBuffer(GL_ARRAY_BUFFER, mod.BuffObj);
-   safe_glVertexAttribPointer(handles.aPosition, 4, GL_FLOAT, GL_FALSE, 0, 0);
-   
-   glBindBuffer(GL_ARRAY_BUFFER, mod.NormalBuffObj);
-   safe_glVertexAttribPointer(handles.aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-   
-   glDrawArrays(GL_TRIANGLES, 0, mod.iboLen * 3);
-   //clean up
-	safe_glDisableVertexAttribArray(handles.aPosition);
-	safe_glDisableVertexAttribArray(handles.aNormal);
-   return;
-}

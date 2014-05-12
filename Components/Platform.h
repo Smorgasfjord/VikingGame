@@ -11,8 +11,7 @@
 
 #include <iostream>
 #include <vector>
-#include "GameObject.hpp"
-#include "../Models/Model.h"
+#include "GameObject.h"
 #include "../glm/glm.hpp"
 #include "../Utils/GLHandles.h"
 
@@ -22,21 +21,20 @@
 #define MOUNT_LEFT 3
 #define STEP .05
 
-class Platform : public pGameObject
+class Platform : public GameObject
 {
    public:
       void step();
-      void draw();
+      //void draw();
       Platform();
-      Platform(glm::vec3 pos, GLHandles hand, Model model);
-      Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, Model model);
+      Platform(glm::vec3 pos, GLHandles hand, GameModel *model);
+      Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model);
       bool detectCollision(glm::vec3 pos);
       float getRot();
       void setRot(float val);
       glm::vec3 getSize();
       void stretch();
       void shrink();
-      glm::vec3 getPos();
       string toString();
       float rotation;
       int mountainSide;
@@ -44,10 +42,9 @@ class Platform : public pGameObject
       void moveDown();
       void moveLeft();
       void moveRight();
-      static vector<Platform> importLevel(std::string const & fileName, GLHandles handles, Model platMod);
+      static std::vector<Platform> importLevel(std::string const & fileName, GLHandles handles, GameModel *platMod);
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size, float rotation);
-      Model mod;
 };
 
 #endif /* defined(__levelBuilder__Platform__) */
