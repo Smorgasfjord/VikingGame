@@ -189,6 +189,7 @@ void ObjectMesh::render(GLHandles handle) {
 
    glUniform1i(handle.uTexUnit,0);
    safe_glUniform3f(handle.uMatAmb, buffDat.mat.ambient[0], buffDat.mat.ambient[1], buffDat.mat.ambient[2]);
+   //printf("%f,%f,%f\n", buffDat.mat.ambient[0], buffDat.mat.ambient[1], buffDat.mat.ambient[2]);
    safe_glUniform3f(handle.uMatDif, buffDat.mat.diffuse[0], buffDat.mat.diffuse[1], buffDat.mat.diffuse[2]);
    safe_glUniform3f(handle.uMatSpec, buffDat.mat.specular[0], buffDat.mat.specular[1], buffDat.mat.specular[2]);
    safe_glUniform1f(handle.uMatShine, buffDat.mat.shininess);

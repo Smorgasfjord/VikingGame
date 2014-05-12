@@ -101,7 +101,7 @@ glm::vec3 lightPos;
 
 //Camera
 float firstPersonHeight = 1.0f;
-float camDistance = 3.0f;
+float camDistance = 6.0f;
 glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize / 2.0);
 glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
@@ -158,7 +158,7 @@ void setWorld()
    //Initialize models
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
-   platMod = loadModel("Models/Platform.dae", handles);
+   platMod = loadModel("Models/BumpyPlatform.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
@@ -169,7 +169,7 @@ void setWorld()
          groundTiles.push_back(glm::vec3(i, g_groundY, j));
    }
    
-   lightPos= glm::vec3(5, 5, 0);
+   lightPos= glm::vec3(50, 50, -50);
    
    //Send light data to shader
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -311,7 +311,6 @@ void Draw (void)
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    world.draw();
-   SetMaterial(1);
    bjorn.draw();
    hammer.draw();
 	//Disable the shader
