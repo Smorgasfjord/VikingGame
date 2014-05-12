@@ -102,12 +102,10 @@ glm::vec3 lightPos;
 
 //Camera
 float firstPersonHeight = 1.0f;
-float camDistance = 6.0f;
+float camDistance = 4.0f;
 glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize / 2.0);
 glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
-float pitch = -pi/4.0f;
-float yaw = pi/2.0f;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
