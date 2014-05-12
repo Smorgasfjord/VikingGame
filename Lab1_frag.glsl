@@ -16,18 +16,23 @@ uniform Material uMat;
 uniform sampler2D uTexUnit;
 
 void main() {
-  vec3 diffuse, specular, ambient;
-  vec3 norm = normalize(vNorm);
-  vec3 light = normalize(uLightPos - vPos);
-  vec3 rVec = reflect(-light, norm);
-  vec3 view = normalize(uCamPos - vPos);
   vec4 texColor = texture2D(uTexUnit, vTexCoord);
+  vec3 diffuse, specular, ambient;
   if (length(texColor.xyz) < 0.01) {
      texColor = vec4(1.0);
   }
+  vec3 norm = normalize(vNorm) * (texColor.x + texColor.y + texColor.z) / 3.0;
+  vec3 light = normalize(uLightPos);
+  vec3 rVec = reflect(-light, norm);
+  vec3 view = normalize(uCamPos - vPos);
+  float maxCol = 1.0;
   diffuse = uLColor*max(dot(vNorm,light),0.0)*uMat.dColor;
   specular = uLColor*pow(max(dot(rVec,view),0.0),uMat.shine)*uMat.sColor;
   ambient = uLColor*uMat.aColor;
   vec3 phong = (diffuse + specular + ambient);
-  gl_FragColor = vec4(phong.x, phong.y, phong.z, 1.0) * vec4(texColor.xyz, 1.0);
+  if (phong.x > maxCol) maxCol = phong.x;
+  if (phong.y > maxCol) maxCol = phong.y;
+  if (phong.z > maxCol) maxCol = phong.z;
+  phong = phong / maxCol;
+  gl_FragColor = vec4(phong * texColor.xyz, 1.0);
 }

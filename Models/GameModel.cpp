@@ -249,7 +249,7 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData)
    for (int k = 0; k < 16; k++) {
       arr[k] = *(node->mTransformation[k]);
    }
-   //trans = glm::make_mat4x4(arr);
+   //trans = glm::make_mat4x4(arr); //not working for some reason
    trans = glm::mat4(1.0f);
    nod = ModelNode(node->mName.C_Str(), trans);
    for (int i = 0; i < node->mNumMeshes; i++) {
@@ -315,7 +315,8 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
       }
       aMesh.numFaces = sc->mMeshes[n]->mNumFaces*3;
 
-      // generate Vertex Array for mesh
+      // generate Vertex Array for mesh 
+      // not gonna use vaos though
       //glGenVertexArrays(1,&(aMesh.vao));
       //glBindVertexArray(aMesh.vao);
 
