@@ -46,6 +46,7 @@ class World
       int placeObject(GameObject *obj, GameModel *mod);
       void updateObject(GameObject *obj, int objIndex);
       void removeObject(int objIndex);
+      glm::vec3 getStart();
    private:
       int ShadeProg;
       void setGround(glm::vec3 loc);

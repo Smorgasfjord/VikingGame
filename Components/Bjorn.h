@@ -10,6 +10,7 @@
 #define __MyGame__Bjorn__
 
 #include <iostream>
+#define DEBUG_GAME 0
 
 #ifdef _WIN32
 #include <time.h>
