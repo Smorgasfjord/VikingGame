@@ -71,7 +71,7 @@ void Bjorn::step()
          setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
    }
    
-   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - 1));
+   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
    lastUpdated = curtime;
    
    return;
@@ -91,7 +91,7 @@ void Bjorn::moveLeft()
 
 void Bjorn::jump()
 {
-   if(!jumping || DEBUG_GAME)
+   if((!jumping && !suspended) || DEBUG_GAME)
    {
       setVelocity(glm::vec3(getVel().x,2.5,getVel().z));
       jumping = true;

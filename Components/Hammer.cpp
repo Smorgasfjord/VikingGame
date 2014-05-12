@@ -22,7 +22,7 @@ Hammer::Hammer(std::string n)
 void Hammer::setInWorld(World world, Bjorn *character)
 {
    setPos(character->getPos());
-   moveBy(glm::vec3(0, -.5, 0));
+   moveBy(glm::vec3(0, .5, .25));
    scaleBy(glm::vec3(.3f));
    rotateBy(glm::vec3(0, 180, -90));
    this->world = world;
@@ -71,7 +71,7 @@ void Hammer::flip()
 void Hammer::step()
 {
    setPos(bjorn->getPos());
-   moveBy(glm::vec3(0, -.25, 0));
+   moveBy(glm::vec3(0, .5, -.2));
    glm::vec3 hammerTip = getPos();
    hammerTip.y += sin(d2r(getRot().z + 90));
    if(hammerSide)

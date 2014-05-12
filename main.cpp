@@ -433,6 +433,7 @@ void Animate()
    }
    wat++;
    eye = lookAt = bjorn.getPos();
+   eye.y += 1;
    eye.z -= camDistance;
    lastUpdated = curTime;
 }
