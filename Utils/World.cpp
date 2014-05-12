@@ -158,6 +158,12 @@ float World::getY(glm::vec3 pos)
    return pos.y;
 }
 
+//Returns the starting point of the level, could be updated to include checkpoints
+glm::vec3 World::getStart()
+{
+   return platforms[0].getPos();
+}
+
 int World::detectCollision(glm::vec3 pos)
 {
    //Check for collision with platform

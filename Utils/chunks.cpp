@@ -221,6 +221,7 @@ CollisionData ChunkWorld::checkNodeCollision(ObjectNode *newNod, ObjectNode *old
       }
    }
    dat.nod++;
+   //SOMETHING IN HERE IS BREAKING, i think its if oldNod has no children
    for (int j = 0; j < newNod->children.size(); j++) { 
       ret = checkNodeCollision(&(newNod->children[j]), &(oldNod->children[j]), geom, newCurrent, oldCurrent, dat);
       if (ret.obj.obj != dat.obj) {

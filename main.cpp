@@ -60,6 +60,7 @@
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
 
+
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
 #define pi 3.14159
@@ -142,6 +143,17 @@ int diffMs(timeval t1, timeval t2)
            (t1.tv_usec - t2.tv_usec))/1000;
 }
 
+//Resets bjorn to the start of the level, could be updated to add checkpoints
+static void reset()
+{
+   eye = lookAt = world.getStart();
+   eye.y += 1;
+   eye.z -= camDistance;
+   lookAt.y += .5;
+   bjorn.setPos(lookAt);
+   bjorn.setVelocity(glm::vec3(0));
+}
+
 /* Initialization of objects in the world. Only occurs Once */
 void setWorld()
 {
@@ -159,7 +171,7 @@ void setWorld()
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
    platMod = loadModel("Models/BumpyPlatform.dae", handles);
-   bjornMod = loadModel("Models/bjorn_v1.dae", handles);
+   bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
    groundTiles.clear();
@@ -169,7 +181,7 @@ void setWorld()
          groundTiles.push_back(glm::vec3(i, g_groundY, j));
    }
    
-   lightPos= glm::vec3(50, 50, -50);
+   lightPos= glm::vec3(35, 15, -15);
    
    //Send light data to shader
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -181,7 +193,7 @@ void setWorld()
    cout << "Level imported\n";
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
    eye = lookAt = platforms[0].getPos();
-   eye.y += .5;
+   eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
    
@@ -194,6 +206,7 @@ void setWorld()
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
+   cout << hammerTime;
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -387,7 +400,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             bjorn.jump();
             break;
          case GLFW_KEY_R:
-            setWorld();
+            reset();
             break;
       }
    }
@@ -407,15 +420,19 @@ void Animate()
    bjorn.step();
    hammer.step();
   
+   //kill bjorn if he's falling too fast
+   if(bjorn.getVel().y < -10.0 && !DEBUG_GAME)
+      reset();
    //updates the spatial data structure 
    if (wat % 10 == 0) {
       if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
-         printf("hammer hit the platform\n");
+         //printf("hammer hit the platform\n");
       }
       world.updateObject(&hammer, hammerTime);
    }
    wat++;
    eye = lookAt = bjorn.getPos();
+   eye.y += 1;
    eye.z -= camDistance;
    lastUpdated = curTime;
 }
