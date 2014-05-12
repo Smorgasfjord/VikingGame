@@ -169,7 +169,7 @@ void setWorld()
          groundTiles.push_back(glm::vec3(i, g_groundY, j));
    }
    
-   lightPos= glm::vec3(5, 5, 0);
+   lightPos= glm::vec3(35, 15, -15);
    
    //Send light data to shader
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -194,6 +194,7 @@ void setWorld()
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
+   cout << hammerTime;
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -411,7 +412,7 @@ void Animate()
    //updates the spatial data structure 
    if (wat % 10 == 0) {
       if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
-         printf("hammer hit the platform\n");
+         //printf("hammer hit the platform\n");
       }
       world.updateObject(&hammer, hammerTime);
    }

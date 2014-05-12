@@ -22,6 +22,7 @@ Hammer::Hammer(std::string n)
 void Hammer::setInWorld(World world, Bjorn *character)
 {
    setPos(character->getPos());
+   moveBy(glm::vec3(0, -.5, 0));
    scaleBy(glm::vec3(.3f));
    rotateBy(glm::vec3(0, 180, -90));
    this->world = world;
@@ -57,7 +58,6 @@ void Hammer::updateAngle(float x, float y)
       else
          setRotation(glm::vec3(currentAngle.x, currentAngle.y, angle  * (180.0 / pi)));
    }
-   
 }
 
 
@@ -71,17 +71,26 @@ void Hammer::flip()
 void Hammer::step()
 {
    setPos(bjorn->getPos());
+   moveBy(glm::vec3(0, -.25, 0));
    glm::vec3 hammerTip = getPos();
    hammerTip.y += sin(d2r(getRot().z + 90));
-   hammerTip.x -= cos(d2r(getRot().z + 90));
-   if(world.detectCollision(hammerTip) == 1 && abs(previousAngle - getRot().z) > 4)
+   if(hammerSide)
+      hammerTip.x -= cos(d2r(getRot().z + 90));
+   else
+      hammerTip.x += cos(d2r(getRot().z + 90));
+   if(world.detectCollision(hammerTip))
    {
-      cout << "COllision\n";
-      bjorn->launch(45);
+      if(hammerSide && abs(previousAngle - getRot().z) > 4)
+         bjorn->launch(d2r(35));
+      else if(!hammerSide)
+         bjorn->suspend();
       collision = true;
    }
    else
+   {
       collision = false;
+      bjorn->unsuspend();
+   }
    return;
 }
 

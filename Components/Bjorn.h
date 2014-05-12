@@ -40,8 +40,12 @@ class Bjorn : public GameObject
       void moveLeft();
       void jump();
       void launch(float angle);
+      void suspend();
+      void unsuspend();
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size);
+      bool jumping;
+      bool suspended;
       World world;
       Model mod;
       float mass;

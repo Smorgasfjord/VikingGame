@@ -25,13 +25,10 @@ class Platform : public GameObject
       Platform(glm::vec3 pos, GLHandles hand, GameModel *model);
       Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model);
       bool detectCollision(glm::vec3 pos);
-      float getRot();
-      void setRot(float val);
       glm::vec3 getSize();
       void stretch();
       void shrink();
       string toString();
-      float rotation;
       int mountainSide;
       void moveUp();
       void moveDown();

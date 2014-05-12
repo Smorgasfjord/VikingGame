@@ -39,7 +39,7 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
    setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
    setScale(glm::vec3(1.0f, 0.4, 0.5));
    setVelocity(glm::vec3(0));
-   rotation = 0;
+   setRotation(glm::vec3(0, 0, 0));
    mountainSide = Mountain::getSide(pos);
 }
 
@@ -50,7 +50,7 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
    initialize(model, 0, 1, hand);
    setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
    setScale(size * glm::vec3(1.0, 0.4, 0.5));
-   this->rotation = rotation;
+   setRotation(glm::vec3(-rotation/2, 0, rotation));
    setVelocity(glm::vec3(0));
 }
 
@@ -64,7 +64,7 @@ string Platform::toString()
    sprintf(side, "\t%d\n", mountainSide);
    sprintf(pos, "\t%f %f %f\n", getPos().x, getPos().y, getPos().z);
    sprintf(sizeStr, "\t%f %f %f\n", model.state.scale.x, model.state.scale.y, model.state.scale.z);
-   sprintf(rot, "\t%f\n", rotation);
+   sprintf(rot, "\t%f\n", getRot().z);
    str.append(side);
    str.append(pos);
    str.append(sizeStr);
@@ -119,9 +119,18 @@ bool Platform::detectCollision(glm::vec3 test)
 {
    if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
    {
-      if(test.x <= getPos().x + getSize().x && test.x >= getPos().x - getSize().x &&
-         test.y <= getPos().y + .5 && test.y >= getPos().y - .5)
-         return true;
+      if(getRot().z < 80 && getRot().z > -80)
+      {
+         if(test.x <= getPos().x + getSize().x && test.x >= getPos().x - getSize().x &&
+            test.y <= getPos().y + .5 && test.y >= getPos().y - .5)
+            return true;
+      }
+      else
+      {
+         if(test.x <= getPos().x + .65 && test.x >= getPos().x - .65 &&
+            test.y <= getPos().y + getSize().x && test.y >= getPos().y - getSize().x)
+            return true;
+      }
    }
    else
    {
@@ -171,16 +180,6 @@ void Platform::moveRight()
       setPos(getPos() - glm::vec3(0.0,0.0,STEP));
    else
       setPos(getPos() + glm::vec3(0.0,0.0,STEP));
-}
-
-float Platform::getRot()
-{
-   return rotation;
-}
-
-void Platform::setRot(float val)
-{
-   rotation = val;
 }
 
 void Platform::step()
