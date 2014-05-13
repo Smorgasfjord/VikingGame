@@ -313,7 +313,7 @@ void ChunkWorld::depopulate(int objIndex) {
                break;
             }
          }
-         if(it == temp.objects.end())
+         if(temp.objects.empty())
             done = true;
       }
    }
