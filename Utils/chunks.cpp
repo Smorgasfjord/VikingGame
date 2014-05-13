@@ -315,6 +315,12 @@ void ChunkWorld::depopulate(int objIndex) {
          }
          if(temp.objects.empty())
             done = true;
+			//I'm not super sure what this should be doing.
+			//I think it's deleting everything in the list right?
+			//If its just deleting that one object than why not break 
+			//   after temp.objects.erase(it)?
+			// I will leave this to be further fixed.
+			// Also, in standard compliant c++, erase will invalidate an iterator
       }
    }
    objectMap[objIndex].clear();
