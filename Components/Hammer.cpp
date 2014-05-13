@@ -81,7 +81,10 @@ void Hammer::step()
    if(world.detectCollision(hammerTip))
    {
       if(hammerSide && abs(previousAngle - getRot().z) > 4)
+      {
          bjorn->launch(d2r(35));
+         Sound::hammerSmash();
+      }
       else if(!hammerSide)
          bjorn->suspend();
       collision = true;

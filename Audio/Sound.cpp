@@ -8,74 +8,190 @@
 //
 
 #include "Sound.h"
+#include <string>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+//Add new Sound Effect files here, Do not add background music here
+string files[] = {
+   "Audio/Music/EverythingFadesToGray.mp3",
+   "Audio/Effects/footsteps.mp3",
+   "Audio/Effects/hammerSmash.mp3",
+   "Audio/Effects/scream.mp3"
+};
+#define numChannels 4
+
+enum channelUsage {
+   BACKGROUND_CHANNEL = 0,
+   WALK_CHANNEL,
+   HAMMER_CHANNEL,
+   SCREAM_CHANNEL,
+};
+
+//Add background music here
+string backgroundMusic[] = {
+   "Audio/Music/Epiphany.mp3",
+   "Audio/Music/Orion.mp3",
+   "Audio/Music/EverythingFadesToGray.mp3",
+   "Audio/Music/LastOfTheWilds.mp3",
+};
+#define backgroundFiles 4
+int jukeboxIndex = 0;
 
 /******** CLASS VARIABLE DECLARATIONS ********/
 
 bool Sound::on = true; //is sound on?
 bool Sound::possible = true; //is it possible to play sound?
-char * Sound::currentSound; //currently played sound
 //FMOD-specific stuff
 FMOD_RESULT Sound::result;
 FMOD_SYSTEM * Sound::fmodsystem;
-FMOD_SOUND * Sound::sound;
-FMOD_CHANNEL * Sound::channel;
+FMOD_SOUND * Sound::sounds[numChannels];
+FMOD_CHANNEL * Sound::channels[numChannels];
 
 /******** METHODS' IMPLEMENTATIONS ********/
+
+//-------------------------------Initialization--------------------------------
 
 //initialises sound
 void Sound::initialise (void) {
    //create the sound system. If fails, sound is set to impossible
    result = FMOD_System_Create(&fmodsystem);
-   if (result != FMOD_OK) possible = false;
+   if (result != FMOD_OK)
+   {
+      possible = false;
+      cout << "Unable to create FMOD System \n";
+   }
    //if initialise the sound system. If fails, sound is set to impossible
-   if (possible) result = FMOD_System_Init(fmodsystem,2, FMOD_INIT_NORMAL, 0);
-   if (result != FMOD_OK) possible = false;
-   //sets initial sound volume (mute)
-   if (possible) FMOD_Channel_SetVolume(channel,0.0f);
+   if (possible)
+   {
+      //Initialize the system with #channels = total audio files
+      result = FMOD_System_Init(fmodsystem, numChannels, FMOD_INIT_NORMAL, 0);
+   }
+   if (result != FMOD_OK)
+   {
+      possible = false;
+      cout << "Unable to initialize FMOD System \n";
+   }
+   //Mute all channels
+   if (possible)
+   {
+      for(int i = 0; i < numChannels; i++)
+         FMOD_Channel_SetVolume(channels[i],0.0f);
+   }
 }
 
-//sets the actual playing sound's volume
-void Sound::setVolume (float v) {
+//loads all soundfiles
+void Sound::loadAll () {
+   if (possible && on) {
+      for (int i = 0; i < numChannels; i++) {
+         result = FMOD_System_CreateStream(fmodsystem, files[i].c_str(), FMOD_SOFTWARE, 0, &sounds[i]);
+         if (result != FMOD_OK)
+         {
+            cout << "Unable to load " << files[i] << "\n";
+            possible = false;
+         }
+      }
+   }
+}
+
+//-----------------------------------Jukebox-----------------------------------
+
+//Not really implemented
+unsigned int Sound::startJukebox()
+{
+   return nextSong();
+}
+
+unsigned int Sound::nextSong()
+{
+   unsigned int duration;
+   if (jukeboxIndex == backgroundFiles) {
+      jukeboxIndex = 0;
+   }
+   loadOnBackgroundChannel(jukeboxIndex++);
+   play(BACKGROUND_CHANNEL);
+   FMOD_Sound_GetLength(sounds[BACKGROUND_CHANNEL], &duration, FMOD_TIMEUNIT_MS);
+   return duration;
+}
+
+void Sound::pauseJukebox()
+{
+   togglePause(BACKGROUND_CHANNEL);
+}
+
+void Sound::setJukeboxVolume(float volume)
+{
+   setVolume(channels[BACKGROUND_CHANNEL], volume);
+}
+
+//-------------------------------------Walking---------------------------------
+void Sound::walk()
+{
+   FMOD_BOOL paused;
+   FMOD_Channel_GetPaused(channels[WALK_CHANNEL], &paused);
+   if (paused) {
+      play(WALK_CHANNEL);
+   }
+}
+
+void Sound::stopWalk()
+{
+   FMOD_Channel_SetPaused(channels[WALK_CHANNEL], true);
+}
+
+//---------------------------------Hammer--------------------------------------
+
+void Sound::hammerSmash()
+{
+   play(HAMMER_CHANNEL);
+}
+
+//-----------------------------------Scream------------------------------------
+
+void Sound::scream()
+{
+   FMOD_BOOL paused;
+   FMOD_Channel_GetPaused(channels[SCREAM_CHANNEL], &paused);
+   if (paused) {
+      play(SCREAM_CHANNEL);
+   }
+}
+
+//---------------------------------Private Methods------------------------------
+
+//Load a new song onto the background channel
+void Sound::loadOnBackgroundChannel(int index)
+{
+   if (possible) {
+      //Release the current sound
+      result = FMOD_Sound_Release(sounds[BACKGROUND_CHANNEL]);
+      if (result == FMOD_OK) {
+         //load the new one
+         result = FMOD_System_CreateStream(fmodsystem, backgroundMusic[index].c_str(), FMOD_SOFTWARE, 0, &sounds[BACKGROUND_CHANNEL]);
+         if (result != FMOD_OK) possible = false;
+      }
+   }
+}
+
+//Set the volume of channel to the given value
+void Sound::setVolume (FMOD_CHANNEL * channel, float v) {
    if (possible && on && v >= 0.0f && v <= 1.0f) {
       FMOD_Channel_SetVolume(channel,v);
    }
 }
 
-//loads a soundfile
-void Sound::load (const char * filename) {
-   currentSound = (char *)filename;
+//Start playing the sound at index on channel at index
+void Sound::play (int index) {
    if (possible && on) {
-      result = FMOD_Sound_Release(sound);
-      result = FMOD_System_CreateStream(fmodsystem,currentSound, FMOD_SOFTWARE, 0, &sound);
-      if (result != FMOD_OK) possible = false;
+      result = FMOD_System_PlaySound(fmodsystem, FMOD_CHANNEL_REUSE, sounds[index], false, &channels[index]);
+      //FMOD_Channel_SetMode(channels[index],FMOD_LOOP_NORMAL);
    }
 }
 
-//frees the sound object
-void Sound::unload (void) {
-   if (possible) {
-      result = FMOD_Sound_Release(sound);
-   }
-}
-
-//plays a sound (no argument to leave pause as dafault)
-void Sound::play (bool pause) {
-   if (possible && on) {
-      result = FMOD_System_PlaySound(fmodsystem,FMOD_CHANNEL_FREE, sound, pause, &channel);
-      FMOD_Channel_SetMode(channel,FMOD_LOOP_NORMAL);
-   }
-}
-
-//toggles sound on and off
-void Sound::toggleSound (void) {
-   on = !on;
-   if (on == true) { load(currentSound); play(); }
-   if (on == false) { unload(); }
-}
-
-//pause or unpause the sound
-void Sound::setPause (bool pause) {
-   FMOD_Channel_SetPaused (channel, pause);
+//pause or unpause the sound on channel at index
+void Sound::setPause (bool pause, int index) {
+   FMOD_Channel_SetPaused (channels[index], pause);
 }
 
 //turn sound on or off
@@ -83,11 +199,11 @@ void Sound::setSound (bool s) {
    on = s;
 }
 
-//toggle pause on and off
-void Sound::togglePause (void) {
+//toggle pause of a channel
+void Sound::togglePause (int index) {
    FMOD_BOOL p;
-   FMOD_Channel_GetPaused(channel,&p);
-   FMOD_Channel_SetPaused (channel,!p);
+   FMOD_Channel_GetPaused(channels[index],&p);
+   FMOD_Channel_SetPaused (channels[index],!p);
 }
 
 //tells whether the sound is on or off

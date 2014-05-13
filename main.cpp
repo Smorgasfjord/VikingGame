@@ -62,7 +62,7 @@
 
 //Audio
 #include "Audio/Sound.h"
-
+#include "Jukebox.h"
 
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
@@ -102,6 +102,9 @@ float frameRate;
 
 //Light
 glm::vec3 lightPos;
+
+//Audio
+Jukebox music;
 
 //Camera
 float firstPersonHeight = 1.0f;
@@ -210,9 +213,10 @@ void setWorld()
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
    cout << "Hammer held\n";
-   Sound::initialise();
-   Sound::load("Audio/NoEasyWayOut.mp3");
-   Sound::play();
+   //Sound::initialise();
+   //Sound::loadAll();
+   //Sound::startJukebox();
+   music.start();
    cout << "Lets play!\n";
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
@@ -409,6 +413,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_R:
             reset();
             break;
+         case GLFW_KEY_EQUAL:
+            music.volumeUp();
+            break;
+         case GLFW_KEY_MINUS:
+            music.volumeDown();
+            break;
       }
    }
 }
@@ -428,7 +438,9 @@ void Animate()
    hammer.step();
   
    //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < -10.0 && !DEBUG_GAME)
+   if(bjorn.getVel().y < -8.0 && !DEBUG_GAME)
+      Sound::scream();
+   if(bjorn.getVel().y < -14.0 && !DEBUG_GAME)
       reset();
    //updates the spatial data structure 
    if (wat % 10 == 0) {

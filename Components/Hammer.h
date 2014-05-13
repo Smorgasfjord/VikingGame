@@ -19,6 +19,7 @@
 #include <iostream>
 #include "../Components/GameObject.h"
 #include "Bjorn.h"
+#include "../Audio/Sound.h"
 
 class Hammer : public GameObject
 {
