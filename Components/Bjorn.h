@@ -28,6 +28,7 @@
 
 #include "GameObject.h"
 #include "../Utils/World.h"
+#include "../Audio/Sound.h"
 
 
 class Bjorn : public GameObject

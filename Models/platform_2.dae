@@ -2,7 +2,7 @@
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
   <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2014-05-12T16:51:20Z</created><keywords></keywords><modified>2014-05-12T16:51:20Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
   <library_images>
-    <image id="file1-image" name="file1"><init_from>file://C:/Users/Acer/Documents/maya/projects/Smorgasfjord/images/platform_snow.jpg</init_from></image>
+    <image id="file1-image" name="file1"><init_from>Models/platform_snow.jpg</init_from></image>
   </library_images>
   <library_materials>
     <material id="lambert2" name="lambert2">

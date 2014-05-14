@@ -60,6 +60,9 @@
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
 
+//Audio
+#include "Audio/Sound.h"
+#include "Jukebox.h"
 
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
@@ -100,14 +103,15 @@ float frameRate;
 //Light
 glm::vec3 lightPos;
 
+//Audio
+Jukebox music;
+
 //Camera
 float firstPersonHeight = 1.0f;
-float camDistance = 6.0f;
+float camDistance = 4.0f;
 glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize / 2.0);
 glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
-float pitch = -pi/4.0f;
-float yaw = pi/2.0f;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
@@ -170,7 +174,7 @@ void setWorld()
    //Initialize models
    grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
-   platMod = loadModel("Models/BumpyPlatform.dae", handles);
+   platMod = loadModel("Models/platform_2.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
@@ -188,25 +192,32 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
-   cout << "Importing level\n";
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
-   cout << "Level imported\n";
+   cout << "Level loaded\n";
    world = World(platforms, mount, grndMod, &handles, ShadeProg);
+   cout << "World worked\n";
    eye = lookAt = platforms[0].getPos();
    eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
-   
+   //This freezes when placing new platforms
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
-
+    
+   cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, world);
+   cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.initialize(&hammerMod, 0, 0, handles);
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
-   cout << hammerTime;
+   cout << "Hammer held\n";
+   //Sound::initialise();
+   //Sound::loadAll();
+   //Sound::startJukebox();
+   music.start();
+   cout << "Lets play!\n";
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
 }
@@ -402,6 +413,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_R:
             reset();
             break;
+         case GLFW_KEY_EQUAL:
+            music.volumeUp();
+            break;
+         case GLFW_KEY_MINUS:
+            music.volumeDown();
+            break;
       }
    }
 }
@@ -422,7 +439,9 @@ void Animate()
    hammer.step();
   
    //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < -10.0 && !DEBUG_GAME)
+   if(bjorn.getVel().y < -8.0 && !DEBUG_GAME)
+      Sound::scream();
+   if(bjorn.getVel().y < -14.0 && !DEBUG_GAME)
       reset();
    //updates the spatial data structure 
    if (wat % 10 == 0) {
