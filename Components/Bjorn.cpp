@@ -32,7 +32,7 @@ Bjorn::Bjorn()
    
 }
 
-Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World world) :
+Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world) :
    GameObject("Bjorn")
 {
    initialize(model, 0, 0, hand);
@@ -45,6 +45,7 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World world) :
    gravity = -3;
    mass = 20;
    this->world = world;
+   modelIdx = world.placeObject(this, model);
 }
 
 

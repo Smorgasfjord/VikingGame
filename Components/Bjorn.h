@@ -36,7 +36,7 @@ class Bjorn : public GameObject
       void step();
       Bjorn();
       ~Bjorn();
-      Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World world);
+      Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world);
       void moveRight();
       void moveLeft();
       void jump();

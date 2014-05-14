@@ -41,19 +41,21 @@ class CollisionData {
       ~CollisionData() { }
       CollisionData() 
       {
-         obj.obj = -1;
-         obj.nod = -1;
-         obj.mesh = -1;
-         obj.tri = -1;
+         hitObj.obj = -1;
+         hitObj.nod = -1;
+         hitObj.mesh = -1;
+         hitObj.tri = -1;
       }
-      CollisionData(ObjData d, glm::vec3 p, glm::vec3 a, glm::vec3 n) :
-         obj(d),
+      CollisionData(ObjData d, ObjData t, glm::vec3 p, glm::vec3 a, glm::vec3 n) :
+         hitObj(d),
+         thisObj(t),
          collisionPoint(p),
          collisionAngle(a),
          collisionNormal(n)
       {
       }
-      ObjData obj;
+      ObjData thisObj; //thisObj.tri is actually a vertex
+      ObjData hitObj;
       glm::vec3 collisionPoint;
       glm::vec3 collisionAngle;
       glm::vec3 collisionNormal;

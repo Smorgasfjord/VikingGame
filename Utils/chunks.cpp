@@ -204,22 +204,24 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
    glm::vec3 cPoint, cAngle, cNormal;
    glm::vec4 newTransVert;
    glm::vec4 oldTransVert;
-   glm::vec3 move;
+   glm::vec3 move, actual;
    for (int i = 0; i < geom.verts.size(); i++) {
+      dat.tri = i;
       newTransVert = newTrans * glm::vec4(geom.verts[i],1.0f);
       oldTransVert = oldTrans * glm::vec4(geom.verts[i],1.0f);
       temp = findMicroChunk(newTransVert.x,newTransVert.y,newTransVert.z);
       if (temp->isValid()) {
          for (map<ObjData,glm::vec3>::iterator it=temp->objects.begin(); it!=temp->objects.end(); ++it) {
-            if (it->first.obj != dat.obj) {
+            if (objects[it->first.obj].collisionGroup != objects[dat.obj].collisionGroup) {
                cDat = it->first;
                move = glm::vec3(newTransVert) - glm::vec3(oldTransVert);
                cPoint = findCollisionPoint(move,glm::vec3(oldTransVert),cDat);
-               if (cPoint.x > COLL_LIMIT) {
+               if (cPoint.x != cPoint.x || cPoint.x > COLL_LIMIT) {
                   continue;
                }
                cNormal = interpolateNormal(cPoint.y, cPoint.z, cDat);
-               ret = CollisionData(cDat, glm::vec3(oldTransVert) + move * cPoint.x, glm::normalize(move), cNormal);
+               actual = move * cPoint.x;
+               ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal);
                return ret;
             }
          }
@@ -235,7 +237,7 @@ CollisionData ChunkWorld::checkNodeCollision(ObjectNode *newNod, ObjectNode *old
    for (int i = 0; i < newNod->meshes.size(); i++) {
       dat.mesh = i;
       ret = checkMeshCollision(geom[newNod->meshes[i].meshIdx], newCurrent, oldCurrent, dat);
-      if (ret.obj.obj != dat.obj) {
+      if (ret.hitObj.obj >= 0) {
          return ret;
       }
    }
@@ -243,7 +245,7 @@ CollisionData ChunkWorld::checkNodeCollision(ObjectNode *newNod, ObjectNode *old
    //SOMETHING IN HERE IS BREAKING, i think its if oldNod has no children
    for (int j = 0; j < newNod->children.size(); j++) { 
       ret = checkNodeCollision(&(newNod->children[j]), &(oldNod->children[j]), geom, newCurrent, oldCurrent, dat);
-      if (ret.obj.obj != dat.obj) {
+      if (ret.hitObj.obj >= 0) {
          return ret;
       }
    }
