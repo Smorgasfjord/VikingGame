@@ -154,8 +154,14 @@ void Sound::scream()
    FMOD_BOOL paused;
    FMOD_Channel_GetPaused(channels[SCREAM_CHANNEL], &paused);
    if (paused) {
+      FMOD_Channel_SetMode(channels[SCREAM_CHANNEL], FMOD_LOOP_OFF);
       play(SCREAM_CHANNEL);
    }
+}
+
+void Sound::stopScream()
+{
+   FMOD_Channel_SetPaused(channels[SCREAM_CHANNEL], true);
 }
 
 //---------------------------------Private Methods------------------------------
@@ -185,7 +191,6 @@ void Sound::setVolume (FMOD_CHANNEL * channel, float v) {
 void Sound::play (int index) {
    if (possible && on) {
       result = FMOD_System_PlaySound(fmodsystem, FMOD_CHANNEL_REUSE, sounds[index], false, &channels[index]);
-      //FMOD_Channel_SetMode(channels[index],FMOD_LOOP_NORMAL);
    }
 }
 

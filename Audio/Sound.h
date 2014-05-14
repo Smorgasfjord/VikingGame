@@ -61,6 +61,7 @@ public:
    
    //Scream
    static void scream();
+   static void stopScream();
 };
 
 #endif /* defined(__MyGame__Sound__) */

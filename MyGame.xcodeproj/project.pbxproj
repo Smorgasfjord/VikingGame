@@ -47,9 +47,6 @@
 
 /* Begin PBXFileReference section */
 		7B212F7019209001005F8D6E /* bjorn_hammer.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = bjorn_hammer.dae; sourceTree = "<group>"; };
-		7B212F7119209001005F8D6E /* bjorn_v1.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = bjorn_v1.dae; sourceTree = "<group>"; };
-		7B212F7219209001005F8D6E /* Platform.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = Platform.dae; sourceTree = "<group>"; };
-		7B212F7319209001005F8D6E /* Platform.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Platform.png; sourceTree = "<group>"; };
 		7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.0.0.dylib; path = ../../../../../../../opt/local/lib/libassimp.3.0.0.dylib; sourceTree = "<group>"; };
 		7B256D84191BF31800616E09 /* libIL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIL.a; path = ../../../../../../../opt/local/lib/libIL.a; sourceTree = "<group>"; };
 		7B256D87191BF80400616E09 /* bjorn_hammer.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = bjorn_hammer.dae; sourceTree = "<group>"; };
@@ -308,6 +305,7 @@
 		7BCFD2971922D07D0069E59A /* LastOfTheWilds.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = LastOfTheWilds.mp3; sourceTree = "<group>"; };
 		7BCFD2981922D07D0069E59A /* Orion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Orion.mp3; sourceTree = "<group>"; };
 		7BCFD2991922D29D0069E59A /* scream.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = scream.mp3; sourceTree = "<group>"; };
+		7BCFD2BB192415590069E59A /* mountain.lvl */ = {isa = PBXFileReference; lastKnownFileType = text; path = mountain.lvl; sourceTree = "<group>"; };
 		7BD073E8191ED2AC006327F3 /* chunks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chunks.cpp; sourceTree = "<group>"; };
 		7BD073E9191ED2AC006327F3 /* chunks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chunks.h; sourceTree = "<group>"; };
 		7BE396991915AD6C005A026B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
@@ -633,9 +631,6 @@
 			isa = PBXGroup;
 			children = (
 				7B212F7019209001005F8D6E /* bjorn_hammer.dae */,
-				7B212F7119209001005F8D6E /* bjorn_v1.dae */,
-				7B212F7219209001005F8D6E /* Platform.dae */,
-				7B212F7319209001005F8D6E /* Platform.png */,
 				7B256D87191BF80400616E09 /* bjorn_hammer.dae */,
 				7B355979191B0DAA005FAD21 /* GameModel.cpp */,
 				7B35597A191B0DAA005FAD21 /* GameModel.h */,
@@ -685,6 +680,7 @@
 		7BE395921915ACE1005A026B = {
 			isa = PBXGroup;
 			children = (
+				7BCFD2BB192415590069E59A /* mountain.lvl */,
 				7BF7374F19216FA70057AF67 /* libfmodexL.dylib */,
 				7BF7374319216E380057AF67 /* Audio */,
 				7BF7373819216DC90057AF67 /* libfmodex.dylib */,

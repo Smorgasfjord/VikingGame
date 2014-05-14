@@ -200,7 +200,6 @@ void setWorld()
    eye.y += 1;
    eye.z -= camDistance;
    lookAt.y += .5;
-   //This freezes when placing new platforms
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
@@ -213,9 +212,6 @@ void setWorld()
    hammer.setInWorld(world, &bjorn);
    hammerTime = world.placeObject(&hammer, &hammerMod);
    cout << "Hammer held\n";
-   //Sound::initialise();
-   //Sound::loadAll();
-   //Sound::startJukebox();
    music.start();
    cout << "Lets play!\n";
    glfwSetTime(0);
@@ -441,8 +437,11 @@ void Animate()
    if(bjorn.getVel().y < -8.0 && !DEBUG_GAME)
       Sound::scream();
    if(bjorn.getVel().y < -14.0 && !DEBUG_GAME)
+   {
+      Sound::stopScream();
       reset();
-   //updates the spatial data structure 
+   }
+   //updates the spatial data structure
    if (wat % 10 == 0) {
       if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
          //printf("hammer hit the platform\n");
