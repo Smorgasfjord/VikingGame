@@ -13,6 +13,7 @@
 #define CHUNK_SIZE 8.0f
 #define APP 0.001f
 #define BOOST 1.0001f
+#define COLL_LIMIT 1000000.0f
 
 using namespace std;
 
@@ -21,7 +22,6 @@ class Chunk;
 class MicroChunk;
 typedef struct chunk_data ChunkData;
 typedef struct obj_data ObjData;
-typedef struct coll_data CollisionData;
 
 struct chunk_data {
    int x; //x index
@@ -36,9 +36,27 @@ struct obj_data {
    int tri; //face index
 };
 
-struct coll_data {
-   ObjData obj;
-   glm::vec3 collisionPoint;
+class CollisionData {
+   public:
+      ~CollisionData() { }
+      CollisionData() 
+      {
+         obj.obj = -1;
+         obj.nod = -1;
+         obj.mesh = -1;
+         obj.tri = -1;
+      }
+      CollisionData(ObjData d, glm::vec3 p, glm::vec3 a, glm::vec3 n) :
+         obj(d),
+         collisionPoint(p),
+         collisionAngle(a),
+         collisionNormal(n)
+      {
+      }
+      ObjData obj;
+      glm::vec3 collisionPoint;
+      glm::vec3 collisionAngle;
+      glm::vec3 collisionNormal;
 };
 
 // for mapping purposes
@@ -139,6 +157,8 @@ class ChunkWorld {
       int traceNode(ObjectNode *nod, const vector<BufferContents> & geom, glm::mat4 trans, ObjData dat); 
       int populate(GameObject *obj, const std::vector<BufferContents> & geom);
       void repopulate(GameObject *obj, int objIndex);
+      glm::vec3 interpolateNormal(float beta, float gamma, ObjData dat);
+      glm::vec3 findCollisionPoint(glm::vec3 path, glm::vec3 start, ObjData dat);
       CollisionData checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
       CollisionData checkNodeCollision(ObjectNode *newNod, ObjectNode *oldNod, const std::vector<BufferContents> & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
       CollisionData checkForCollision(GameObject *newObj, int objIndex);

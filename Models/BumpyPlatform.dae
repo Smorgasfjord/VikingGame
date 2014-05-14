@@ -12,7 +12,7 @@
   </asset>
   <library_images>
     <image id="Platform_png" name="Platform_png">
-      <init_from>Models/Platform.png</init_from>
+      <init_from>Models/platform_snow.png</init_from>
     </image>
   </library_images>
   <library_effects>

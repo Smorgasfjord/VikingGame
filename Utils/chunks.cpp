@@ -35,13 +35,14 @@ bool containedIn(glm::vec3 pt, glm::vec3 min, glm::vec3 max) {
           && pt.x <= max.x && pt.y <= max.y && pt.z <= max.z;
 }
 
-/*glm::vec3 checkCollision(glm::vec3 ray, glm::vec3 eye, GameObject *mesh, int tri) {
-   float beta, gamma, trace, meta, eihf, gfdi, dheg, akjb, jcal, blkc;
-   glm::vec3 vert1, vert2, vert3, abc, def, ghi, jkl;
+glm::vec3 ChunkWorld::findCollisionPoint(glm::vec3 ray, glm::vec3 eye, ObjData dat) {
+   float beta, gamma, traceLength, meta, eihf, gfdi, dheg, akjb, jcal, blkc;
+   glm::vec3 vert1, vert2, vert3, face, abc, def, ghi, jkl;
 
-   vert1 = mesh->Vertices[mesh->Triangles[tri].vIdx1].pos;
-   vert2 = mesh->Vertices[mesh->Triangles[tri].vIdx2].pos;
-   vert3 = mesh->Vertices[mesh->Triangles[tri].vIdx3].pos;
+   face = models[dat.obj][dat.mesh].faces[dat.tri];
+   vert1 = models[dat.obj][dat.mesh].verts[(int)face.x];
+   vert2 = models[dat.obj][dat.mesh].verts[(int)face.y];
+   vert3 = models[dat.obj][dat.mesh].verts[(int)face.z];
 
    abc = vert1 - vert2;
    def = vert1 - vert3;
@@ -57,8 +58,8 @@ bool containedIn(glm::vec3 pt, glm::vec3 min, glm::vec3 max) {
 
    meta = abc.x*eihf + abc.y*gfdi + abc.z*dheg;
    //cout << "checking collision";
-   trace = (def.z*akjb + def.y*jcal+def.x*blkc) / meta;
-   if (trace > 0.0 || fabsf(trace) > ray.length())
+   traceLength = (def.z*akjb + def.y*jcal+def.x*blkc) / meta;
+   if (traceLength > 0.0 || fabsf(traceLength) > ray.length())
       return glm::vec3(2.0*COLL_LIMIT);
    //cout << ".";
    gamma = (ghi.z*akjb + ghi.y*jcal+ghi.x*blkc) / meta;
@@ -70,9 +71,9 @@ bool containedIn(glm::vec3 pt, glm::vec3 min, glm::vec3 max) {
       return glm::vec3(2.0*COLL_LIMIT);
    //cout << ".";
 
-   return glm::vec3(fabsf(trace), beta, gamma);
+   return glm::vec3(fabsf(traceLength), beta, gamma);
 }
-*/
+
 glm::vec3 nextChunk(glm::vec3 pos, glm::vec3 ray, float scale) {
    float x,y,z, xdis,ydis,zdis, temp;
    glm::vec3 rayNorm = ray / glm::length(ray);
@@ -186,26 +187,44 @@ MicroChunk * ChunkWorld::addMicroChunk(float x, float y, float z) {
    return findMicroChunk(x,y,z);
 }
 
+glm::vec3 ChunkWorld::interpolateNormal(float beta, float gamma, ObjData dat) {
+   glm::vec3 face, norm1, norm2, norm3;
+   face = models[dat.obj][dat.mesh].faces[dat.tri];
+   norm1 = models[dat.obj][dat.mesh].norms[(int)face.x];
+   norm2 = models[dat.obj][dat.mesh].norms[(int)face.y];
+   norm3 = models[dat.obj][dat.mesh].norms[(int)face.z];
+
+   return norm1 * (1-beta-gamma) + norm2 * beta + norm3 * gamma;
+}
+
 CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat) {
    MicroChunk *temp;
    CollisionData ret;
+   ObjData cDat;
+   glm::vec3 cPoint, cAngle, cNormal;
    glm::vec4 newTransVert;
    glm::vec4 oldTransVert;
+   glm::vec3 move;
    for (int i = 0; i < geom.verts.size(); i++) {
       newTransVert = newTrans * glm::vec4(geom.verts[i],1.0f);
+      oldTransVert = oldTrans * glm::vec4(geom.verts[i],1.0f);
       temp = findMicroChunk(newTransVert.x,newTransVert.y,newTransVert.z);
       if (temp->isValid()) {
          for (map<ObjData,glm::vec3>::iterator it=temp->objects.begin(); it!=temp->objects.end(); ++it) {
             if (it->first.obj != dat.obj) {
-               ret.obj = it->first;
-               ret.collisionPoint = glm::vec3(newTransVert);
+               cDat = it->first;
+               move = glm::vec3(newTransVert) - glm::vec3(oldTransVert);
+               cPoint = findCollisionPoint(move,glm::vec3(oldTransVert),cDat);
+               if (cPoint.x > COLL_LIMIT) {
+                  continue;
+               }
+               cNormal = interpolateNormal(cPoint.y, cPoint.z, cDat);
+               ret = CollisionData(cDat, glm::vec3(oldTransVert) + move * cPoint.x, glm::normalize(move), cNormal);
                return ret;
             }
          }
       }
    }
-   ret.obj = dat;
-   ret.collisionPoint = glm::vec3(0.0f);
    return ret;
 }
 

@@ -35,12 +35,15 @@
             </emission>
             <ambient>
               <color sid="ambient">0.1 0.1 0.1 1</color>
+              <texture texture="Platform_png-sampler" texcoord="UVMap"/>
             </ambient>
             <diffuse>
+              <color sid="diffuse">0.6 0.6 0.6 1</color>
               <texture texture="Platform_png-sampler" texcoord="UVMap"/>
             </diffuse>
             <specular>
-              <color sid="specular">0.5 0.5 0.5 1</color>
+              <color sid="specular">0.3 0.3 0.3 1</color>
+              <texture texture="Platform_png-sampler" texcoord="UVMap"/>
             </specular>
             <shininess>
               <float sid="shininess">10</float>
