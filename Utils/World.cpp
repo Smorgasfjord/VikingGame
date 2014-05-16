@@ -17,24 +17,15 @@ World::World()
    
 }
 
-World::World(std::vector<Platform> plats, Mountain mnt, Model gndMod, GLHandles* handles, int shadeProg)
+World::World(std::vector<Platform> plats, Mountain mnt, GLHandles* handles, int shadeProg)
 {
    platforms = plats;
    mount = mnt;
-   grndMod = gndMod;
    this->handles = handles;
    ShadeProg = shadeProg;
    space = ChunkWorld(50,50,50);
 }
 
-
-/* Set up matrices for ground plane */
-void World::setGround(glm::vec3 loc)
-{
-   glm::mat4 ctm = glm::translate(glm::mat4(1.0f), loc);
-   safe_glUniformMatrix4fv(handles->uModelMatrix, glm::value_ptr(ctm));
-   safe_glUniformMatrix4fv(handles->uNormMatrix, glm::value_ptr(glm::mat4(1.0f)));
-}
 
 /* helper function to set up material for shading */
 void World::SetMaterial(int i) {

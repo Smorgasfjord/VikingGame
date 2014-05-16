@@ -167,23 +167,12 @@ void setWorld()
    //Platforms
    GameModel platMod;
    std::vector<Platform> platforms;
-   //Ground
-   Model grndMod;
-   std::vector<glm::vec3> groundTiles;
    
    //Initialize models
-   grndMod = Model::init_Ground(g_groundY);
    mountMod = Model::init_Mountain();
    platMod = loadModel("Models/platform_2.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
-   
-   groundTiles.clear();
-   for(int i = 0; i < g_groundSize; i++)
-   {
-      for(int j = 0; j < g_groundSize; j++)
-         groundTiles.push_back(glm::vec3(i, g_groundY, j));
-   }
    
    lightPos= glm::vec3(35, 15, -15);
    
@@ -194,7 +183,7 @@ void setWorld()
    mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
-   world = World(platforms, mount, grndMod, &handles, ShadeProg);
+   world = World(platforms, mount, &handles, ShadeProg);
    cout << "World worked\n";
    eye = lookAt = platforms[0].getPos();
    eye.y += 1;
@@ -284,26 +273,6 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    
    printf("sucessfully installed shader %d\n", ShadeProg);
    return 1;
-}
-
-/* helper function to set up material for shading */
-void SetMaterial(int i) {
-   
-   glUseProgram(ShadeProg);
-   switch (i) {
-      case 0:
-         safe_glUniform3f(handles.uMatAmb, 0.2, 0.2, 0.2);
-         safe_glUniform3f(handles.uMatDif, 0.4, 0.4, 0.4);
-         safe_glUniform3f(handles.uMatSpec, 0.2, 0.2, 0.2);
-         safe_glUniform1f(handles.uMatShine, .2);
-         break;
-      case GROUND_MAT:
-         safe_glUniform3f(handles.uMatAmb, 0.1, 0.3, 0.1);
-         safe_glUniform3f(handles.uMatDif, 0.1, 0.3, 0.1);
-         safe_glUniform3f(handles.uMatSpec, 0.3, 0.3, 0.4);
-         safe_glUniform1f(handles.uMatShine, 1.0);
-         break;
-   }
 }
 
 /* Some OpenGL initialization */

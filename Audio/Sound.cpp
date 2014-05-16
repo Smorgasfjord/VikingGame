@@ -32,6 +32,7 @@ enum channelUsage {
 //Add background music here
 string backgroundMusic[] = {
    "Audio/Music/Epiphany.mp3",
+   "Audio/Music/LetItGo.mp3",
    "Audio/Music/Orion.mp3",
    "Audio/Music/EverythingFadesToGray.mp3",
    "Audio/Music/LastOfTheWilds.mp3",
@@ -175,7 +176,11 @@ void Sound::loadOnBackgroundChannel(int index)
       if (result == FMOD_OK) {
          //load the new one
          result = FMOD_System_CreateStream(fmodsystem, backgroundMusic[index].c_str(), FMOD_SOFTWARE, 0, &sounds[BACKGROUND_CHANNEL]);
-         if (result != FMOD_OK) possible = false;
+         if (result != FMOD_OK)
+         {
+            possible = false;
+            cout << "Unable to load: " << backgroundMusic[index] << "\n";
+         }
       }
    }
 }

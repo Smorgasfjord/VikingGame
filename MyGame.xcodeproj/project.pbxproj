@@ -306,6 +306,7 @@
 		7BCFD2981922D07D0069E59A /* Orion.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Orion.mp3; sourceTree = "<group>"; };
 		7BCFD2991922D29D0069E59A /* scream.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = scream.mp3; sourceTree = "<group>"; };
 		7BCFD2BB192415590069E59A /* mountain.lvl */ = {isa = PBXFileReference; lastKnownFileType = text; path = mountain.lvl; sourceTree = "<group>"; };
+		7BCFD2BE19257F7F0069E59A /* LetItGo.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = LetItGo.mp3; sourceTree = "<group>"; };
 		7BD073E8191ED2AC006327F3 /* chunks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chunks.cpp; sourceTree = "<group>"; };
 		7BD073E9191ED2AC006327F3 /* chunks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chunks.h; sourceTree = "<group>"; };
 		7BE396991915AD6C005A026B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
@@ -669,6 +670,7 @@
 		7BCFD2941922D07D0069E59A /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				7BCFD2BE19257F7F0069E59A /* LetItGo.mp3 */,
 				7BCFD2951922D07D0069E59A /* Epiphany.mp3 */,
 				7BCFD2961922D07D0069E59A /* EverythingFadesToGray.mp3 */,
 				7BCFD2971922D07D0069E59A /* LastOfTheWilds.mp3 */,
