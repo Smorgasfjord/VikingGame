@@ -341,7 +341,7 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
          glBindBuffer(GL_ARRAY_BUFFER, aMesh.nbo);
          glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*mesh->mNumVertices, mesh->mNormals, GL_STATIC_DRAW);
          for (int i = 0; i < mesh->mNumVertices; i++) {
-            conts.verts.push_back(glm::vec3(mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z));
+            conts.norms.push_back(glm::vec3(mesh->mNormals[i].x,mesh->mNormals[i].y,mesh->mNormals[i].z));
          }
       }
 
