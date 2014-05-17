@@ -8,6 +8,7 @@
 #include "../Models/GameModel.h"
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
+#include "../glm/gtx/matrix_query.hpp" //perspective, trans etc
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 
 #define CHUNK_SIZE 8.0f
@@ -159,8 +160,10 @@ class ChunkWorld {
       int traceNode(ObjectNode *nod, const vector<BufferContents> & geom, glm::mat4 trans, ObjData dat); 
       int populate(GameObject *obj, const std::vector<BufferContents> & geom);
       void repopulate(GameObject *obj, int objIndex);
-      glm::vec3 interpolateNormal(float beta, float gamma, ObjData dat);
-      glm::vec3 findCollisionPoint(glm::vec3 path, glm::vec3 start, ObjData dat);
+      glm::mat4 accumTransform(ObjectNode *node, glm::mat4 cumulative, int & currNod, int targetNode);
+      glm::mat4 findTransform(ObjData dat);
+      glm::vec3 interpolateNormal(float beta, float gamma, ObjData dat, glm::mat4 trans);
+      glm::vec3 findCollisionPoint(glm::vec3 path, glm::vec3 start, ObjData dat, glm::mat4 trans);
       CollisionData checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
       CollisionData checkNodeCollision(ObjectNode *newNod, ObjectNode *oldNod, const std::vector<BufferContents> & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
       CollisionData checkForCollision(GameObject *newObj, int objIndex);
