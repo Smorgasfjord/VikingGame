@@ -74,6 +74,7 @@ int Mountain::getSide(glm::vec3 pos)
    float fl = Mountain::testLeftDiagonal(pos);
    float fr = Mountain::testRightDiagonal(pos);
    
+   
    //Determine which mountain side we're on
    if(fr > 0 && fl < 0)
       side = MOUNT_RIGHT;
@@ -94,7 +95,7 @@ float Mountain::getX(glm::vec3 pos)
    float x;
    float fl = testLeftDiagonal(pos);
    float fr = testRightDiagonal(pos);
-   
+   cout << "Front left: " << fl << " Front Right: " << fr << "\n";
    //Right face
    if(fr > 0 && fl < 0)
    {
@@ -125,7 +126,7 @@ float Mountain::getZ(glm::vec3 pos)
    float z;
    float fl = testLeftDiagonal(pos);
    float fr = testRightDiagonal(pos);
-   
+   cout << "Front left: " << fl << " Front Right: " << fr << "\n";
    //Front face
    if(fr > 0 && fl > 0)
    {

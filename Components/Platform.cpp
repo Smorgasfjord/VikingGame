@@ -49,7 +49,7 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
    mountainSide = mountSide;
    initialize(model, 0, 1, hand);
    setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
-   setScale(size * glm::vec3(1.0,1.0, 0.5));
+   setScale(size);
    setRotation(glm::vec3(-rotation/2, 0, rotation));
    setVelocity(glm::vec3(0));
 }
