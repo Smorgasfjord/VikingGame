@@ -33,9 +33,9 @@ public:
    void updatePos(float dx, float dy);
    void updateAngle(float x, float y);
    void flip();
+   int mountainSide;
 private:
    World world;
-   Model mod;
    Bjorn *bjorn;
    float rotation;
    bool hammerSide;

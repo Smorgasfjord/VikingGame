@@ -124,9 +124,9 @@ void World::draw()
    }*/
    
    SetMaterial(2);
+   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    mount.draw();
    
-   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    SetMaterial(0);
    for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
       it->draw();

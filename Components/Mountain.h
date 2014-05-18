@@ -10,9 +10,9 @@
 #define __levelBuilder__Mountain__
 
 #include <iostream>
-#include "GameObject.hpp"
+#include "GameObject.h"
 #include "../Utils/GLHandles.h"
-#include "../Models/Model.h"
+#include "../Models/GameModel.h"
 #include "../glm/glm.hpp"
 
 #define MOUNT_FRONT 0
@@ -20,22 +20,19 @@
 #define MOUNT_BACK 2
 #define MOUNT_LEFT 3
 
-class Mountain : public pGameObject
+class Mountain : public GameObject
 {
    public:
-      void step();
-      void draw();
       Mountain();
-      Mountain(glm::vec3 pos, GLHandles hand, Model model);
-      static float getZ(glm::vec3 pos);
-      static float getX(glm::vec3 pos);
+      Mountain(GLHandles hand, GameModel *model);
+      //static float getZ(glm::vec3 pos);
+      //static float getX(glm::vec3 pos);
       static int getSide(glm::vec3 pos);
-      float rotation;
+      static glm::vec3 lockOn(glm::vec3 pos);
    private:
       static float testLeftDiagonal(glm::vec3 pos);
       static float testRightDiagonal(glm::vec3 pos);
-      void SetModel(glm::vec3 loc, glm::vec3 size, float rotation);
-      Model mod;
+      static void loadHeightMaps();
 };
 
 #endif /* defined(__levelBuilder__Mountain__) */

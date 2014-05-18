@@ -44,15 +44,14 @@ class Bjorn : public GameObject
       void launch(float angle);
       void suspend();
       void unsuspend();
+      int mountainSide;
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size);
       bool jumping;
       bool suspended;
       World world;
-      Model mod;
       float mass;
       float gravity;
-      int mountainSide;
 };
 
 #endif /* defined(__MyGame__Bjorn__) */

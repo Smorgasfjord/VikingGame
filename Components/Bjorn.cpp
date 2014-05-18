@@ -45,6 +45,7 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world) :
    gravity = -3;
    mass = 20;
    this->world = world;
+   mountainSide = Mountain::getSide(pos);
    modelIdx = world.placeObject(this, model);
 }
 
@@ -52,6 +53,7 @@ void Bjorn::step()
 {
 	double curtime = glfwGetTime();
    float deltaT = (float)(curtime -  lastUpdated);
+   int newSide;
    //Update position based on velocity
    moveBy(deltaT * getVel());
    //Fall due to gravity if not colliding with anything, this is a weird y offset, i don't get it
@@ -62,23 +64,59 @@ void Bjorn::step()
    }
    else
    {
-      //setPos(glm::vec3(getPos().x,world.getY(getPos()),getPos().z));
       Sound::walk();
       jumping = false;
       setVelocity(glm::vec3(getVel().x, 0, getVel().z));
-      //Update X velocity due to friction
-      if(getVel().x > 0.1)
-         addVelocity(glm::vec3(-0.15,0.0,0.0));
-      else if (getVel().x < -0.1)
-         addVelocity(glm::vec3(0.15, 0.0,0.0));
+      //Update velocity due to friction
+      if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
+      {
+         if(getVel().x > 0.1)
+            addVelocity(glm::vec3(-0.15,0.0,0.0));
+         else if (getVel().x < -0.1)
+            addVelocity(glm::vec3(0.15, 0.0,0.0));
+         else
+         {
+            setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
+            Sound::stopWalk();
+         }
+      }
       else
       {
-         setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
-         Sound::stopWalk();
+         if(getVel().z > 0.1)
+            addVelocity(glm::vec3(0, 0, -0.15));
+         else if (getVel().z < -0.1)
+            addVelocity(glm::vec3(0, 0, 0.15));
+         else
+         {
+            setVelocity(glm::vec3(getVel().x, getVel().y, 0));
+            Sound::stopWalk();
+         }
       }
    }
    
-   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
+   //setPos(Mountain::lockOn(getPos()));
+   glm::vec3 newPos = getPos();
+   newPos.z += 1;
+   newSide = Mountain::getSide(newPos);
+   //Check if we've changed sides of the mountain
+   if(newSide != mountainSide)
+   {
+      //Moving right around the mountain
+      if(newSide > mountainSide)
+         rotateBy(glm::vec3(0, 90, 0));
+      //Moving left
+      else
+         rotateBy(glm::vec3(0, -90, 0));
+      
+      //Transfer velocity
+      if (getVel().x != 0)
+         setVelocity(glm::vec3(0, getVel().y, getVel().x));
+      else
+         setVelocity(glm::vec3(getVel().z, getVel().y, 0));
+         
+      mountainSide = newSide;
+         
+   }
    lastUpdated = curtime;
    
    return;
@@ -86,14 +124,50 @@ void Bjorn::step()
 
 void Bjorn::moveRight()
 {
-   if(getVel().x > -MAX_SPEED)
-      addVelocity(glm::vec3(-0.5, 0.0, 0.0));
+   if(mountainSide == MOUNT_FRONT)
+   {
+      if(getVel().x > -MAX_SPEED)
+         addVelocity(glm::vec3(-0.5f, 0, 0));
+   }
+   else if(mountainSide == MOUNT_RIGHT)
+   {
+      if(getVel().z < MAX_SPEED)
+         addVelocity(glm::vec3(0, 0, 0.5f));
+   }
+   else if(mountainSide == MOUNT_BACK)
+   {
+      if(getVel().x < MAX_SPEED)
+         addVelocity(glm::vec3(0.5f, 0, 0));
+   }
+   else
+   {
+      if(getVel().z > -MAX_SPEED)
+         addVelocity(glm::vec3(0, 0, -0.5f));
+   }
 }
 
 void Bjorn::moveLeft()
 {
-   if(getVel().x < MAX_SPEED)
-      addVelocity(glm::vec3(0.5f,0.0,0.0));
+   if(mountainSide == MOUNT_FRONT)
+   {
+      if(getVel().x < MAX_SPEED)
+         addVelocity(glm::vec3(0.5f, 0, 0));
+   }
+   else if(mountainSide == MOUNT_RIGHT)
+   {
+      if(getVel().z > -MAX_SPEED)
+         addVelocity(glm::vec3(0, 0, -0.5f));
+   }
+   else if(mountainSide == MOUNT_BACK)
+   {
+      if(getVel().x > -MAX_SPEED)
+         addVelocity(glm::vec3(-0.5f, 0, 0));
+   }
+   else
+   {
+      if(getVel().z < MAX_SPEED)
+         addVelocity(glm::vec3(0, 0, 0.5f));
+   }
 }
 
 void Bjorn::jump()
@@ -120,6 +194,5 @@ void Bjorn::launch(float angle)
 {
    jumping = true;
    setVelocity(glm::vec3(-5 * cos(angle), 5 * sin(angle), 0.0));
-//   addVelocity(glm::vec3(-2.5 * cos(angle), 2.5 * sin(angle), 0.0));
 }
 

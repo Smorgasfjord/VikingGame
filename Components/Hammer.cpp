@@ -29,6 +29,7 @@ void Hammer::setInWorld(World world, Bjorn *character)
    bjorn = character;
    previousAngle = 0.0;
    hammerSide = true;
+   mountainSide = bjorn->mountainSide;
 }
 
 float d2r(float val)
@@ -53,10 +54,20 @@ void Hammer::updateAngle(float x, float y)
       //Save the last angle
       previousAngle = currentAngle.z;
       //Rotation is flipped if the hammer is flipped
-      if(hammerSide)
-         setRotation(glm::vec3(currentAngle.x, currentAngle.y, -angle  * (180.0 / pi)));
+      if(bjorn->mountainSide == MOUNT_FRONT || bjorn->mountainSide == MOUNT_BACK)
+      {
+         if(hammerSide)
+            setRotation(glm::vec3(currentAngle.x, currentAngle.y, -angle * (180.0 / pi)));
+         else
+            setRotation(glm::vec3(currentAngle.x, currentAngle.y, angle * (180.0 / pi)));
+      }
       else
-         setRotation(glm::vec3(currentAngle.x, currentAngle.y, angle  * (180.0 / pi)));
+      {
+         if(hammerSide)
+            setRotation(glm::vec3(angle * (180.0 / pi), currentAngle.y, currentAngle.z));
+         else
+            setRotation(glm::vec3(-angle * (180.0 / pi), currentAngle.y, currentAngle.z));
+      }
    }
 }
 
@@ -71,7 +82,26 @@ void Hammer::flip()
 void Hammer::step()
 {
    setPos(bjorn->getPos());
-   moveBy(glm::vec3(0, .5, -.2));
+   //Move the hammer to the proper position
+   if(bjorn->mountainSide == MOUNT_FRONT)
+      moveBy(glm::vec3(0, .5, -.2));
+   else if(bjorn->mountainSide == MOUNT_RIGHT)
+      moveBy(glm::vec3(-.2, .5, 0));
+   else if(bjorn->mountainSide == MOUNT_BACK)
+      moveBy(glm::vec3(0, .5, .2));
+   else
+      moveBy(glm::vec3(.2, .5, 0));
+   
+   //Update hammer rotation if we're on a different side of the mountain
+   if(mountainSide != bjorn->mountainSide)
+   {
+      if(mountainSide < bjorn->mountainSide)
+         rotateBy(glm::vec3(0, 90, 0));
+      else
+         rotateBy(glm::vec3(0, -90, 0));
+      mountainSide = bjorn->mountainSide;
+   }
+   
    glm::vec3 hammerTip = getPos();
    hammerTip.y += sin(d2r(getRot().z + 90));
    if(hammerSide)

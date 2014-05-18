@@ -15,7 +15,7 @@
 #include "../glm/glm.hpp"
 #include "../Utils/GLHandles.h"
 
-#define STEP .05
+#define STEP .25
 
 class Platform : public GameObject
 {
@@ -25,7 +25,7 @@ class Platform : public GameObject
       Platform(glm::vec3 pos, GLHandles hand, GameModel *model);
       Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model);
       bool detectCollision(glm::vec3 pos);
-      glm::vec3 getSize();
+      void checkSide();
       void stretch();
       void shrink();
       string toString();
