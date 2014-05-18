@@ -13,8 +13,8 @@ Hammer::~Hammer()
 {
    
 }
-Hammer::Hammer(std::string n)
-   :GameObject(n)
+Hammer::Hammer(std::string n) : 
+   GameObject(n)
 {
    
 }

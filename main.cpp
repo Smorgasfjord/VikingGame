@@ -392,6 +392,7 @@ void Animate()
 {
    double curTime = glfwGetTime();
    static int wat = 0; //helps make updates only 30 times a second or so
+   CollisionData dat;
    frameRate = 1000 / (curTime - lastUpdated + 1);
    /*
    cout << "Update @ " << curTime.tv_sec << "\n";
@@ -412,10 +413,16 @@ void Animate()
    }
    //updates the spatial data structure
    if (wat % 10 == 0) {
-      if (world.checkCollision(&hammer, hammerTime).obj.obj != hammerTime) {
+      dat = world.checkCollision(&hammer, hammerTime);
+      if (dat.hitObj.obj >= 0) {
+         printf("%s vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
+                hammer.model.children[dat.thisObj.nod].name.c_str(), dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri, 
+                dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
+                dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
          //printf("hammer hit the platform\n");
       }
       world.updateObject(&hammer, hammerTime);
+      world.updateObject(&bjorn, bjorn.modelIdx);
    }
    wat++;
    eye = lookAt = bjorn.getPos();
