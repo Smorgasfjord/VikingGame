@@ -21,6 +21,7 @@ class Platform : public GameObject
 {
    public:
       void step();
+      ~Platform() {}
       Platform();
       Platform(glm::vec3 pos, GLHandles hand, GameModel *model);
       Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model);

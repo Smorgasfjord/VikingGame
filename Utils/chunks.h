@@ -47,18 +47,20 @@ class CollisionData {
          hitObj.mesh = -1;
          hitObj.tri = -1;
       }
-      CollisionData(ObjData d, ObjData t, glm::vec3 p, glm::vec3 a, glm::vec3 n) :
+      CollisionData(ObjData d, ObjData t, glm::vec3 p, glm::vec3 a, glm::vec3 n, glm::vec3 s) :
          hitObj(d),
          thisObj(t),
          collisionPoint(p),
          collisionAngle(a),
-         collisionNormal(n)
+         collisionNormal(n),
+         collisionStrength(s)
       {
       }
       ObjData thisObj; //thisObj.tri is actually a vertex
       ObjData hitObj;
       glm::vec3 collisionPoint;
       glm::vec3 collisionAngle;
+      glm::vec3 collisionStrength;
       glm::vec3 collisionNormal;
 };
 

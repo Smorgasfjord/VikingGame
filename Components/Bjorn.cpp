@@ -48,14 +48,31 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world) :
    modelIdx = world.placeObject(this, model);
 }
 
-void Bjorn::step()
+//What Bjorn does
+void Bjorn::step(double timeStep)
 {
-	double curtime = glfwGetTime();
-   float deltaT = (float)(curtime -  lastUpdated);
-   //Update position based on velocity
-   moveBy(deltaT * getVel());
+   if (grounded) {
+      Sound::walk();
+      //Update X velocity due to friction
+      if(getVel().x > 0.1)
+         addVelocity(glm::vec3(-0.15,0.0,0.0));
+      else if (getVel().x < -0.1)
+         addVelocity(glm::vec3(0.15, 0.0,0.0));
+      else
+      {
+         setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
+         Sound::stopWalk();
+      }
+   }
+   else {
+      Sound::stopWalk();
+   }
+   addVelocity(-glm::vec3(0.0,GRAVITY,0.0));
+
+   moveBy(getVel());
+   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
    //Fall due to gravity if not colliding with anything, this is a weird y offset, i don't get it
-   if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .15, getPos().z)) == 0 && !suspended)
+   /*if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .15, getPos().z)) == 0 && !suspended)
    {
       addVelocity(glm::vec3(0.0, ((mass * gravity) * .002f), 0.0));
       Sound::stopWalk();
@@ -78,10 +95,22 @@ void Bjorn::step()
       }
    }
    
-   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
-   lastUpdated = curtime;
+   lastUpdated = curtime;*/
    
    return;
+}
+
+//How the world reacts to what Bjorn does
+void Bjorn::update(double timeStep) {
+   CollisionData dat;
+   dat = world.checkCollision(this, modelIdx);
+   if (dat.hitObj.obj >= 0) {
+      activeForce = dat.collisionStrength * dat.collisionNormal;
+      addVelocity(-activeForce/(float)timeStep);
+   }
+   
+   moveBy(getVel());
+   setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
 }
 
 void Bjorn::moveRight()

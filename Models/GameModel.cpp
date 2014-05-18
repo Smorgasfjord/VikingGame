@@ -290,6 +290,7 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
    GLsizei stride = (3 + 3 + 2) * sizeof(float);
    float *firstComp = 0;
    GLuint buffer;
+   contents = std::vector<BufferContents>();
 
    // For each mesh
    for (unsigned int n = 0; n < sc->mNumMeshes; ++n)

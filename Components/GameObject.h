@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string>
 
+#define GRAVITY 10.0
+
 using namespace std;
 
 typedef struct trans_data Transform_t;
@@ -76,6 +78,8 @@ class ObjectNode {
          initGameObjState(&state);
       }
       
+      ObjectNode & copy();
+
       void initialize(ModelNode *modNod);
       void render(GLHandles handle, glm::mat4 cumulative);
 };
@@ -91,6 +95,7 @@ class GameObject {
       float mass;
       float lastUpdated;
       float deltaT;
+      glm::vec3 activeForce;
       GLHandles handles;
 
       GameObject()
@@ -105,6 +110,8 @@ class GameObject {
          mass = 1.0;
          collisionGroup = 0;
       }
+
+      GameObject & copy();
      
       void initialize(GameModel *gMod, int modIdx, int collGroup, GLHandles handle);
       //Physics

@@ -265,7 +265,7 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
                }
                cNormal = interpolateNormal(cPoint.y, cPoint.z, cDat, oldTrans);
                actual = move * cPoint.x;
-               ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal);
+               ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal, move);
                return ret;
             }
          }
@@ -297,11 +297,11 @@ CollisionData ChunkWorld::checkNodeCollision(ObjectNode *newNod, ObjectNode *old
 }
 
 CollisionData ChunkWorld::checkForCollision(GameObject *obj, int objIndex) {
-   GameObject *old = &(objects[objIndex]);
+   GameObject old = objects[objIndex].copy();
    ObjData dat;
    dat.obj = objIndex;
    dat.nod = -1;
-   return checkNodeCollision(&(obj->model), &(old->model), models[objIndex], glm::mat4(1.0f), glm::mat4(1.0f), dat);
+   return checkNodeCollision(&(obj->model), &(old.model), models[objIndex], glm::mat4(1.0f), glm::mat4(1.0f), dat);
 }
 
 
@@ -393,7 +393,7 @@ void ChunkWorld::repopulate(GameObject* obj, int objIndex) {
    dat.obj = objIndex;
    dat.nod = -1;
    traceNode(&(obj->model), models[objIndex], glm::mat4(1.0f), dat);
-   objects[objIndex] = *obj;
+   objects[objIndex] = obj->copy();
 }
 
 //returns the index of the object --KEEP THIS--
@@ -404,10 +404,10 @@ int ChunkWorld::populate(GameObject *mesh, const vector<BufferContents> & geom) 
    dat.nod = -1;
    traceNode(&(mesh->model), geom, glm::mat4(1.0f), dat);
 
-   objects.push_back(*mesh);
+   objects.push_back(mesh->copy());
    models.push_back(geom);
    objCount++;
-   return objCount - 1;
+   return objects.size() - 1;
 }
 /*
 int ChunkWorld::addMaterial(mat_t mat) {
@@ -419,4 +419,4 @@ int ChunkWorld::addMaterial(mat_t mat) {
 int ChunkWorld::addLight(LightSource light) {
    lights.push_back(light);
    return lights.size() - 1;
-}*/
+};*/

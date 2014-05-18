@@ -34,7 +34,7 @@
 class Bjorn : public GameObject
 {
    public:
-      void step();
+      void step(double timeStep);
       Bjorn();
       ~Bjorn();
       Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world);
@@ -44,6 +44,7 @@ class Bjorn : public GameObject
       void launch(float angle);
       void suspend();
       void unsuspend();
+      void update(double timeStep);
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size);
       bool jumping;

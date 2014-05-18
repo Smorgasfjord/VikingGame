@@ -27,8 +27,8 @@ void ObjectNode::initialize(ModelNode *modNod) {
       meshes.push_back(mesh);
    }
    for (int j = 0; j < modNod->children.size(); j++) {
-      nod = ObjectNode(modNod->name);
-      nod.initialize(&modNod->children[j]);
+      nod = ObjectNode(modNod->name.c_str());
+      nod.initialize(&(modNod->children[j]));
       children.push_back(nod);
    }
    state.transform = modNod->transform;
@@ -40,8 +40,29 @@ void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandl
    this->collisionGroup = collGroup;
    this->modelIdx = modIdx;
    nod = ObjectNode(model->rootNode.name);
-   nod.initialize(&model->rootNode);
+   nod.initialize(&(model->rootNode));
    this->model = nod;
+}
+
+ObjectNode & ObjectNode::copy() {
+   ObjectNode *node = new ObjectNode(name.c_str());
+   memcpy(&(node->state), &state, sizeof(state));
+   for (int i = 0; i < meshes.size(); i++) {
+      node->meshes.push_back(ObjectMesh(i, meshes[i].buffDat));
+   }
+   for (int j = 0; j < children.size(); j++) {
+      node->children.push_back(children[j].copy());
+   }
+
+   return *node;
+}
+
+GameObject & GameObject::copy() {
+   GameObject *obj = new GameObject(name.c_str());
+   obj->collisionGroup = collisionGroup;
+   obj->modelIdx = modelIdx;
+   obj->model = model.copy();
+   return *obj;
 }
 
 //------------------------------Get-ers-------------------------------

@@ -62,8 +62,9 @@
 
 //Audio
 #include "Audio/Sound.h"
-#include "Jukebox.h"
+#include "Audio/Jukebox.h"
 
+#define REFRESH_RATE 60.0
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
 #define pi 3.14159
@@ -97,8 +98,9 @@ Hammer hammer;
 
 //Text
 int playerScore = 0;
-double lastUpdated;
-float frameRate;
+double lastUpdated = 0.0;
+static float frameRate = 0.0;
+static int frames = 0;
 
 //Light
 glm::vec3 lightPos;
@@ -117,6 +119,7 @@ glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 10
 
 //User interaction
 glm::vec2 prevMouseLoc;
+glm::vec2 currentMouseLoc;
 
 /* projection matrix */
 void SetProjectionMatrix(bool drawText) {
@@ -208,9 +211,7 @@ void setWorld()
    bjorn = Bjorn(lookAt, handles, &bjornMod, world);
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
-   hammer.initialize(&hammerMod, 0, 0, handles);
-   hammer.setInWorld(world, &bjorn);
-   hammerTime = world.placeObject(&hammer, &hammerMod);
+   hammer.setInWorld(world, &bjorn, &hammerMod, handles);
    cout << "Hammer held\n";
    music.start();
    cout << "Lets play!\n";
@@ -373,13 +374,10 @@ static void error_callback(int error, const char* description)
 /* Tracks mouse movement for the camera */
 void mouse(GLFWwindow* window, double x, double y)
 {
-   glm::vec2 currentPos = glm::vec2(p2wx(x), p2wy(y));
-   currentPos.x += bjorn.getPos().x;
-   currentPos.y += bjorn.getPos().y;
+   currentMouseLoc = glm::vec2(p2wx(x), p2wy(y));
+   currentMouseLoc.x += bjorn.getPos().x;
+   currentMouseLoc.y += bjorn.getPos().y;
    
-   hammer.updateAngle(currentPos.x, currentPos.y);
-   
-   prevMouseLoc = currentPos;
 }
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
@@ -421,18 +419,33 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 void Animate()
 {
-   double curTime = glfwGetTime();
+   double curTime = glfwGetTime(), timeStep;
    static int wat = 0; //helps make updates only 30 times a second or so
    CollisionData dat;
-   frameRate = 1000 / (curTime - lastUpdated + 1);
+
+   if ((int)curTime > (int)lastUpdated) {
+      frameRate = frames;
+      frames = 0;
+   }
+   frames++;
+   if (curTime - lastUpdated < 1.0/REFRESH_RATE) {
+      return;
+   }
+   timeStep = curTime - lastUpdated;
+   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y);
+   prevMouseLoc = currentMouseLoc;
    /*
    cout << "Update @ " << curTime.tv_sec << "\n";
    cout << "\tCurrent score: " << playerScore << "\n";
    cout << "\tFramerate: " << frameRate << "\n";
     */
    //THESE HAVE TO STAY IN THIS ORDER
-   bjorn.step();
-   hammer.step();
+   bjorn.step(timeStep);
+   hammer.step(timeStep);
+   world.updateObject(&hammer, hammer.modelIdx);
+   world.updateObject(&bjorn, bjorn.modelIdx);
+   bjorn.update(timeStep);
+   hammer.update(timeStep);
   
    //kill bjorn if he's falling too fast
    if(bjorn.getVel().y < -8.0 && !DEBUG_GAME)
@@ -444,16 +457,14 @@ void Animate()
    }
    //updates the spatial data structure
    if (wat % 10 == 0) {
-      dat = world.checkCollision(&hammer, hammerTime);
+      dat = world.checkCollision(&hammer, hammer.modelIdx);
       if (dat.hitObj.obj >= 0) {
-         printf("%s vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
-                hammer.model.children[dat.thisObj.nod].name.c_str(), dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri, 
+         printf("vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
+                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri, 
                 dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
          //printf("hammer hit the platform\n");
       }
-      world.updateObject(&hammer, hammerTime);
-      world.updateObject(&bjorn, bjorn.modelIdx);
    }
    wat++;
    eye = lookAt = bjorn.getPos();
