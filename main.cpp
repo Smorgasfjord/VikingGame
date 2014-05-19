@@ -406,7 +406,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
-   static int wat = 0; //helps make updates only 30 times a second or so
    CollisionData dat;
 
    if ((int)curTime > (int)lastUpdated) {

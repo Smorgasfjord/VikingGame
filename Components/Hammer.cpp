@@ -88,7 +88,7 @@ void Hammer::step(double timeStep)
    setVelocity(bjorn->getVel());
    moveBy(getVel()*(float)timeStep);
    setPos(bjorn->getPos());
-   glm::vec3 hammerTip = getPos();
+
    //Move the hammer to the proper position
    if(bjorn->mountainSide == MOUNT_FRONT)
       moveBy(glm::vec3(0, .5, -.2));
