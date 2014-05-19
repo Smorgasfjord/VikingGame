@@ -21,31 +21,33 @@
 #include "../Utils/GLSL_helper.h"
 
 #define HEIGHT 0
-#define MAX_SPEED 2
+#define MAX_SPEED 1.5
 
 Bjorn::~Bjorn()
 {
 }
 
-Bjorn::Bjorn()
+Bjorn::Bjorn() 
 {
-   
+
 }
 
-Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world) :
+Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World * worl) :
    GameObject("Bjorn")
 {
+   GameModel simple = genSimpleModel(model);
    initialize(model, 0, 0, hand);
    setPos(pos + glm::vec3(0.0, 0.75f, 0.5f));
    setScale(glm::vec3(0.1f));
    setRotation(glm::vec3(0.0, -90.0, 0.0));
    setVelocity(glm::vec3(0));
    jumping = false;
+   grounded = true;
    suspended = false;
    gravity = -3;
    mass = 20;
-   this->world = world;
-   modelIdx = world.placeObject(this, model);
+   this->world = worl;
+   modelIdx = world->placeObject(this, &simple);
 }
 
 //What Bjorn does
@@ -55,9 +57,9 @@ void Bjorn::step(double timeStep)
       Sound::walk();
       //Update X velocity due to friction
       if(getVel().x > 0.1)
-         addVelocity(glm::vec3(-0.15,0.0,0.0));
+         addVelocity(glm::vec3(-0.15 * timeStep,0.0,0.0));
       else if (getVel().x < -0.1)
-         addVelocity(glm::vec3(0.15, 0.0,0.0));
+         addVelocity(glm::vec3(0.15 * timeStep, 0.0,0.0));
       else
       {
          setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
@@ -67,9 +69,10 @@ void Bjorn::step(double timeStep)
    else {
       Sound::stopWalk();
    }
-   addVelocity(-glm::vec3(0.0,GRAVITY,0.0));
+   //                         (m/s^2  * s)
+   addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
 
-   moveBy(getVel());
+   moveBy(getVel()*(float)timeStep);
    setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
    //Fall due to gravity if not colliding with anything, this is a weird y offset, i don't get it
    /*if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .15, getPos().z)) == 0 && !suspended)
@@ -103,13 +106,32 @@ void Bjorn::step(double timeStep)
 //How the world reacts to what Bjorn does
 void Bjorn::update(double timeStep) {
    CollisionData dat;
-   dat = world.checkCollision(this, modelIdx);
+   static double jumpCount = 0.0;
+   glm::vec3 thing;
+   dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      activeForce = dat.collisionStrength * dat.collisionNormal;
-      addVelocity(-activeForce/(float)timeStep);
+      printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
+                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
+                dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
+                dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
+      moveBy(-getVel()*(float)timeStep); //reevaluate location
+      //moveBy(-dat.collisionAngle); //amount actually moved
+      setVelocity((getVel() + glm::reflect(getVel(), dat.collisionNormal))/2.0f);
+      if (dat.collisionNormal.y > 0.5) {
+         jumpCount = 0.0;
+         jumping = false;
+      }
+      else jumping = true;
+   } 
+   else {
+      if (jumpCount < 0.2) {
+         jumpCount+=timeStep;
+      }
+      else {
+         jumping = true;
+      }
    }
-   
-   moveBy(getVel());
+   //moveBy(getVel()*(float)timeStep);
    setPos(glm::vec3(getPos().x, getPos().y, Mountain::getZ(getPos()) - .5));
 }
 
@@ -129,8 +151,7 @@ void Bjorn::jump()
 {
    if((!jumping && !suspended) || DEBUG_GAME)
    {
-      setVelocity(glm::vec3(getVel().x,2.5,getVel().z));
-      jumping = true;
+      setVelocity(glm::vec3(getVel().x,1.0,getVel().z));
    }
 }
 

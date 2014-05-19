@@ -23,11 +23,11 @@ void ObjectNode::initialize(ModelNode *modNod) {
    ObjectMesh mesh;
    ObjectNode nod;
    for (int i = 0; i < modNod->meshes.size(); i++) {
-      mesh = ObjectMesh(i, modNod->meshes[i].buffDat);
+      mesh = ObjectMesh(modNod->meshes[i].mIdx, modNod->meshes[i].buffDat);
       meshes.push_back(mesh);
    }
    for (int j = 0; j < modNod->children.size(); j++) {
-      nod = ObjectNode(modNod->name.c_str());
+      nod = ObjectNode(modNod->children[j].name.c_str());
       nod.initialize(&(modNod->children[j]));
       children.push_back(nod);
    }
@@ -39,9 +39,28 @@ void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandl
    this->handles = handles;
    this->collisionGroup = collGroup;
    this->modelIdx = modIdx;
-   nod = ObjectNode(model->rootNode.name);
+   nod = ObjectNode(model->rootNode.name.c_str());
    nod.initialize(&(model->rootNode));
    this->model = nod;
+}
+
+void ObjectNode::copyTo(ObjectNode & node) {
+   node.state = state;
+   /*for (int i = 0; i < meshes.size(); i++) {
+      meshes[i].copyTo(node.children[i]);
+   }*/
+   for (int j = 0; j < children.size(); j++) {
+      children[j].copyTo(node.children[j]);
+   }
+}
+
+void GameObject::copyTo(GameObject & obj) {
+   obj.mass = mass;
+   obj.gravityAffected = gravityAffected;
+   obj.grounded = grounded;
+   obj.collisionGroup = collisionGroup;
+   obj.modelIdx = modelIdx;
+   model.copyTo(obj.model);
 }
 
 ObjectNode & ObjectNode::copy() {

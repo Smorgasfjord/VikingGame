@@ -76,6 +76,7 @@ using namespace std;
 //GL basics
 int ShadeProg;
 static float g_width, g_height;
+static bool moveLeft = false, moveRight = false;
 
 //Handles to the shader data
 GLHandles handles;
@@ -89,11 +90,13 @@ std::vector<int> platIdxs;
 
 //Bjorn
 GameModel bjornMod;
+GameModel simpleBjornMod;
 Bjorn bjorn;
 
 //Hammer
 int hammerTime;
 GameModel hammerMod;
+GameModel simpleHammerMod;
 Hammer hammer;
 
 //Text
@@ -208,10 +211,10 @@ void setWorld()
    }
     
    cout << "Platforms placed\n";
-   bjorn = Bjorn(lookAt, handles, &bjornMod, world);
+   bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
-   hammer.setInWorld(world, &bjorn, &hammerMod, handles);
+   hammer.setInWorld(&world, &bjorn, &hammerMod, handles);
    cout << "Hammer held\n";
    music.start();
    cout << "Lets play!\n";
@@ -393,10 +396,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
    {
       switch( key ) {
          case GLFW_KEY_D:
-            bjorn.moveRight();
+            moveRight = true;
+            moveLeft = false;
             break;
          case GLFW_KEY_A:
-            bjorn.moveLeft();
+            moveRight = false;
+            moveLeft = true;
             break;
          case GLFW_KEY_Q: case GLFW_KEY_ESCAPE:
             exit( EXIT_SUCCESS );
@@ -412,6 +417,18 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
          case GLFW_KEY_MINUS:
             music.volumeDown();
+            break;
+      }
+   }
+   if (action == GLFW_RELEASE) {
+      switch( key ) {
+         case GLFW_KEY_D:
+            moveRight = false;
+            break;
+         case GLFW_KEY_A:
+            moveLeft = false;
+            break;
+         default:
             break;
       }
    }
@@ -434,6 +451,12 @@ void Animate()
    timeStep = curTime - lastUpdated;
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y);
    prevMouseLoc = currentMouseLoc;
+   if (moveLeft) {
+      bjorn.moveLeft();
+   }
+   else if (moveRight) {
+      bjorn.moveRight();
+   }
    /*
    cout << "Update @ " << curTime.tv_sec << "\n";
    cout << "\tCurrent score: " << playerScore << "\n";
@@ -442,15 +465,15 @@ void Animate()
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step(timeStep);
    hammer.step(timeStep);
-   world.updateObject(&hammer, hammer.modelIdx);
-   world.updateObject(&bjorn, bjorn.modelIdx);
    bjorn.update(timeStep);
    hammer.update(timeStep);
+   world.updateObject(&bjorn, bjorn.modelIdx);
+   world.updateObject(&hammer, hammer.modelIdx);
   
    //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < -8.0 && !DEBUG_GAME)
+   if(bjorn.getVel().y < -3.0*GRAVITY && !DEBUG_GAME)
       Sound::scream();
-   if(bjorn.getVel().y < -14.0 && !DEBUG_GAME)
+   if(bjorn.getVel().y < -4.0*GRAVITY && !DEBUG_GAME)
    {
       Sound::stopScream();
       reset();
@@ -476,6 +499,7 @@ void Animate()
 int main( int argc, char *argv[] )
 {
    GLFWwindow* window;
+   char title[256];
    
    g_width = INIT_WIDTH;
    g_height = INIT_HEIGHT;
@@ -531,6 +555,9 @@ int main( int argc, char *argv[] )
    while (!glfwWindowShouldClose(window))
    {
       Animate();
+      sprintf(title, "Climb the Mountain! (%.1f %s)", frameRate, "FPS");
+      glfwSetWindowTitle(window, title);
+
       Draw();
       glfwSwapBuffers(window);
       glfwPollEvents();

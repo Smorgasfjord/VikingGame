@@ -14,5 +14,5 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	-rm -rf *.o $(EXECUTABLE)
+	-rm -rf Models/*.o Components/*.o Utils/*.o Audio/*.o *.o $(EXECUTABLE)
 

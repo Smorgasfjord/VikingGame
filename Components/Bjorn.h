@@ -37,7 +37,7 @@ class Bjorn : public GameObject
       void step(double timeStep);
       Bjorn();
       ~Bjorn();
-      Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World & world);
+      Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World * world);
       void moveRight();
       void moveLeft();
       void jump();
@@ -49,7 +49,7 @@ class Bjorn : public GameObject
       void SetModel(glm::vec3 loc, glm::vec3 size);
       bool jumping;
       bool suspended;
-      World world;
+      World * world;
       Model mod;
       float mass;
       float gravity;

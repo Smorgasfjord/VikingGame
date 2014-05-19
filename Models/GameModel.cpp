@@ -238,6 +238,79 @@ void color4_to_float4(const aiColor4D *c, float f[4])
    f[3] = c->a;
 }
 
+BufferContents findBounds(BufferContents & bc) {
+   BufferContents newBc = BufferContents(8,12);
+   glm::vec3 min = glm::vec3(0.0f), max = glm::vec3(0.0f), norm;
+   for (int i = 0; i < bc.numVerts; i++) {
+      if (bc.verts[i].x > max.x) max.x = bc.verts[i].x;
+      else if (bc.verts[i].x < min.x) min.x = bc.verts[i].x;
+      if (bc.verts[i].y > max.y) max.y = bc.verts[i].y;
+      else if (bc.verts[i].y < min.y) min.y = bc.verts[i].y;
+      if (bc.verts[i].z > max.z) max.z = bc.verts[i].z;
+      else if (bc.verts[i].z < min.z) min.z = bc.verts[i].z;
+   }
+   norm = glm::normalize(max - min);
+   newBc.verts.push_back(glm::vec3(min.x,min.y,min.z));
+   newBc.verts.push_back(glm::vec3(min.x,min.y,max.z));
+   newBc.verts.push_back(glm::vec3(min.x,max.y,max.z));
+   newBc.verts.push_back(glm::vec3(min.x,max.y,min.z));
+   newBc.verts.push_back(glm::vec3(max.x,max.y,min.z));
+   newBc.verts.push_back(glm::vec3(max.x,max.y,max.z));
+   newBc.verts.push_back(glm::vec3(max.x,min.y,max.z));
+   newBc.verts.push_back(glm::vec3(max.x,min.y,min.z));
+   newBc.faces.push_back(glm::vec3(0,1,2.0f));//right
+   newBc.faces.push_back(glm::vec3(2,3,0.0f));
+   newBc.faces.push_back(glm::vec3(2,3,4.0f));//top
+   newBc.faces.push_back(glm::vec3(4,5,2.0f));
+   newBc.faces.push_back(glm::vec3(4,5,6.0f));//left
+   newBc.faces.push_back(glm::vec3(6,7,4.0f));
+   newBc.faces.push_back(glm::vec3(0,1,6.0f));//bottom
+   newBc.faces.push_back(glm::vec3(6,7,0.0f));
+   newBc.faces.push_back(glm::vec3(4,3,0.0f));//back
+   newBc.faces.push_back(glm::vec3(0,7,4.0f));
+   newBc.faces.push_back(glm::vec3(1,2,5.0f));
+   newBc.faces.push_back(glm::vec3(5,6,1.0f));
+   newBc.norms.push_back(glm::vec3(-norm.x,-norm.y,-norm.z));
+   newBc.norms.push_back(glm::vec3(-norm.x,-norm.y,norm.z));
+   newBc.norms.push_back(glm::vec3(-norm.x,norm.y,norm.z));
+   newBc.norms.push_back(glm::vec3(-norm.x,norm.y,-norm.z));
+   newBc.norms.push_back(glm::vec3(norm.x,norm.y,-norm.z));
+   newBc.norms.push_back(glm::vec3(norm.x,norm.y,norm.z));
+   newBc.norms.push_back(glm::vec3(norm.x,-norm.y,norm.z));
+   newBc.norms.push_back(glm::vec3(norm.x,-norm.y,-norm.z));
+   return newBc;
+}
+
+ModelNode genSimpleModelNode(ModelNode *node, std::vector<MeshBufferData> meshData) {
+   ModelNode nod;
+   ModelMesh mesh;
+   MeshBufferData mDat;
+   unsigned int mIdx;
+
+   //trans = glm::make_mat4x4(arr); //not working for some reason
+   nod = ModelNode(node->name.c_str(), node->transform);
+   for (int i = 0; i < node->meshes.size(); i++) {
+      mIdx = node->meshes[i].mIdx;
+      mDat = meshData[mIdx];
+      mesh = ModelMesh(mDat,mIdx);
+      nod.meshes.push_back(mesh);
+   }
+   for (int j = 0; j < node->children.size(); j++) {
+      nod.children.push_back(genSimpleModelNode(&(node->children[j]), meshData));
+   }
+   return nod;
+}
+
+GameModel genSimpleModel(GameModel *mod) {
+   GameModel newMod = GameModel(mod->fname.c_str());
+   for (int i = 0; i < mod->contents.size(); i++) {
+      newMod.contents.push_back(findBounds(mod->contents[i]));
+   }
+
+   newMod.rootNode = genSimpleModelNode(&(mod->rootNode), mod->meshData);
+   return newMod;
+}
+
 ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData) {
    ModelNode nod;
    ModelMesh mesh;
@@ -255,7 +328,7 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData)
    for (int i = 0; i < node->mNumMeshes; i++) {
       mIdx = node->mMeshes[i];
       mDat = meshData[mIdx];
-      mesh = ModelMesh(mDat);
+      mesh = ModelMesh(mDat,mIdx);
       nod.meshes.push_back(mesh);
    }
    for (int j = 0; j < node->mNumChildren; j++) {

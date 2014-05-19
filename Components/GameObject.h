@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string>
 
-#define GRAVITY 10.0
 
 using namespace std;
 
@@ -47,6 +46,10 @@ class ObjectMesh {
       int meshIdx;
       MeshBufferData buffDat;
 
+      ~ObjectMesh() 
+      {
+      }
+
       ObjectMesh() 
       {
       }
@@ -67,6 +70,10 @@ class ObjectNode {
       string name;
       Transform_t state;
 
+      ~ObjectNode()
+      {
+      }
+
       ObjectNode()
       {
          initGameObjState(&state);
@@ -78,6 +85,7 @@ class ObjectNode {
          initGameObjState(&state);
       }
       
+      void copyTo(ObjectNode & obj);
       ObjectNode & copy();
 
       void initialize(ModelNode *modNod);
@@ -98,6 +106,10 @@ class GameObject {
       glm::vec3 activeForce;
       GLHandles handles;
 
+      ~GameObject()
+      {
+      }
+
       GameObject()
       {
       }
@@ -111,6 +123,7 @@ class GameObject {
          collisionGroup = 0;
       }
 
+      void copyTo(GameObject & obj);
       GameObject & copy();
      
       void initialize(GameModel *gMod, int modIdx, int collGroup, GLHandles handle);

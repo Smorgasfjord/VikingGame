@@ -190,14 +190,14 @@ class BufferContents {
 class ModelMesh {
    public:
       MeshBufferData buffDat;
-      std::vector<aiVector3D> vertices;
-      std::vector<aiFace> faces;
+      unsigned int mIdx;
 
       ModelMesh()
       {
       }
 
-      ModelMesh(MeshBufferData bd) 
+      ModelMesh(MeshBufferData bd, unsigned int m) :
+         mIdx(m) 
       {
          buffDat = bd;
       }
@@ -244,6 +244,7 @@ class GameModel {
       void genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle); 
 };
 
+GameModel genSimpleModel(GameModel *mod);
 ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> meshData);
 GameModel loadModel(std::string fName, GLHandles handle);
 

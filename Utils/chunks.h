@@ -167,7 +167,7 @@ class ChunkWorld {
       glm::vec3 interpolateNormal(float beta, float gamma, ObjData dat, glm::mat4 trans);
       glm::vec3 findCollisionPoint(glm::vec3 path, glm::vec3 start, ObjData dat, glm::mat4 trans);
       CollisionData checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
-      CollisionData checkNodeCollision(ObjectNode *newNod, ObjectNode *oldNod, const std::vector<BufferContents> & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
+      CollisionData checkNodeCollision(ObjectNode & newNod, ObjectNode & oldNod, const std::vector<BufferContents> & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat);
       CollisionData checkForCollision(GameObject *newObj, int objIndex);
       void depopulate(int objIndex);
       //int addMaterial(mat_t mat);      

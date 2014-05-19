@@ -26,16 +26,18 @@ class Hammer : public GameObject
 public:
    void step(double timeStep);
    void update(double timeStep);
-   Hammer() {}
+   Hammer() 
+   {
+   }
    Hammer(std::string name);
    ~Hammer();
    //Hammer(GLHandles hand, Model model, World world, Bjorn *character);
-   void setInWorld(World & world, Bjorn *character, GameModel *mod, GLHandles hand);
+   void setInWorld(World * world, Bjorn *character, GameModel *mod, GLHandles hand);
    void updatePos(float dx, float dy);
    void updateAngle(float x, float y);
    void flip();
 private:
-   World world;
+   World * world;
    Model mod;
    Bjorn *bjorn;
    glm::vec3 pickAngle;
