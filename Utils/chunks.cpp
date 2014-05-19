@@ -209,17 +209,17 @@ glm::vec3 ChunkWorld::findCollisionPoint(glm::vec3 ray, glm::vec3 eye, ObjData d
    meta = abc.x*eihf + abc.y*gfdi + abc.z*dheg;
    //cout << "checking collision";
    traceLength = (def.z*akjb + def.y*jcal+def.x*blkc) / meta;
-   cout << "possible collision length: " << traceLength << "\n";
+   //cout << "possible collision length: " << traceLength << "\n";
    if (traceLength > 0.0 || -traceLength > glm::length(ray))
       return glm::vec3(2.0*COLL_LIMIT);
    //cout << ".";
    gamma = (ghi.z*akjb + ghi.y*jcal+ghi.x*blkc) / meta;
-   cout << "gamma: " << gamma << "\n";
+   //cout << "gamma: " << gamma << "\n";
    if (gamma <= 0.0 || gamma >= 1.0)
       return glm::vec3(2.0*COLL_LIMIT);
    //cout << ".";
    beta = (jkl.x*eihf + jkl.y*gfdi+jkl.z*dheg) / meta;
-   cout << "beta: " << beta << "\n";
+   //cout << "beta: " << beta << "\n";
    if (beta <= 0.0 || beta >= 1.0 - gamma)
       return glm::vec3(2.0*COLL_LIMIT);
    //cout << ".";

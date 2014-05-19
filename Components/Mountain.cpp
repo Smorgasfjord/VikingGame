@@ -112,7 +112,7 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos)
       x = pos.z * (IMG_MAX_X / MOUNT_WIDTH);
    
    y = ((MOUNT_HEIGHT - pos.y) * ((IMG_MAX_Y - IMG_MIN_Y) / MOUNT_HEIGHT)) + IMG_MIN_Y;
-   
+   if (y > 0) { 
    //Index into the data
    depthOffset = heightMaps[side][(y * WIDTH + x) * 4];
    
@@ -130,6 +130,7 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos)
       mountPos.x = depth;
    else
       mountPos.x =  MOUNT_WIDTH - depth;
+   }
    return mountPos;
 }
 

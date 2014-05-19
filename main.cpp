@@ -197,6 +197,7 @@ void setWorld()
    currentSide = MOUNT_FRONT;
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &simplePlatformMod));
+      cout << "Platform " << i << " placed\n";
    }
     
    cout << "Platforms placed\n";

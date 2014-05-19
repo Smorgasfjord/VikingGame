@@ -150,10 +150,10 @@ void Bjorn::update(double timeStep) {
    glm::vec3 thing;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
-                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
-                dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
-                dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
+      //printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
+      //          /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
+      //          dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
+      //          dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
       moveBy(-getVel()*(float)timeStep); //reevaluate location
       //moveBy(-dat.collisionAngle); //amount actually moved
       setVelocity((getVel()*0.9f + glm::reflect(getVel(), dat.collisionNormal))/2.0f);

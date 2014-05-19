@@ -11,7 +11,7 @@
 #include "../glm/gtx/matrix_query.hpp" //perspective, trans etc
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 
-#define CHUNK_SIZE 8.0f
+#define CHUNK_SIZE 4.0f
 #define APP 0.001f
 #define BOOST 1.0001f
 #define COLL_LIMIT 1000000.0f
