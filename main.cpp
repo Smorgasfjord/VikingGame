@@ -85,16 +85,15 @@ static const float g_groundSize = 60.0;
 //World
 World world;
 std::vector<int> platIdxs;
+GameModel simplePlatformMod;
 
 //Bjorn
 GameModel bjornMod;
-GameModel simpleBjornMod;
 Bjorn bjorn;
 
 //Hammer
 int hammerTime;
 GameModel hammerMod;
-GameModel simpleHammerMod;
 Hammer hammer;
 
 //Text
@@ -176,6 +175,7 @@ void setWorld()
    //Initialize models
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
+   simplePlatformMod = genSimpleModel(&platMod);
    bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    
@@ -196,7 +196,7 @@ void setWorld()
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
    for (int i = 0; i < platforms.size(); i++) {
-      platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
+      platIdxs.push_back(world.placeObject(&(platforms[i]), &simplePlatformMod));
    }
     
    cout << "Platforms placed\n";

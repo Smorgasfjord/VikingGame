@@ -250,14 +250,14 @@ BufferContents findBounds(BufferContents & bc) {
       else if (bc.verts[i].z < min.z) min.z = bc.verts[i].z;
    }
    norm = glm::normalize(max - min);
-   newBc.verts.push_back(glm::vec3(min.x,min.y,min.z));
-   newBc.verts.push_back(glm::vec3(min.x,min.y,max.z));
-   newBc.verts.push_back(glm::vec3(min.x,max.y,max.z));
-   newBc.verts.push_back(glm::vec3(min.x,max.y,min.z));
-   newBc.verts.push_back(glm::vec3(max.x,max.y,min.z));
-   newBc.verts.push_back(glm::vec3(max.x,max.y,max.z));
-   newBc.verts.push_back(glm::vec3(max.x,min.y,max.z));
-   newBc.verts.push_back(glm::vec3(max.x,min.y,min.z));
+   newBc.verts.push_back(glm::vec3(min.x,min.y,min.z)); //lbb
+   newBc.verts.push_back(glm::vec3(min.x,min.y,max.z)); //lbf
+   newBc.verts.push_back(glm::vec3(min.x,max.y,max.z)); //ltf
+   newBc.verts.push_back(glm::vec3(min.x,max.y,min.z)); //ltb
+   newBc.verts.push_back(glm::vec3(max.x,max.y,min.z)); //rtb
+   newBc.verts.push_back(glm::vec3(max.x,max.y,max.z)); //rtf
+   newBc.verts.push_back(glm::vec3(max.x,min.y,max.z)); //rbf
+   newBc.verts.push_back(glm::vec3(max.x,min.y,min.z)); //rbb
    newBc.faces.push_back(glm::vec3(0,1,2.0f));//right
    newBc.faces.push_back(glm::vec3(2,3,0.0f));
    newBc.faces.push_back(glm::vec3(2,3,4.0f));//top
@@ -268,7 +268,7 @@ BufferContents findBounds(BufferContents & bc) {
    newBc.faces.push_back(glm::vec3(6,7,0.0f));
    newBc.faces.push_back(glm::vec3(4,3,0.0f));//back
    newBc.faces.push_back(glm::vec3(0,7,4.0f));
-   newBc.faces.push_back(glm::vec3(1,2,5.0f));
+   newBc.faces.push_back(glm::vec3(1,2,5.0f));//front
    newBc.faces.push_back(glm::vec3(5,6,1.0f));
    newBc.norms.push_back(glm::vec3(-norm.x,-norm.y,-norm.z));
    newBc.norms.push_back(glm::vec3(-norm.x,-norm.y,norm.z));

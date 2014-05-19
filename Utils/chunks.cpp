@@ -235,7 +235,13 @@ glm::vec3 ChunkWorld::interpolateNormal(float beta, float gamma, ObjData dat, gl
    mnorm1 = models[dat.obj][dat.mesh].norms[(int)face.x];
    mnorm2 = models[dat.obj][dat.mesh].norms[(int)face.y];
    mnorm3 = models[dat.obj][dat.mesh].norms[(int)face.z];
-
+   
+   if (mnorm1.x == mnorm2.x && mnorm2.x == mnorm3.x) 
+      return glm::normalize(mnorm1 * glm::vec3(1.0,0.0f,0.0));
+   if (mnorm1.y == mnorm2.y && mnorm2.y == mnorm3.y) 
+      return glm::normalize(mnorm1 * glm::vec3(0.0,1.0f,0.0));
+   if (mnorm1.z == mnorm2.z && mnorm2.z == mnorm3.z) 
+      return glm::normalize(mnorm1 * glm::vec3(0.0,0.0f,1.0));
    return glm::normalize(mnorm1+mnorm2+mnorm3);//mnorm1 * (1.0f-beta-gamma) + mnorm2 * beta + mnorm3 * gamma;
 }
 
