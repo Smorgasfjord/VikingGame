@@ -38,11 +38,9 @@
 #include <vector>
 
 //Models
-#include "Models/Model.h"
 #include "Models/GameModel.h"
 
 //Components
-#include "Components/GameObject.hpp"
 #include "Components/GameObject.h"
 #include "Components/Platform.h"
 #include "Components/Mountain.h"
@@ -117,6 +115,7 @@ float camDistance = 4.0f;
 glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize / 2.0);
 glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
+int currentSide;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
@@ -168,28 +167,17 @@ static void reset()
 void setWorld()
 {
    //Mountain
-   Model mountMod;
+   GameModel mountMod;
    Mountain mount;
    //Platforms
    GameModel platMod;
    std::vector<Platform> platforms;
-   //Ground
-   Model grndMod;
-   std::vector<glm::vec3> groundTiles;
    
    //Initialize models
-   grndMod = Model::init_Ground(g_groundY);
-   mountMod = Model::init_Mountain();
+   mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
-   
-   groundTiles.clear();
-   for(int i = 0; i < g_groundSize; i++)
-   {
-      for(int j = 0; j < g_groundSize; j++)
-         groundTiles.push_back(glm::vec3(i, g_groundY, j));
-   }
    
    lightPos= glm::vec3(35, 15, -15);
    
@@ -197,15 +185,16 @@ void setWorld()
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
-   mount = Mountain(glm::vec3(g_groundSize / 2, 0, g_groundSize / 2), handles, mountMod);
+   mount = Mountain(handles, &mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
-   world = World(platforms, mount, grndMod, &handles, ShadeProg);
+   world = World(platforms, mount, &handles, ShadeProg);
    cout << "World worked\n";
+   //This stuff all assumes we start on the front of the mountain
    eye = lookAt = platforms[0].getPos();
    eye.y += 1;
    eye.z -= camDistance;
-   lookAt.y += .5;
+   currentSide = MOUNT_FRONT;
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &platMod));
    }
@@ -288,26 +277,6 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    
    printf("sucessfully installed shader %d\n", ShadeProg);
    return 1;
-}
-
-/* helper function to set up material for shading */
-void SetMaterial(int i) {
-   
-   glUseProgram(ShadeProg);
-   switch (i) {
-      case 0:
-         safe_glUniform3f(handles.uMatAmb, 0.2, 0.2, 0.2);
-         safe_glUniform3f(handles.uMatDif, 0.4, 0.4, 0.4);
-         safe_glUniform3f(handles.uMatSpec, 0.2, 0.2, 0.2);
-         safe_glUniform1f(handles.uMatShine, .2);
-         break;
-      case GROUND_MAT:
-         safe_glUniform3f(handles.uMatAmb, 0.1, 0.3, 0.1);
-         safe_glUniform3f(handles.uMatDif, 0.1, 0.3, 0.1);
-         safe_glUniform3f(handles.uMatSpec, 0.3, 0.3, 0.4);
-         safe_glUniform1f(handles.uMatShine, 1.0);
-         break;
-   }
 }
 
 /* Some OpenGL initialization */
@@ -479,20 +448,26 @@ void Animate()
       reset();
    }
    //updates the spatial data structure
-   if (wat % 10 == 0) {
-      dat = world.checkCollision(&hammer, hammer.modelIdx);
-      if (dat.hitObj.obj >= 0) {
-         printf("vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
-                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri, 
-                dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
-                dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
-         //printf("hammer hit the platform\n");
-      }
-   }
-   wat++;
+   
+   //Update camera
    eye = lookAt = bjorn.getPos();
    eye.y += 1;
-   eye.z -= camDistance;
+   if(currentSide != bjorn.mountainSide)
+   {
+      //This could be used to add a nice animation for the camera swinging around the mountain
+      cout << "camera changing sides\n";
+      currentSide = bjorn.mountainSide;
+   }
+   if(currentSide == MOUNT_FRONT)
+      eye.z -= camDistance;
+   else if(currentSide == MOUNT_RIGHT)
+      eye.x -= camDistance;
+   else if(currentSide == MOUNT_BACK)
+      eye.z += camDistance;
+   else
+      eye.x += camDistance;
+   
+   
    lastUpdated = curTime;
 }
 

@@ -98,6 +98,10 @@ vec3 GameObject::getRot() {
    return model.state.orient;
 }
 
+vec3 GameObject::getScale() {
+   return model.state.scale;
+}
+
 //------------------------------Set-ers------------------------------
 
 void GameObject::setPos(glm::vec3 pos)

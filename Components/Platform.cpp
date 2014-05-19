@@ -36,11 +36,12 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
    GameObject("platform")
 {
    initialize(model, 0, 1, hand);
-   setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
-   setScale(glm::vec3(1.0f, 1.0, 0.5));
+   setPos(Mountain::lockOn(pos));
+   setScale(glm::vec3(1.0f, 1.0, 3.0));
    setVelocity(glm::vec3(0));
-   setRotation(glm::vec3(0, 0, 0));
    mountainSide = Mountain::getSide(pos);
+   if(mountainSide == MOUNT_LEFT || mountainSide == MOUNT_RIGHT)
+      setRotation(glm::vec3(0, 90, 0));
 }
 
 Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model) :
@@ -48,9 +49,11 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
 {
    mountainSide = mountSide;
    initialize(model, 0, 1, hand);
-   setPos(glm::vec3(Mountain::getX(pos), pos.y, Mountain::getZ(pos)));
-   setScale(size * glm::vec3(1.0,1.0, 0.5));
-   setRotation(glm::vec3(-rotation/2, 0, rotation));
+   setPos(Mountain::lockOn(pos));
+   setScale(size);
+   setRotation(glm::vec3(-rotation/4, 0, rotation));
+   if(mountSide == MOUNT_LEFT || mountSide == MOUNT_RIGHT)
+      rotateBy(glm::vec3(0, 90, 0));
    setVelocity(glm::vec3(0));
 }
 
@@ -121,20 +124,20 @@ bool Platform::detectCollision(glm::vec3 test)
    {
       if(getRot().z < 80 && getRot().z > -80)
       {
-         if(test.x <= getPos().x + getSize().x && test.x >= getPos().x - getSize().x &&
+         if(test.x <= getPos().x + getScale().x && test.x >= getPos().x - getScale().x &&
             test.y <= getPos().y + .5 && test.y >= getPos().y - .5)
             return true;
       }
       else
       {
          if(test.x <= getPos().x + .65 && test.x >= getPos().x - .65 &&
-            test.y <= getPos().y + getSize().x && test.y >= getPos().y - getSize().x)
+            test.y <= getPos().y + getScale().x && test.y >= getPos().y - getScale().x)
             return true;
       }
    }
    else
    {
-      if(test.z <= getPos().z + getSize().x && test.z >= getPos().z - getSize().x &&
+      if(test.z <= getPos().z + getScale().x && test.z >= getPos().z - getScale().x &&
          test.y <= getPos().y + .5 && test.y >= getPos().y - .5)
          return true;
    }
@@ -142,44 +145,65 @@ bool Platform::detectCollision(glm::vec3 test)
    return false;
 }
 
+void Platform::checkSide()
+{
+   int curSide = Mountain::getSide(getPos());
+   //If the platform has changed sides of the mountain update its rotation
+   if(curSide != mountainSide)
+   {
+      mountainSide = curSide;
+      glm::vec3 curRotation = getRot();
+      if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
+         setRotation(glm::vec3(curRotation.x, 0.0f, curRotation.z));
+      else
+         setRotation(glm::vec3(curRotation.x, 90.0f, curRotation.z));
+   }
+}
+
 void Platform::moveDown()
 {
-   if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
-      setPos(glm::vec3(getPos().x, getPos().y - STEP, Mountain::getZ(getPos()-glm::vec3(0.0,STEP,0.0))));
-   else
-      setPos(glm::vec3(Mountain::getX(getPos()-glm::vec3(0.0,STEP,0.0)), getPos().y - STEP, getPos().z));
+   glm::vec3 newPos = getPos();
+   newPos.y -= STEP;
+   setPos(Mountain::lockOn(newPos));
+   checkSide();
 }
 
 void Platform::moveUp()
 {
-   if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
-      setPos(glm::vec3(getPos().x, getPos().y + STEP, Mountain::getZ(getPos()+glm::vec3(0.0,STEP,0.0))));
-   else
-      setPos(glm::vec3(Mountain::getX(getPos()+glm::vec3(0.0,STEP,0.0)), getPos().y + STEP, getPos().z));
+   glm::vec3 newPos = getPos();
+   newPos.y += STEP;
+   setPos(Mountain::lockOn(newPos));
+   checkSide();
 }
 
 void Platform::moveLeft()
 {
+   glm::vec3 newPos = getPos();
    if(mountainSide == MOUNT_FRONT)
-      setPos(getPos() + glm::vec3(STEP,0.0,0.0));
+      newPos.x += STEP;
    else if(mountainSide == MOUNT_BACK)
-      setPos(getPos() - glm::vec3(STEP,0.0,0.0));
+      newPos.x -= STEP;
    else if(mountainSide == MOUNT_LEFT)
-      setPos(getPos() + glm::vec3(0.0,0.0,STEP));
+      newPos.z += STEP;
    else
-      setPos(getPos() - glm::vec3(0.0,0.0,STEP));
+      newPos.z -= STEP;
+   setPos(Mountain::lockOn(newPos));
+   checkSide();
 }
 
 void Platform::moveRight()
 {
+   glm::vec3 newPos = getPos();
    if(mountainSide == MOUNT_FRONT)
-      setPos(getPos() - glm::vec3(STEP,0.0,0.0));
+      newPos.x -= STEP;
    else if(mountainSide == MOUNT_BACK)
-      setPos(getPos() + glm::vec3(STEP,0.0,0.0));
+      newPos.x += STEP;
    else if(mountainSide == MOUNT_LEFT)
-      setPos(getPos() - glm::vec3(0.0,0.0,STEP));
+      newPos.z -= STEP;
    else
-      setPos(getPos() + glm::vec3(0.0,0.0,STEP));
+      newPos.z += STEP;
+   setPos(Mountain::lockOn(newPos));
+   checkSide();
 }
 
 void Platform::step()
@@ -187,19 +211,14 @@ void Platform::step()
    return;
 }
 
-glm::vec3 Platform::getSize()
-{
-   return model.state.scale;
-}
-
 void Platform::stretch()
 {
-   scaleBy(glm::vec3(1.05));
+   scaleBy(glm::vec3(1.05, 1, 1));
 }
 
 void Platform::shrink()
 {
-   scaleBy(glm::vec3(0.95));
+   scaleBy(glm::vec3(0.95, 1, 1));
 }
 
 #endif
