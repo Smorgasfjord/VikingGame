@@ -183,3 +183,7 @@ void World::updateObject(GameObject *obj, int objIndex) {
 void World::removeObject(int objIndex) {
    space.depopulate(objIndex);
 }
+
+GameObject & getObjectByIndex(int idx) {
+   return space.objects[idx];
+}
