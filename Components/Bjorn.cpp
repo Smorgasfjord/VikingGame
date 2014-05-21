@@ -156,7 +156,7 @@ void Bjorn::update(double timeStep) {
       //          dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
       moveBy(-getVel()*(float)timeStep); //reevaluate location
       //moveBy(-dat.collisionAngle); //amount actually moved
-      setVelocity((getVel()*0.9f + glm::reflect(getVel(), dat.collisionNormal))/2.0f);
+      setVelocity((getVel()*0.9f + dat.collisionNormal*(float)timeStep + glm::reflect(getVel(), dat.collisionNormal))/2.0f);
       if (dat.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
          jumping = false;
