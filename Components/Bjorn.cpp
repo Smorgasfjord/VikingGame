@@ -75,47 +75,7 @@ void Bjorn::step(double timeStep)
    addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
 
    moveBy(getVel()*(float)timeStep);
-   //setPos(Mountain::lockOn(getPos()));
-   //Fall due to gravity if not colliding with anything, this is a weird y offset, i don't get it
-   /*if(world.detectCollision(glm::vec3(getPos().x, getPos().y + .15, getPos().z)) == 0 && !suspended)
-   {
-      addVelocity(glm::vec3(0.0, ((mass * gravity) * .002f), 0.0));
-      Sound::stopWalk();
-   }
-   else
-   {
-      Sound::walk();
-      jumping = false;
-      setVelocity(glm::vec3(getVel().x, 0, getVel().z));
-      //Update velocity due to friction
-      if(mountainSide == MOUNT_FRONT || mountainSide == MOUNT_BACK)
-      {
-         if(getVel().x > 0.1)
-            addVelocity(glm::vec3(-0.15,0.0,0.0));
-         else if (getVel().x < -0.1)
-            addVelocity(glm::vec3(0.15, 0.0,0.0));
-         else
-         {
-            setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
-            Sound::stopWalk();
-         }
-      }
-      else
-      {
-         if(getVel().z > 0.1)
-            addVelocity(glm::vec3(0, 0, -0.15));
-         else if (getVel().z < -0.1)
-            addVelocity(glm::vec3(0, 0, 0.15));
-         else
-         {
-            setVelocity(glm::vec3(getVel().x, getVel().y, 0));
-            Sound::stopWalk();
-         }
-      }
-   }
    
-<<<<<<< HEAD
-   lastUpdated = curtime;*/
    //setPos(Mountain::lockOn(getPos()));
    glm::vec3 newPos = getPos();
    newPos.z += 1;
@@ -137,7 +97,6 @@ void Bjorn::step(double timeStep)
          setVelocity(glm::vec3(getVel().z, getVel().y, 0));
          
       mountainSide = newSide;
-         
    }
    
    return;

@@ -17,13 +17,17 @@ World::World()
    
 }
 
-World::World(std::vector<Platform> plats, Mountain mnt, GLHandles* handles, int shadeProg)
+World::World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles, int shadeProg)
 {
    platforms = plats;
    mount = mnt;
    this->handles = handles;
    ShadeProg = shadeProg;
    space = ChunkWorld(50,50,50);
+   for (int i = 0; i < plats.size(); i++) {
+      placeObject(&(plats[i]), simplePlatformMod);
+      cout << "Platform " << i << " placed\n";
+   }
 }
 
 
@@ -102,7 +106,6 @@ void World::draw()
 	*/
 
 #endif
-
 
    //-------------------------------Ground Plane --------------------------
 	safe_glEnableVertexAttribArray(handles->aPosition);

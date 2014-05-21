@@ -40,7 +40,7 @@ class World
       void draw();
       World();
       ~World();
-      World(std::vector<Platform> plats, Mountain mnt, GLHandles* handles, int shadeProg);
+      World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles, int shadeProg);
       int detectCollision(glm::vec3 pos);
       CollisionData checkCollision(GameObject *obj, int objIndex);
       float getY(glm::vec3 pos);

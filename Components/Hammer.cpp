@@ -63,8 +63,6 @@ void Hammer::updateAngle(float x, float y)
          else
             setRotation(glm::vec3(currentAngle.x, currentAngle.y, angle * (180.0 / pi)));
       }
-      if(!hammerSide)
-         setRotation(glm::vec3(currentAngle.x, currentAngle.y, -angle  * (180.0 / pi)));
       else
       {
          if(hammerSide)

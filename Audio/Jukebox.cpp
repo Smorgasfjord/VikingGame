@@ -41,7 +41,6 @@ public:
 void nextSong()
 {
    int msDuration = Sound::nextSong();
-   std::cout << "Delaying " << msDuration << " ms\n";
    //Will play the next song after the duration has passed
    later playNext(msDuration, true, &nextSong);
    return;

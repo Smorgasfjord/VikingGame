@@ -25,12 +25,6 @@ BufferContents conts;
 // pointer to texture Array
 std::map<std::string, GLuint> textureIdMap;
 
-static inline float
-DegToRad(float degrees)
-{
-   return (float)(degrees * (PI / 180.0f));
-};
-
 // Frame counting and FPS computation
 char s[32];
 
@@ -163,7 +157,7 @@ int LoadGLTextures()
       }
    }
 
-   int numTextures = textureIdMap.size();
+   int numTextures = (int)textureIdMap.size();
 
    /* create and fill array with DevIL texture ids */
    ILuint* imageIds = new ILuint[numTextures];
@@ -360,9 +354,9 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
 
    MeshBufferData aMesh;
    struct MyMaterial aMat;
-   GLsizei stride = (3 + 3 + 2) * sizeof(float);
+   //GLsizei stride = (3 + 3 + 2) * sizeof(float);
    float *firstComp = 0;
-   GLuint buffer;
+   //GLuint buffer;
    contents = std::vector<BufferContents>();
 
    // For each mesh
@@ -380,7 +374,7 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
       for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
          const aiFace* face = &mesh->mFaces[t];
          memcpy(&faceArray[faceIndex], face->mIndices,3 * sizeof(unsigned int));
-         if (face->mIndices[2] > mesh->mNumVertices || face->mIndices[2] < 0) {
+         if (face->mIndices[2] > mesh->mNumVertices){// || face->mIndices[2] < 0) {
             faceArray[faceIndex+2] = faceArray[faceIndex+1]+1;
          }
          conts.faces.push_back(glm::vec3((float)faceArray[faceIndex],(float)faceArray[faceIndex+1],(float)faceArray[faceIndex+2]));
