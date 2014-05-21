@@ -152,8 +152,7 @@ void Bjorn::update(double timeStep) {
       //          /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
       //          dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
       //          dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
-      moveBy(-getVel()*(float)timeStep + dat.collisionAngle *0.9f); //reevaluate location
-      //moveBy(-dat.collisionAngle); //amount actually moved
+      moveBy(-getVel()*(float)timeStep + dat.collisionAngle*dat.collisionNormal*(float)timeStep); //reevaluate location
       setVelocity((getVel()*1.0f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*2.0f);
       if (dat.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
