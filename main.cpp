@@ -66,8 +66,10 @@
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
 #define pi 3.14159
-#define PLANE_HEIGHT 1.25
-#define WALL_COLLISION_SIZE .63
+#define CAMERA_MASS 50
+#define CAMERA_SPRING .1
+#define CAM_Y_MAX_OFFSET 2
+
 
 using namespace std;
 
@@ -115,6 +117,8 @@ glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize /
 glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
+float camYOffset = 0;
+bool manualCamControl = false;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
@@ -365,6 +369,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
    if(action == GLFW_PRESS || action == GLFW_REPEAT)
    {
       switch( key ) {
+         //Movement left/right
          case GLFW_KEY_D:
             moveRight = true;
             moveLeft = false;
@@ -372,6 +377,17 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_A:
             moveRight = false;
             moveLeft = true;
+            break;
+         //Camera control
+         case GLFW_KEY_W:
+            if(camYOffset < CAM_Y_MAX_OFFSET)
+               camYOffset += 0.25;
+            manualCamControl = true;
+            break;
+         case GLFW_KEY_S:
+            if(camYOffset > -CAM_Y_MAX_OFFSET)
+               camYOffset -= 0.25;
+            manualCamControl = true;
             break;
          case GLFW_KEY_Q: case GLFW_KEY_ESCAPE:
             exit( EXIT_SUCCESS );
@@ -397,6 +413,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
          case GLFW_KEY_A:
             moveLeft = false;
+            break;
+         case GLFW_KEY_W: case GLFW_KEY_S:
+            manualCamControl = false;
             break;
          default:
             break;
@@ -450,8 +469,11 @@ void Animate()
    //updates the spatial data structure
    
    //Update camera
-   eye = lookAt = bjorn.getPos();
-   eye.y += 1;
+   lookAt = bjorn.getPos();
+   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1 + camYOffset);
+   if(!manualCamControl)
+      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1);
+      
    if(currentSide != bjorn.mountainSide)
    {
       //This could be used to add a nice animation for the camera swinging around the mountain
@@ -459,13 +481,26 @@ void Animate()
       currentSide = bjorn.mountainSide;
    }
    if(currentSide == MOUNT_FRONT)
-      eye.z -= camDistance;
+   {
+      eye.x += CAMERA_SPRING * (bjorn.getPos().x - eye.x);
+      eye.z = bjorn.getPos().z - camDistance;
+   }
    else if(currentSide == MOUNT_RIGHT)
-      eye.x -= camDistance;
+   {
+      eye.x = bjorn.getPos().z - camDistance;
+      eye.z += CAMERA_SPRING * (eye.z - bjorn.getPos().z);
+   }
    else if(currentSide == MOUNT_BACK)
-      eye.z += camDistance;
+   {
+      eye.x -= CAMERA_SPRING * (bjorn.getPos().x - eye.x);
+      eye.z = bjorn.getPos().z + camDistance;
+   }
    else
-      eye.x += camDistance;
+   {
+      eye.x = bjorn.getPos().x + camDistance;
+      eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
+   }
+   
    
    
    lastUpdated = curTime;
