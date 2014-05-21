@@ -409,11 +409,11 @@ void Animate()
    double curTime = glfwGetTime(), timeStep;
    CollisionData dat;
 
+   frames++;
    if ((int)curTime > (int)lastUpdated) {
       frameRate = frames;
       frames = 0;
    }
-   frames++;
    if (curTime - lastUpdated < 1.0/REFRESH_RATE) {
       return;
    }
