@@ -58,13 +58,11 @@ void Bjorn::step(double timeStep)
    if (grounded) {
       Sound::walk();
       //Update X velocity due to friction
-      if(getVel().x > 0.1)
-         addVelocity(glm::vec3(-0.15 * timeStep,0.0,0.0));
-      else if (getVel().x < -0.1)
-         addVelocity(glm::vec3(0.15 * timeStep, 0.0,0.0));
+      if(glm::length(getVel()) > 0.1)
+         setVelocity(getVel() * (float)exp(-1.0 * timeStep));
       else
       {
-         setVelocity(glm::vec3(0.0, getVel().y, getVel().z));
+         setVelocity(glm::vec3(0.0f));
          Sound::stopWalk();
       }
    }
@@ -154,20 +152,23 @@ void Bjorn::update(double timeStep) {
       //          /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
       //          dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
       //          dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
-      moveBy(-getVel()*(float)timeStep); //reevaluate location
+      moveBy(-getVel()*(float)timeStep + dat.collisionAngle *0.9f); //reevaluate location
       //moveBy(-dat.collisionAngle); //amount actually moved
-      setVelocity((getVel()*0.9f + dat.collisionNormal*(float)timeStep + glm::reflect(getVel(), dat.collisionNormal))/2.0f);
+      setVelocity((getVel()*1.0f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*2.0f);
       if (dat.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
          jumping = false;
+         grounded = true;
       }
       else jumping = true;
+
    } 
    else {
       if (jumpCount < 0.2) {
          jumpCount+=timeStep;
       }
       else {
+         grounded = false;
          jumping = true;
       }
    }
