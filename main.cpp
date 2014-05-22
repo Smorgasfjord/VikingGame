@@ -66,7 +66,7 @@
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
 #define pi 3.14159
-#define CAMERA_SPRING .1
+#define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 2
 
 
@@ -307,7 +307,7 @@ void Draw (void)
    SetView();
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   world.draw();
+   world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
 	//Disable the shader
@@ -454,6 +454,7 @@ void Animate()
    hammer.step(timeStep);
    bjorn.update(timeStep);
    hammer.update(timeStep);
+   
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
   
@@ -499,7 +500,6 @@ void Animate()
       eye.x = bjorn.getPos().x + camDistance;
       eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
    }
-   
    
    
    lastUpdated = curTime;

@@ -37,7 +37,7 @@
 class World
 {
    public:
-      void draw();
+      void draw(int mountainSide);
       World();
       ~World();
       World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles, int shadeProg);
@@ -47,11 +47,12 @@ class World
       int placeObject(GameObject *obj, GameModel *mod);
       void updateObject(GameObject *obj, int objIndex);
       void removeObject(int objIndex);
-      GameObject & getObjectByIndex(int idx);
+      GameObject& getObjectByIndex(int idx);
       glm::vec3 getStart();
    private:
       int ShadeProg;
       void SetMaterial(int i);
+      std::vector<GameObject> cull(int mountainSide);
       std::vector<Platform> platforms;
       Mountain mount;
       //std::vector<glm::vec3> groundTiles;

@@ -103,16 +103,23 @@ void Bjorn::step(double timeStep)
 //How the world reacts to what Bjorn does
 void Bjorn::update(double timeStep) {
    CollisionData dat;
+   GameObject collidedWith;
    static double jumpCount = 0.0;
    glm::vec3 thing;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      //printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
-      //          /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
-      //          dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
-      //          dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
-      moveBy(-getVel()*(float)timeStep + dat.collisionAngle *0.9f); //reevaluate location
-      //moveBy(-dat.collisionAngle); //amount actually moved
+      moveBy(-getVel()*(float)timeStep); //+ dat.collisionAngle *0.9f); //reevaluate location
+      collidedWith = world->getObjectByIndex(dat.hitObj.obj);
+      //Nudge bjorn towards the correct position on the platform
+      cout << (collidedWith.getPos().z - getPos().z) << " Off from platform center\n";
+      cout << "size " << collidedWith.getScale().z << "\n";
+      float nudgeAmount = (collidedWith.getPos().z - getPos().z - (collidedWith.getScale().z / 30.0f))* (collidedWith.getScale().z / 50.0f);
+      //if(abs(nudgeAmount) > .01)
+      //{
+         cout << "Moving by " << nudgeAmount << "\n";
+         moveBy(glm::vec3(0, 0, nudgeAmount));
+      //}
+      
       setVelocity((getVel()*1.0f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*2.0f);
       if (dat.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
