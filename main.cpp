@@ -128,7 +128,7 @@ glm::vec2 currentMouseLoc;
 void SetProjectionMatrix(bool drawText) {
    glm::mat4 Projection;
    if(!drawText)
-      Projection = glm::perspective(80.0f, (float)g_width/g_height, 0.1f, 100.f);
+      Projection = glm::perspective(90.0f, (float)g_width/g_height, 0.1f, 45.0f);
    else
       Projection = glm::ortho(0.0f, (float)g_width / 2,(float)g_height / 2,0.0f, 0.1f, 100.0f);
    safe_glUniformMatrix4fv(handles.uProjMatrix, glm::value_ptr(Projection));
