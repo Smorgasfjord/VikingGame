@@ -352,9 +352,6 @@ static void error_callback(int error, const char* description)
 void mouse(GLFWwindow* window, double x, double y)
 {
    currentMouseLoc = glm::vec2(p2wx(x), p2wy(y));
-   currentMouseLoc.x += bjorn.getPos().x;
-   currentMouseLoc.y += bjorn.getPos().y;
-   
 }
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
@@ -453,8 +450,8 @@ void Animate()
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step(timeStep);
    hammer.step(timeStep);
-   bjorn.update(timeStep);
    hammer.update(timeStep);
+   bjorn.update(timeStep);
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
   

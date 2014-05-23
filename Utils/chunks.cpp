@@ -274,7 +274,7 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
                      continue;
                   }
                   cNormal = interpolateNormal(cPoint.y, cPoint.z, cDat, oldTrans);
-                  actual = glm::normalize(move) * cPoint.x;
+                  actual = move * cPoint.x;
                   ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal, move);
                   return ret;
                }

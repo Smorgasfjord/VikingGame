@@ -148,11 +148,11 @@ void Bjorn::update(double timeStep) {
    glm::vec3 thing;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      //printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f)\n",
-      //          /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
-      //          dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
-      //          dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z);
-      moveBy(-getVel()*(float)timeStep + dat.collisionAngle*dat.collisionNormal*(float)timeStep); //reevaluate location
+      printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) while trying to move (%f, %f, %f)\n",
+                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
+                dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
+                dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x,dat.collisionStrength.y,dat.collisionStrength.z);
+      moveBy(dat.collisionAngle-dat.collisionStrength + dat.collisionNormal*0.01f); //reevaluate location
       setVelocity((getVel()*1.0f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*2.0f);
       if (dat.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
