@@ -17,13 +17,17 @@ World::World()
    
 }
 
-World::World(std::vector<Platform> plats, Mountain mnt, GLHandles* handles, int shadeProg)
+World::World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles, int shadeProg)
 {
    platforms = plats;
    mount = mnt;
    this->handles = handles;
    ShadeProg = shadeProg;
    space = ChunkWorld(50,50,50);
+   for (int i = 0; i < plats.size(); i++) {
+      placeObject(&(plats[i]), simplePlatformMod);
+      cout << "Platform " << i << " placed\n";
+   }
 }
 
 
@@ -46,9 +50,9 @@ void World::SetMaterial(int i) {
    }
 }
 
-void World::draw()
+void World::draw(int mountainSide)
 {  
-
+   std::vector<GameObject>objectsInScene;
 #ifdef _WIN32
 	//------------------------------Depth Buffer -------------------------
 	/*
@@ -103,38 +107,80 @@ void World::draw()
 
 #endif
 
-
-   //-------------------------------Ground Plane --------------------------
 	safe_glEnableVertexAttribArray(handles->aPosition);
 	safe_glEnableVertexAttribArray(handles->aNormal);
-   SetMaterial(GROUND_MAT);
-   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-   /*for (std::vector<glm::vec3>::iterator it = groundTiles.begin(); it != groundTiles.end(); ++ it) {
-      setGround(glm::vec3(it->x, it->y, it->z));
-      
-      glBindBuffer(GL_ARRAY_BUFFER, grndMod.BuffObj);
-	  safe_glVertexAttribPointer(handles->aPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, grndMod.IndxBuffObj);
-      
-	  safe_glEnableVertexAttribArray(handles->aNormal);
-      glBindBuffer(GL_ARRAY_BUFFER, grndMod.NormalBuffObj);
-	  safe_glVertexAttribPointer(handles->aNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-      
-      glDrawElements(GL_TRIANGLES, grndMod.iboLen, GL_UNSIGNED_SHORT, 0);
-   }*/
    
    SetMaterial(2);
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    mount.draw();
    
+   objectsInScene = cull(mountainSide);
    SetMaterial(0);
-   for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
+   for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
       it->draw();
    }
    
    //clean up
    safe_glDisableVertexAttribArray(handles->aPosition);
    safe_glDisableVertexAttribArray(handles->aNormal);
+}
+
+float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec3 point)
+{
+   float value;
+   glm::vec4 vec4Point = glm::vec4(point, 1);
+   for (int i = 0; i < 4; i++) {
+      value += (row1[i] + row2[i]) * vec4Point[i];
+   }
+   return value;
+}
+
+//Returns a vector of GameObjects which need to be drawn
+std::vector<GameObject> World::cull(int mountainSide)
+{
+   vector<GameObject> objects;
+   //Get mvp matrix
+   glm::mat4 model, view, projection, mvp;
+   glGetUniformfv(ShadeProg, handles->uViewMatrix, glm::value_ptr(view));
+   glGetUniformfv(ShadeProg, handles->uModelMatrix, glm::value_ptr(model));
+   glGetUniformfv(ShadeProg, handles->uProjMatrix, glm::value_ptr(projection));
+   
+   mvp = projection * view * model;
+   cout << "First thing in mvp: " << mvp[0][0] << "\n";
+   for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
+      //This will cull any platforms on the opposite side of the mountain
+      if (((mountainSide + it->mountainSide) % 2 != 0) || (mountainSide == it->mountainSide)) {
+         //Not on the back side, check against each plane of view frustum
+         //Negative Z
+         if(testPlane(mvp[2], -mvp[3], it->getPos()) <= 0)
+         {
+            //Positive Z
+            if(testPlane(mvp[2], mvp[3], it->getPos()) >= 0)
+            {
+               //Negative Y
+               if(testPlane(mvp[1], -mvp[3], it->getPos()) <= 0)
+               {
+                  //Positive Y
+                  if(testPlane(mvp[1], mvp[3], it->getPos()) >= 0)
+                  {
+                     //Negative X
+                     if(testPlane(mvp[0], -mvp[3], it->getPos()) <= 0)
+                     {
+                        //Positive X
+                        if(testPlane(mvp[0], mvp[3], it->getPos()) >= 0)
+                        {
+                           objects.push_back(*it);
+                        }
+                     }
+                     
+                  }
+               }
+            }
+         }
+         
+      }
+   }
+   return objects;
 }
 
 //Given a position return the Y coordinate of the top of the platform located there

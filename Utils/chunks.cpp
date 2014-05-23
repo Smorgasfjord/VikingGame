@@ -420,7 +420,7 @@ int ChunkWorld::populate(GameObject *mesh, const vector<BufferContents> & geom) 
    objects.push_back(mesh->copy());
    models.push_back(geom);
    objCount++;
-   return objects.size() - 1;
+   return (int)objects.size() - 1;
 }
 /*
 int ChunkWorld::addMaterial(mat_t mat) {

@@ -66,8 +66,7 @@
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
 #define pi 3.14159
-#define CAMERA_MASS 50
-#define CAMERA_SPRING .1
+#define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 2
 
 
@@ -81,7 +80,6 @@ static bool moveLeft = false, moveRight = false;
 //Handles to the shader data
 GLHandles handles;
 
-static const float g_groundY = 0;
 static const float g_groundSize = 60.0;
 
 //World
@@ -151,7 +149,7 @@ float randomFloat(float min, float max)
 
 int diffMs(timeval t1, timeval t2)
 {
-   return (((t1.tv_sec - t2.tv_sec) * 1000000) +
+   return (int)(((t1.tv_sec - t2.tv_sec) * 1000000) +
            (t1.tv_usec - t2.tv_usec))/1000;
 }
 
@@ -159,11 +157,11 @@ int diffMs(timeval t1, timeval t2)
 static void reset()
 {
    eye = lookAt = world.getStart();
-   eye.y += 1;
+   eye.y += 1.5f;
    eye.z -= camDistance;
-   lookAt.y += .5;
+   lookAt.y += 1.0f;
    bjorn.setPos(lookAt);
-   bjorn.setVelocity(glm::vec3(0));
+   bjorn.setVelocity(glm::vec3(0.0f));
 }
 
 /* Initialization of objects in the world. Only occurs Once */
@@ -179,9 +177,9 @@ void setWorld()
    //Initialize models
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
-   simplePlatformMod = genSimpleModel(&platMod);
-   bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
+   bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
+   simplePlatformMod = genSimpleModel(&platMod);
    
    lightPos= glm::vec3(35, 15, -15);
    
@@ -192,17 +190,18 @@ void setWorld()
    mount = Mountain(handles, &mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
-   world = World(platforms, mount, &handles, ShadeProg);
+   world = World(platforms, &simplePlatformMod, mount, &handles, ShadeProg);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
    eye = lookAt = platforms[0].getPos();
    eye.y += 1;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
+   /*
    for (int i = 0; i < platforms.size(); i++) {
       platIdxs.push_back(world.placeObject(&(platforms[i]), &simplePlatformMod));
       cout << "Platform " << i << " placed\n";
-   }
+   }*/
     
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
@@ -308,7 +307,7 @@ void Draw (void)
    SetView();
    
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   world.draw();
+   world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
 	//Disable the shader
@@ -450,8 +449,8 @@ void Animate()
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step(timeStep);
    hammer.step(timeStep);
-   hammer.update(timeStep);
    bjorn.update(timeStep);
+   hammer.update(timeStep);
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
   
@@ -497,7 +496,6 @@ void Animate()
       eye.x = bjorn.getPos().x + camDistance;
       eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
    }
-   
    
    
    lastUpdated = curTime;
