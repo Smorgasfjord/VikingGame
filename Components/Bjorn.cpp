@@ -37,7 +37,7 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World * worl) :
 {
    GameModel simple = genSimpleModel(model);
    initialize(model, 0, 0, hand);
-   setPos(pos + glm::vec3(0.0, 0.75f, 0.5f));
+   setPos(pos + glm::vec3(0.0, 0.95f, 0.5f));
    setScale(glm::vec3(0.1f));
    setRotation(glm::vec3(0.0, -90.0, 0.0));
    setVelocity(glm::vec3(0));
@@ -108,7 +108,14 @@ void Bjorn::update(double timeStep) {
    glm::vec3 thing;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      moveBy(-getVel()*(float)timeStep); //+ dat.collisionAngle *0.9f); //reevaluate location
+      printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) while trying to move (%f, %f, %f)\n",
+                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
+                dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
+                dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x,dat.collisionStrength.y,dat.collisionStrength.z);
+      thing = dat.collisionAngle-dat.collisionStrength + dat.collisionNormal*(float)timeStep*0.0f;
+      printf("moving Bjorn (%f, %f, %f)\n", thing.x, thing.y,thing.z);
+      moveBy(thing); //reevaluate location
+//      moveBy(-getVel()*(float)timeStep); //+ dat.collisionAngle *0.9f); //reevaluate location
       collidedWith = world->getObjectByIndex(dat.hitObj.obj);
       //Nudge bjorn towards the correct position on the platform
       cout << (collidedWith.getPos().z - getPos().z) << " Off from platform center\n";
@@ -120,7 +127,7 @@ void Bjorn::update(double timeStep) {
          moveBy(glm::vec3(0, 0, nudgeAmount));
       //}
       
-      setVelocity((getVel()*1.0f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*2.0f);
+      setVelocity((getVel()*0.5f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*0.1f);
       if (dat.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
          jumping = false;
@@ -147,22 +154,22 @@ void Bjorn::moveRight()
    if(mountainSide == MOUNT_FRONT)
    {
       if(getVel().x > -MAX_SPEED)
-         addVelocity(glm::vec3(-0.5f, 0, 0));
+         addVelocity(glm::vec3(-0.5f, 0.1f, 0));
    }
    else if(mountainSide == MOUNT_RIGHT)
    {
       if(getVel().z < MAX_SPEED)
-         addVelocity(glm::vec3(0, 0, 0.5f));
+         addVelocity(glm::vec3(0, 0.1f, 0.5f));
    }
    else if(mountainSide == MOUNT_BACK)
    {
       if(getVel().x < MAX_SPEED)
-         addVelocity(glm::vec3(0.5f, 0, 0));
+         addVelocity(glm::vec3(0.5f, 0.1f, 0));
    }
    else
    {
       if(getVel().z > -MAX_SPEED)
-         addVelocity(glm::vec3(0, 0, -0.5f));
+         addVelocity(glm::vec3(0, 0.1f, -0.5f));
    }
 }
 
@@ -171,17 +178,17 @@ void Bjorn::moveLeft()
    if(mountainSide == MOUNT_FRONT)
    {
       if(getVel().x < MAX_SPEED)
-         addVelocity(glm::vec3(0.5f, 0, 0));
+         addVelocity(glm::vec3(0.5f, 0.1f, 0));
    }
    else if(mountainSide == MOUNT_RIGHT)
    {
       if(getVel().z > -MAX_SPEED)
-         addVelocity(glm::vec3(0, 0, -0.5f));
+         addVelocity(glm::vec3(0, 0.1f, -0.5f));
    }
    else if(mountainSide == MOUNT_BACK)
    {
       if(getVel().x > -MAX_SPEED)
-         addVelocity(glm::vec3(-0.5f, 0, 0));
+         addVelocity(glm::vec3(-0.5f, 0.1f, 0));
    }
    else
    {
@@ -194,7 +201,7 @@ void Bjorn::jump()
 {
    if((!jumping && !suspended) || DEBUG_GAME)
    {
-      setVelocity(glm::vec3(getVel().x,1.0,getVel().z));
+      setVelocity(glm::vec3(getVel().x,GRAVITY/2.0f,getVel().z));
    }
 }
 

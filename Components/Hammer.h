@@ -45,7 +45,7 @@ private:
    bool hammerSide;
    bool collision;
    //float mass;
-   float previousAngle;
+   glm::vec3 previousAngle;
 };
 
 #endif /* defined(__MyGame__Hammer__) */

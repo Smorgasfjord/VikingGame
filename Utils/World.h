@@ -31,7 +31,7 @@
 
 #define GROUND_MAT 1
 #define PLATFORM_COLLISION 1
-#define GRAVITY 2.0
+#define GRAVITY 3.0
 
 
 class World

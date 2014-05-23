@@ -157,11 +157,11 @@ int diffMs(timeval t1, timeval t2)
 static void reset()
 {
    eye = lookAt = world.getStart();
-   eye.y += 1;
+   eye.y += 1.5f;
    eye.z -= camDistance;
-   lookAt.y += .5;
+   lookAt.y += 1.0f;
    bjorn.setPos(lookAt);
-   bjorn.setVelocity(glm::vec3(0));
+   bjorn.setVelocity(glm::vec3(0.0f));
 }
 
 /* Initialization of objects in the world. Only occurs Once */
@@ -177,9 +177,9 @@ void setWorld()
    //Initialize models
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
-   simplePlatformMod = genSimpleModel(&platMod);
-   bjornMod = loadModel("Models/bjorn_v1.1.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
+   bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
+   simplePlatformMod = genSimpleModel(&platMod);
    
    lightPos= glm::vec3(35, 15, -15);
    
@@ -351,9 +351,6 @@ static void error_callback(int error, const char* description)
 void mouse(GLFWwindow* window, double x, double y)
 {
    currentMouseLoc = glm::vec2(p2wx(x), p2wy(y));
-   currentMouseLoc.x += bjorn.getPos().x;
-   currentMouseLoc.y += bjorn.getPos().y;
-   
 }
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
@@ -454,7 +451,6 @@ void Animate()
    hammer.step(timeStep);
    bjorn.update(timeStep);
    hammer.update(timeStep);
-   
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
   
