@@ -50,7 +50,7 @@ void nextSong()
 
 Jukebox::Jukebox()
 {
-   volume = .5f;
+   volume = 0.0f;
 }
 
 void Jukebox::start()

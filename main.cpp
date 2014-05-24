@@ -483,12 +483,12 @@ void Animate()
    }
    else if(currentSide == MOUNT_RIGHT)
    {
-      eye.x = bjorn.getPos().z - camDistance;
-      eye.z += CAMERA_SPRING * (eye.z - bjorn.getPos().z);
+      eye.x = bjorn.getPos().x - camDistance;
+      eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
    }
    else if(currentSide == MOUNT_BACK)
    {
-      eye.x -= CAMERA_SPRING * (bjorn.getPos().x - eye.x);
+      eye.x += CAMERA_SPRING * (bjorn.getPos().x - eye.x);
       eye.z = bjorn.getPos().z + camDistance;
    }
    else
@@ -496,7 +496,6 @@ void Animate()
       eye.x = bjorn.getPos().x + camDistance;
       eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
    }
-   
    
    lastUpdated = curTime;
 }

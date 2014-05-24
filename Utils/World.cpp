@@ -115,7 +115,7 @@ void World::draw(int mountainSide)
    mount.draw();
    
    objectsInScene = cull(mountainSide);
-   cout << "Drawing " << objectsInScene.size() << " platforms\n";
+   //cout << "Drawing " << objectsInScene.size() << " platforms\n";
    SetMaterial(0);
    for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
       it->draw();
@@ -137,13 +137,13 @@ float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point)
    for (int i = 0; i < 4; i++) {
       value += ((row1[i] + -row2[i]) * point[i]) / normalize;
    }
-
+/*
    cout << "\t\tRow1 (" << row1[0] << ", " << row1[1] << ", " << row1[2] << ", " << row1[3] << ")\n";
    cout << "\t\tRow2 (" << row2[0] << ", " << row2[1] << ", " << row2[2] << ", " << row2[3] << ")\n";
    cout << "\t\tPoint (" << point[0] << ", " << point[1] << ", " << point[2] << ", " << point[3] << ")\n";
    cout << "\t\tNormal (" << A << ", " << B << ", " << C << ")" << " D: " << row1[3] + -row2[3] << " Length: " << normalize << "\n";
    cout << "\t\tValue: " << value << "\n\n";
-
+*/
    return value;
 }
 
@@ -160,7 +160,7 @@ std::vector<GameObject> World::cull(int mountainSide)
    int i = 0;
    
    for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
-      cout << "Testing platform " << i++ << "\n";
+      //cout << "Testing platform " << i++ << "\n";
       //This will cull any platforms on the opposite side of the mountain
       if (((mountainSide + it->mountainSide) % 2 != 0) || (mountainSide == it->mountainSide)) {
          //Not on the back side, check against each plane of view frustum
@@ -169,6 +169,7 @@ std::vector<GameObject> World::cull(int mountainSide)
          mvp = projection * view * model;
          point = glm::vec4(it->getPos(), 1);
          //point = mvp * point;
+         /*
          cout << "\tNegative Z\n";
          //Negative Z
          if(testPlane(-mvp[2], mvp[3], point) <= 0)
@@ -194,7 +195,9 @@ std::vector<GameObject> World::cull(int mountainSide)
                         if(testPlane(mvp[0], mvp[3], point) <= 0)
                         {
                            cout << "\tAdding platform " << i - 1 << "\n";
+          */
                            objects.push_back(*it);
+         /*
                         }
                      }
                      
@@ -202,6 +205,7 @@ std::vector<GameObject> World::cull(int mountainSide)
                }
             }
          }
+          */
          
       }
    }
