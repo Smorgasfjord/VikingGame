@@ -155,8 +155,8 @@ void Bjorn::update(double timeStep) {
 void Bjorn::moveRight()
 {
    glm::vec4 speed;
-   if (!grounded) {
-      speed = getRotMat() * glm::vec4(0.0f, 0.5f, 0.5f, 0.0f);
+   if (grounded) {
+      speed = getRotMat() * glm::vec4(0.0f, 0.1f, 0.5f, 0.0f);
    }
    else {
       speed = getRotMat() * glm::vec4(0.0f, 0.0f, 0.1f, 0.0f);
@@ -170,8 +170,8 @@ void Bjorn::moveRight()
 void Bjorn::moveLeft()
 {
    glm::vec4 speed;
-   if (!grounded) {
-      speed = getRotMat() * glm::vec4(0.0f, 0.5f, -0.5f, 0);
+   if (grounded) {
+      speed = getRotMat() * glm::vec4(0.0f, 0.1f, -0.5f, 0);
    }
    else {
       speed = getRotMat() * glm::vec4(0.0f, 0.0f, -0.1f, 0);
