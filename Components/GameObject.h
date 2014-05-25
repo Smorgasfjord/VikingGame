@@ -139,6 +139,7 @@ class GameObject {
       glm::vec3 getPos();
       glm::vec3 getVel();
       glm::vec3 getRot();
+      glm::mat4 getRotMat();
       glm::vec3 getScale();
       //Update object
       void moveBy(glm::vec3 amount);

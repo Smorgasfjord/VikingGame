@@ -423,6 +423,7 @@ void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
    CollisionData dat;
+   glm::vec3 norm;
 
    frames++;
    if ((int)curTime > (int)lastUpdated) {
@@ -466,9 +467,10 @@ void Animate()
    
    //Update camera
    lookAt = bjorn.getPos();
-   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1 + camYOffset);
+   Mountain::lockOn(bjorn.getPos(),norm);
+   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.0f + camYOffset);
    if(!manualCamControl)
-      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1);
+      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.0f);
       
    if(currentSide != bjorn.mountainSide)
    {
@@ -476,7 +478,8 @@ void Animate()
       cout << "camera changing sides\n";
       currentSide = bjorn.mountainSide;
    }
-   if(currentSide == MOUNT_FRONT)
+   eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
+   /*if(currentSide == MOUNT_FRONT)
    {
       eye.x += CAMERA_SPRING * (bjorn.getPos().x - eye.x);
       eye.z = bjorn.getPos().z - camDistance;
@@ -484,18 +487,18 @@ void Animate()
    else if(currentSide == MOUNT_RIGHT)
    {
       eye.x = bjorn.getPos().z - camDistance;
-      eye.z += CAMERA_SPRING * (eye.z - bjorn.getPos().z);
+      eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z );
    }
    else if(currentSide == MOUNT_BACK)
    {
-      eye.x -= CAMERA_SPRING * (bjorn.getPos().x - eye.x);
+      eye.x += CAMERA_SPRING * (bjorn.getPos().x - eye.x);
       eye.z = bjorn.getPos().z + camDistance;
    }
    else
    {
       eye.x = bjorn.getPos().x + camDistance;
-      eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
-   }
+      eye.z -= CAMERA_SPRING * (eye.z - bjorn.getPos().z);
+   }*/
    
    
    lastUpdated = curTime;

@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Taylor Woods. All rights reserved.
 //
 
+#define GLM_SWIZZLE
 #include "Bjorn.h"
 
 
@@ -76,7 +77,7 @@ void Bjorn::step(double timeStep)
    
    //setPos(Mountain::lockOn(getPos()));
    glm::vec3 newPos = getPos();
-   newPos.z += 1;
+   newPos.z += 1.0f;
    newSide = Mountain::getSide(newPos);
    //Check if we've changed sides of the mountain
    if(newSide != mountainSide)
@@ -89,10 +90,10 @@ void Bjorn::step(double timeStep)
          rotateBy(glm::vec3(0, -90, 0));
       
       //Transfer velocity
-      if (getVel().x != 0)
-         setVelocity(glm::vec3(0, getVel().y, getVel().x));
-      else
-         setVelocity(glm::vec3(getVel().z, getVel().y, 0));
+      //if (getVel().x != 0)
+         //setVelocity(glm::vec3(0, getVel().y, getVel().x));
+      //else
+         //setVelocity(glm::vec3(getVel().z, getVel().y, 0));
          
       mountainSide = newSide;
    }
@@ -105,7 +106,7 @@ void Bjorn::update(double timeStep) {
    CollisionData dat;
    GameObject collidedWith;
    static double jumpCount = 0.0;
-   glm::vec3 thing;
+   glm::vec3 thing, newPos;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
       printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) while trying to move (%f, %f, %f)\n",
@@ -124,7 +125,9 @@ void Bjorn::update(double timeStep) {
       //if(abs(nudgeAmount) > .01)
       //{
          cout << "Moving by " << nudgeAmount << "\n";
-         moveBy(glm::vec3(0, 0, nudgeAmount));
+      newPos = Mountain::lockOn(getPos(),thing);
+      moveBy(((newPos+thing*glm::vec3(-1.0f,0.0f,-1.0f)) - getPos())/30.0f);
+         //moveBy(glm::vec3(0, 0, nudgeAmount));
       //}
       
       setVelocity((getVel()*0.5f + glm::reflect(getVel(), dat.collisionNormal))/2.0f + dat.collisionNormal*(float)timeStep*0.1f);
@@ -145,55 +148,37 @@ void Bjorn::update(double timeStep) {
          jumping = true;
       }
    }
-   //moveBy(getVel()*(float)timeStep);
-   //setPos(Mountain::lockOn(getPos()));
+   newPos = Mountain::lockOn(getPos(),thing);
+   moveBy(((newPos+thing*glm::vec3(-1.2f,0.0f,-1.2f)) - getPos())/30.0f);
 }
 
 void Bjorn::moveRight()
 {
-   if(mountainSide == MOUNT_FRONT)
-   {
-      if(getVel().x > -MAX_SPEED)
-         addVelocity(glm::vec3(-0.5f, 0.1f, 0));
+   glm::vec4 speed;
+   if (!grounded) {
+      speed = getRotMat() * glm::vec4(0.0f, 0.5f, 0.5f, 0.0f);
    }
-   else if(mountainSide == MOUNT_RIGHT)
-   {
-      if(getVel().z < MAX_SPEED)
-         addVelocity(glm::vec3(0, 0.1f, 0.5f));
+   else {
+      speed = getRotMat() * glm::vec4(0.0f, 0.0f, 0.1f, 0.0f);
    }
-   else if(mountainSide == MOUNT_BACK)
-   {
-      if(getVel().x < MAX_SPEED)
-         addVelocity(glm::vec3(0.5f, 0.1f, 0));
-   }
-   else
-   {
-      if(getVel().z > -MAX_SPEED)
-         addVelocity(glm::vec3(0, 0.1f, -0.5f));
+
+   if (!suspended && glm::length(getVel()) < MAX_SPEED) {
+      addVelocity(speed.xyz());
    }
 }
 
 void Bjorn::moveLeft()
 {
-   if(mountainSide == MOUNT_FRONT)
-   {
-      if(getVel().x < MAX_SPEED)
-         addVelocity(glm::vec3(0.5f, 0.1f, 0));
+   glm::vec4 speed;
+   if (!grounded) {
+      speed = getRotMat() * glm::vec4(0.0f, 0.5f, -0.5f, 0);
    }
-   else if(mountainSide == MOUNT_RIGHT)
-   {
-      if(getVel().z > -MAX_SPEED)
-         addVelocity(glm::vec3(0, 0.1f, -0.5f));
+   else {
+      speed = getRotMat() * glm::vec4(0.0f, 0.0f, -0.1f, 0);
    }
-   else if(mountainSide == MOUNT_BACK)
-   {
-      if(getVel().x > -MAX_SPEED)
-         addVelocity(glm::vec3(-0.5f, 0.1f, 0));
-   }
-   else
-   {
-      if(getVel().z < MAX_SPEED)
-         addVelocity(glm::vec3(0, 0, 0.5f));
+
+   if (!suspended && glm::length(getVel()) < MAX_SPEED) {
+      addVelocity(speed.xyz());
    }
 }
 
