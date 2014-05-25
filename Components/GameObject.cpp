@@ -98,6 +98,10 @@ vec3 GameObject::getRot() {
    return model.state.orient;
 }
 
+mat4 GameObject::getRotMat() {
+   return model.state.rotation;
+}
+
 vec3 GameObject::getScale() {
    return model.state.scale;
 }

@@ -28,7 +28,7 @@ class Mountain : public GameObject
       //static float getZ(glm::vec3 pos);
       //static float getX(glm::vec3 pos);
       static int getSide(glm::vec3 pos);
-      static glm::vec3 lockOn(glm::vec3 pos);
+      static glm::vec3 lockOn(glm::vec3 pos, glm::vec3 & norms);
    private:
       static float testLeftDiagonal(glm::vec3 pos);
       static float testRightDiagonal(glm::vec3 pos);

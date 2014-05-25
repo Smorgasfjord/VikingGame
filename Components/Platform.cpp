@@ -35,8 +35,9 @@ Platform::Platform()
 Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
    GameObject("platform")
 {
+   glm::vec3 rot;
    initialize(model, 0, 1, hand);
-   setPos(Mountain::lockOn(pos));
+   setPos(Mountain::lockOn(pos,rot));
    setScale(glm::vec3(1.0f, 1.0, 3.0));
    setVelocity(glm::vec3(0));
    mountainSide = Mountain::getSide(pos);
@@ -47,9 +48,10 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
 Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide, GLHandles hand, GameModel *model) :
    GameObject("platform")
 {
+   glm::vec3 rot;
    mountainSide = mountSide;
    initialize(model, 0, 1, hand);
-   setPos(Mountain::lockOn(pos));
+   setPos(Mountain::lockOn(pos,rot));
    setScale(size);
    setRotation(glm::vec3(0, 0, rotation));
    if(mountSide == MOUNT_LEFT || mountSide == MOUNT_RIGHT)
@@ -162,23 +164,23 @@ void Platform::checkSide()
 
 void Platform::moveDown()
 {
-   glm::vec3 newPos = getPos();
+   glm::vec3 newPos = getPos(), rot;
    newPos.y -= STEP;
-   setPos(Mountain::lockOn(newPos));
+   setPos(Mountain::lockOn(newPos,rot));
    checkSide();
 }
 
 void Platform::moveUp()
 {
-   glm::vec3 newPos = getPos();
+   glm::vec3 newPos = getPos(), rot;
    newPos.y += STEP;
-   setPos(Mountain::lockOn(newPos));
+   setPos(Mountain::lockOn(newPos, rot));
    checkSide();
 }
 
 void Platform::moveLeft()
 {
-   glm::vec3 newPos = getPos();
+   glm::vec3 newPos = getPos(), rot;
    if(mountainSide == MOUNT_FRONT)
       newPos.x += STEP;
    else if(mountainSide == MOUNT_BACK)
@@ -187,13 +189,13 @@ void Platform::moveLeft()
       newPos.z += STEP;
    else
       newPos.z -= STEP;
-   setPos(Mountain::lockOn(newPos));
+   setPos(Mountain::lockOn(newPos,rot));
    checkSide();
 }
 
 void Platform::moveRight()
 {
-   glm::vec3 newPos = getPos();
+   glm::vec3 newPos = getPos(), rot;
    if(mountainSide == MOUNT_FRONT)
       newPos.x -= STEP;
    else if(mountainSide == MOUNT_BACK)
@@ -202,7 +204,7 @@ void Platform::moveRight()
       newPos.z -= STEP;
    else
       newPos.z += STEP;
-   setPos(Mountain::lockOn(newPos));
+   setPos(Mountain::lockOn(newPos,rot));
    checkSide();
 }
 

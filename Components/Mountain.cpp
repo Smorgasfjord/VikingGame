@@ -8,6 +8,7 @@
 #ifndef MOUNTAIN_CPP
 #define MOUNTAIN_CPP
 
+#define GLM_SWIZZLE
 #include "Mountain.h"
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
@@ -93,43 +94,90 @@ void Mountain::loadHeightMaps()
    }
 }
 
-glm::vec3 Mountain::lockOn(glm::vec3 pos)
+float interpolateDepth(float x, float y, int side, glm::vec3 & norms) {
+   int depths[4];
+   float interps[4];
+   float xfrac, yfrac, xint, yint, depth;
+
+   xfrac = modf(x, &xint);
+   yfrac = modf(y, &yint);
+
+   depths[0] = heightMaps[side][((int)y * WIDTH + (int)x) * 4];
+   depths[1] = heightMaps[side][((int)(y+1) * WIDTH + (int)x) * 4];
+   depths[2] = heightMaps[side][((int)y * WIDTH + (int)(x+1)) * 4];
+   depths[3] = heightMaps[side][((int)(y+1) * WIDTH + (int)(x+1)) * 4];
+
+   interps[0] = (float)depths[0] * (1.0f - xfrac) * (1.0f - yfrac); 
+   interps[1] = (float)depths[1] * (1.0f - xfrac) * yfrac;
+   interps[2] = (float)depths[2] * xfrac * (1.0f - yfrac);
+   interps[3] = (float)depths[3] * xfrac * yfrac;
+   depth = interps[0];
+   depth += interps[1];
+   depth += interps[2];
+   depth += interps[3];
+
+   norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-yfrac) + 
+              sin((float)(depths[1] - depths[3])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*yfrac;
+   norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-xfrac) + 
+              sin((float)(depths[3] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*xfrac;
+   norms.z = sqrt(1.0f - (norms.y*norms.y + norms.x*norms.x));
+
+   return depth;
+}
+
+glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
 {
    int side = Mountain::getSide(pos);
    int x,y;
-   int depthOffset;
-   float depth;
+   float depthOffset;
+   float depth, testDepth, testx, testy;
    glm::vec3 mountPos = pos;
    
    //map position into texture coordinates, x value changes based on side, y is constant
-   if(side == MOUNT_FRONT )
+   if(side == MOUNT_FRONT ) {
       x = (MOUNT_WIDTH - pos.x) * (IMG_MAX_X / MOUNT_WIDTH);
-   else if(side == MOUNT_BACK)
+      testx = ((float)MOUNT_WIDTH - pos.x) * ((float)IMG_MAX_X / MOUNT_WIDTH);
+   }
+   else if(side == MOUNT_BACK) {
       x = pos.x * (IMG_MAX_X / MOUNT_WIDTH);
-   else if(side == MOUNT_LEFT)
+      testx = pos.x * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
+   }
+   else if(side == MOUNT_LEFT) {
       x = (MOUNT_WIDTH - pos.z) * (IMG_MAX_X / MOUNT_WIDTH);
-   else
+      testx = ((float)MOUNT_WIDTH - pos.z) * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
+   }
+   else {
       x = pos.z * (IMG_MAX_X / MOUNT_WIDTH);
+      testx = pos.z * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
+   }
    
    y = ((MOUNT_HEIGHT - pos.y) * ((IMG_MAX_Y - IMG_MIN_Y) / MOUNT_HEIGHT)) + IMG_MIN_Y;
+   testy = (((float)MOUNT_HEIGHT - pos.y) * (((float)IMG_MAX_Y - (float)IMG_MIN_Y) / (float)MOUNT_HEIGHT)) + (float)IMG_MIN_Y;
    if (y > 0) { 
-   //Index into the data
-   depthOffset = heightMaps[side][(y * WIDTH + x) * 4];
-   
-   //Convert depth back to world
-   if(side == MOUNT_FRONT)
-      depth = (IMG_MAX_DEPTH - depthOffset) / (float)(IMG_MAX_DEPTH / MOUNT_FRONT_TOP_DEPTH);
-   else
-      depth = (IMG_MAX_DEPTH - depthOffset) / (float)(IMG_MAX_DEPTH / MOUNT_BACK_TOP_DEPTH);
-   //Set the depth based on what side of the mountain the object is on
-   if(side == MOUNT_FRONT)
-      mountPos.z = depth;
-   else if(side == MOUNT_BACK)
-      mountPos.z = MOUNT_DEPTH - depth;
-   else if(side == MOUNT_RIGHT)
-      mountPos.x = depth;
-   else
-      mountPos.x =  MOUNT_WIDTH - depth;
+      //Index into the data
+      depthOffset = interpolateDepth(testx,testy,side,norms);
+      printf("Bjorn depth: %f with normal: (%f, %f, %f)\n",depthOffset,norms.x,norms.y,norms.z);
+      
+      //Convert depth back to world
+      if(side == MOUNT_FRONT)
+         depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_FRONT_TOP_DEPTH);
+      else
+         depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_BACK_TOP_DEPTH);
+      //Set the depth based on what side of the mountain the object is on
+      if(side == MOUNT_FRONT)
+         mountPos.z = depth;
+      else if(side == MOUNT_BACK) {
+         mountPos.z = (float)MOUNT_DEPTH - depth;
+         norms = (glm::rotate(glm::mat4(1.0f),180.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
+      }
+      else if(side == MOUNT_RIGHT) {
+         mountPos.x = depth;
+         norms = (glm::rotate(glm::mat4(1.0f),90.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
+      }
+      else {
+         mountPos.x = (float)MOUNT_WIDTH - depth;
+         norms = (glm::rotate(glm::mat4(1.0f),270.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
+      }
    }
    return mountPos;
 }
