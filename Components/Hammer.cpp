@@ -107,27 +107,6 @@ void Hammer::step(double timeStep)
          rotateBy(glm::vec3(0, -90, 0));
       mountainSide = bjorn->mountainSide;
    }
-   
-   /*glm::vec3 hammerTip = getPos();
-   hammerTip.y += sin(d2r(getRot().z + 90));
-   if(hammerSide)
-      hammerTip.x -= cos(d2r(getRot().z + 90));
-   else
-      hammerTip.x += cos(d2r(getRot().z + 90));
-   if(world.detectCollision(hammerTip))
-   {
-      if(hammerSide && abs(previousAngle - getRot().z) > 4)
-      {
-         bjorn->launch(d2r(35));
-      }
-      else if(!hammerSide)
-         bjorn->suspend();
-      collision = true;
-   }
-   else
-   {
-      bjorn->unsuspend();
-   }*/
    return;
 }
 
@@ -169,20 +148,16 @@ void Hammer::update(double timeStep) {
       if (dat.collisionStrength.x == 0.0f) dat.collisionStrength.x = 1.0f;
       if (dat.collisionStrength.y == 0.0f) dat.collisionStrength.y = 1.0f;
       if (dat.collisionStrength.z == 0.0f) dat.collisionStrength.z = 1.0f;
-      //rotateBy((movedAngle-previousAngle)*(dat.collisionAngle/dat.collisionStrength));
-      //addVelocity((dat.collisionAngle-dat.collisionStrength)/(float)timeStep);
    }
    else {
       bjorn->unsuspend();
       collision = false;
    }
-   //moveBy(getVel()*(float)timeStep);
-   //setPos(glm::vec3(bjorn->getPos().x,bjorn->getPos().y + 0.4f,bjorn->getPos().z));
+
    hammerTip = getPos();
    hammerTip.y += sin(d2r(getRot().z + 90.0));
    if(!hammerSide)
       hammerTip.x -= cos(d2r(getRot().z + 90.0));
    else
       hammerTip.x += cos(d2r(getRot().z + 90.0));
-   //updateAngle(hammerTip.x,hammerTip.y);
 }

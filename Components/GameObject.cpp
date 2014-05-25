@@ -237,19 +237,16 @@ void ObjectMesh::render(GLHandles handle) {
 
    glUniform1i(handle.uTexUnit,0);
    safe_glUniform3f(handle.uMatAmb, buffDat.mat.ambient[0], buffDat.mat.ambient[1], buffDat.mat.ambient[2]);
-   //printf("%f,%f,%f\n", buffDat.mat.ambient[0], buffDat.mat.ambient[1], buffDat.mat.ambient[2]);
    safe_glUniform3f(handle.uMatDif, buffDat.mat.diffuse[0], buffDat.mat.diffuse[1], buffDat.mat.diffuse[2]);
    safe_glUniform3f(handle.uMatSpec, buffDat.mat.specular[0], buffDat.mat.specular[1], buffDat.mat.specular[2]);
    safe_glUniform1f(handle.uMatShine, buffDat.mat.shininess);
-   //SetMaterial(0, handle.ShadeProg, handle);
-   //glBindBufferRange(GL_UNIFORM_BUFFER, (GLuint)2, buffDat.uniformBlockIndex, 0, sizeof(struct MyMaterial));
+
    // bind texture
    glBindTexture(GL_TEXTURE_2D, buffDat.texIndex);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffDat.ibo);
    // draw!
    glDrawElements(GL_TRIANGLES, buffDat.numFaces, GL_UNSIGNED_INT, 0);
-   //glDrawArrays(GL_TRIANGLES, 0, buffDat.numFaces);
    //clean up
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

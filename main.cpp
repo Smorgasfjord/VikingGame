@@ -197,11 +197,6 @@ void setWorld()
    eye.y += 1;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
-   /*
-   for (int i = 0; i < platforms.size(); i++) {
-      platIdxs.push_back(world.placeObject(&(platforms[i]), &simplePlatformMod));
-      cout << "Platform " << i << " placed\n";
-   }*/
     
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
@@ -442,11 +437,7 @@ void Animate()
    else if (moveRight) {
       bjorn.moveRight();
    }
-   /*
-   cout << "Update @ " << curTime.tv_sec << "\n";
-   cout << "\tCurrent score: " << playerScore << "\n";
-   cout << "\tFramerate: " << frameRate << "\n";
-    */
+
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step(timeStep);
    hammer.step(timeStep);
