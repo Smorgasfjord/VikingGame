@@ -479,26 +479,6 @@ void Animate()
       currentSide = bjorn.mountainSide;
    }
    eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
-   /*if(currentSide == MOUNT_FRONT)
-   {
-      eye.x += CAMERA_SPRING * (bjorn.getPos().x - eye.x);
-      eye.z = bjorn.getPos().z - camDistance;
-   }
-   else if(currentSide == MOUNT_RIGHT)
-   {
-      eye.x = bjorn.getPos().x - camDistance;
-      eye.z += CAMERA_SPRING * (bjorn.getPos().z - eye.z);
-   }
-   else if(currentSide == MOUNT_BACK)
-   {
-      eye.x += CAMERA_SPRING * (bjorn.getPos().x - eye.x);
-      eye.z = bjorn.getPos().z + camDistance;
-   }
-   else
-   {
-      eye.x = bjorn.getPos().x + camDistance;
-      eye.z -= CAMERA_SPRING * (eye.z - bjorn.getPos().z);
-   }*/
    
    lastUpdated = curTime;
 }
