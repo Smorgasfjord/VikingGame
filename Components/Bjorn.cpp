@@ -71,7 +71,7 @@ void Bjorn::step(double timeStep)
       Sound::stopWalk();
    }
    //                         (m/s^2  * s)
-   addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
+   /*if (!suspended)*/ addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
 
    moveBy(getVel()*(float)timeStep);
    
@@ -119,12 +119,8 @@ void Bjorn::update(double timeStep) {
 //      moveBy(-getVel()*(float)timeStep); //+ dat.collisionAngle *0.9f); //reevaluate location
       collidedWith = world->getObjectByIndex(dat.hitObj.obj);
       //Nudge bjorn towards the correct position on the platform
-      cout << (collidedWith.getPos().z - getPos().z) << " Off from platform center\n";
-      cout << "size " << collidedWith.getScale().z << "\n";
-      float nudgeAmount = (collidedWith.getPos().z - getPos().z - (collidedWith.getScale().z / 30.0f))* (collidedWith.getScale().z / 50.0f);
       //if(abs(nudgeAmount) > .01)
       //{
-         cout << "Moving by " << nudgeAmount << "\n";
       newPos = Mountain::lockOn(getPos(),thing);
       moveBy(((newPos+thing*glm::vec3(-1.0f,0.0f,-1.0f)) - getPos())/30.0f);
          //moveBy(glm::vec3(0, 0, nudgeAmount));
@@ -155,14 +151,14 @@ void Bjorn::update(double timeStep) {
 void Bjorn::moveRight()
 {
    glm::vec4 speed;
-   if (grounded) {
+   if (grounded || DEBUG_GAME) {
       speed = getRotMat() * glm::vec4(0.0f, 0.1f, 0.5f, 0.0f);
    }
    else {
       speed = getRotMat() * glm::vec4(0.0f, 0.0f, 0.1f, 0.0f);
    }
 
-   if (!suspended && glm::length(getVel()) < MAX_SPEED) {
+   if (glm::length(getVel()) < MAX_SPEED) {
       addVelocity(speed.xyz());
    }
 }
@@ -170,14 +166,14 @@ void Bjorn::moveRight()
 void Bjorn::moveLeft()
 {
    glm::vec4 speed;
-   if (grounded) {
+   if (grounded || DEBUG_GAME) {
       speed = getRotMat() * glm::vec4(0.0f, 0.1f, -0.5f, 0);
    }
    else {
       speed = getRotMat() * glm::vec4(0.0f, 0.0f, -0.1f, 0);
    }
 
-   if (!suspended && glm::length(getVel()) < MAX_SPEED) {
+   if (glm::length(getVel()) < MAX_SPEED) {
       addVelocity(speed.xyz());
    }
 }
@@ -192,7 +188,7 @@ void Bjorn::jump()
 
 void Bjorn::suspend()
 {
-   setVelocity(glm::vec3(0));
+   //setVelocity(glm::vec3(0));
    suspended = true;
 }
 

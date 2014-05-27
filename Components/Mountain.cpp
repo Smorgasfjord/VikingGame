@@ -116,12 +116,18 @@ float interpolateDepth(float x, float y, int side, glm::vec3 & norms) {
    depth += interps[2];
    depth += interps[3];
 
-   norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-yfrac) + 
-              sin((float)(depths[1] - depths[3])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*yfrac;
-   norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-xfrac) + 
-              sin((float)(depths[3] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*xfrac;
-   norms.z = sqrt(1.0f - (norms.y*norms.y + norms.x*norms.x));
+   norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*255.0f))*(1.0f-yfrac) + 
+              sin((float)(depths[1] - depths[3])*M_PI/(2.0f*255.0f))*yfrac;
+   norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*255.0f))*(1.0f-xfrac) + 
+              sin((float)(depths[3] - depths[2])*M_PI/(2.0f*255.0f))*xfrac;
+   if (norms.y*norms.y + norms.x*norms.x < 1.0f) {
+      norms.z = sqrt(1.0f - (norms.y*norms.y + norms.x*norms.x));
+   }
+   else {
+      norms.z = -sqrt(norms.y*norms.y + norms.x*norms.x - 1.0f);
+   }
 
+   norms = glm::normalize(norms);
    return depth;
 }
 
@@ -156,7 +162,8 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
    if (y > 0) { 
       //Index into the data
       depthOffset = interpolateDepth(testx,testy,side,norms);
-      printf("Bjorn depth: %f with normal: (%f, %f, %f)\n",depthOffset,norms.x,norms.y,norms.z);
+      
+      printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, testx, testy);
       
       //Convert depth back to world
       if(side == MOUNT_FRONT)
@@ -164,20 +171,27 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
       else
          depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_BACK_TOP_DEPTH);
       //Set the depth based on what side of the mountain the object is on
+      if (depthOffset == 0.0f) {
+         norms.x = (testx - (float)IMG_MAX_X/2.0f)/((float)IMG_MAX_X*0.5f);
+         norms.z = fabsf((float)IMG_MAX_X/2.0f-testx)/((float)IMG_MAX_X*0.5f);
+         norms.y = 0.0f;
+         norms = glm::normalize(norms);
+      }
       if(side == MOUNT_FRONT)
-         mountPos.z = depth;
+         if(depthOffset > 0.0f) mountPos.z = depth;
       else if(side == MOUNT_BACK) {
-         mountPos.z = (float)MOUNT_DEPTH - depth;
+         if(depthOffset > 0.0f) mountPos.z = (float)MOUNT_DEPTH - depth;
          norms = (glm::rotate(glm::mat4(1.0f),180.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
       }
       else if(side == MOUNT_RIGHT) {
-         mountPos.x = depth;
+         if(depthOffset > 0.0f) mountPos.x = depth;
          norms = (glm::rotate(glm::mat4(1.0f),90.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
       }
       else {
-         mountPos.x = (float)MOUNT_WIDTH - depth;
+         if(depthOffset > 0.0f) mountPos.x = (float)MOUNT_WIDTH - depth;
          norms = (glm::rotate(glm::mat4(1.0f),270.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
       }
+      printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, testx, testy);
    }
    return mountPos;
 }

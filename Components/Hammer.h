@@ -42,6 +42,7 @@ private:
    Bjorn *bjorn;
    glm::vec3 pickAngle;
    float rotation;
+   float angularVelocity;
    bool hammerSide;
    bool collision;
    //float mass;

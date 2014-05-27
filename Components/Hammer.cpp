@@ -50,7 +50,7 @@ void Hammer::updateAngle(float x, float y)
    glm::vec3 currentAngle = getRot();
    //Angle between desired vector and neutral hammer position (straight up)
    float angle = atan2(x, y);
-   if(!isnan(angle) && !collision)
+   if(!isnan(angle))
    {
       //Save the last angle
       previousAngle = currentAngle;
@@ -85,19 +85,20 @@ void Hammer::flip()
 void Hammer::step(double timeStep)
 {
    setVelocity(bjorn->getVel());
-   moveBy(getVel()*(float)timeStep);
-   setPos(bjorn->getPos());
+   if (!collision) {
+      setPos(bjorn->getPos());
 
-   //Move the hammer to the proper position
-   if(bjorn->mountainSide == MOUNT_FRONT)
-      moveBy(glm::vec3(0, 0, -.2));
-   else if(bjorn->mountainSide == MOUNT_RIGHT)
-      moveBy(glm::vec3(-.2, 0, 0));
-   else if(bjorn->mountainSide == MOUNT_BACK)
-      moveBy(glm::vec3(0, 0, .2));
-   else
-      moveBy(glm::vec3(.2, 0, 0));
-   
+      //Move the hammer to the proper position
+      if(bjorn->mountainSide == MOUNT_FRONT)
+         moveBy(glm::vec3(0, 0, -.2));
+      else if(bjorn->mountainSide == MOUNT_RIGHT)
+         moveBy(glm::vec3(-.2, 0, 0));
+      else if(bjorn->mountainSide == MOUNT_BACK)
+         moveBy(glm::vec3(0, 0, .2));
+      else
+         moveBy(glm::vec3(.2, 0, 0));
+   }
+   moveBy(getVel()*(float)timeStep);
    //Update hammer rotation if we're on a different side of the mountain
    if(mountainSide != bjorn->mountainSide)
    {
@@ -137,39 +138,47 @@ void Hammer::update(double timeStep) {
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      printf("Hommur vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
-                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.hitObj.obj, dat.hitObj.tri,
+      printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
+                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.thisObj.nod, dat.hitObj.obj, dat.hitObj.tri,
                 dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
 
-      if (hammerSide) { 
+      if (dat.thisObj.tri == 4 && !collision) {
          //m/s         = m/s           
          activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
          //                  m          /       s
          bjorn->addVelocity(-activeForce);//(float)timeStep);
          Sound::hammerSmash();
       }
-      else if (!hammerSide && !collision) {
+      else if (dat.thisObj.tri == 2 && !collision) {
+      moveBy(-getVel()*(float)timeStep);
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
-         activeForce = dat.collisionStrength * dat.collisionNormal*(float)GRAVITY/2.0f;
+         activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
          bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
          pickAngle = glm::normalize(dat.collisionAngle);
+         bjorn->suspend();
       }
-      else {
+      else if (collision) {
+         bjorn->suspend();
          //m/s         = m/s                     - (m/s^2                * s)
          activeForce = dat.collisionStrength*(float)GRAVITY/2.0f; 
          //                  m/s
-         bjorn->addVelocity(-activeForce);//(float)timeStep);
+         if (glm::length(getPos() - bjorn->getPos()) < 0.4f) {
+            if (dat.thisObj.tri == 2) {
+               bjorn->setVelocity(-activeForce);//(float)timeStep);
+               moveBy(-getVel()*(float)timeStep);
+            }
+            else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*0.1f));//(float)timeStep);
+         }
+         else {
+            bjorn->addVelocity((getPos() - bjorn->getPos())*0.05f);
+            addVelocity((bjorn->getPos() - getPos())*0.2f);
+         }
       }
       collision = true;
       //bjorn->suspend();
       movedAngle = getRot();
       setRotation(previousAngle);
-      if (dat.collisionStrength.x == 0.0f) dat.collisionStrength.x = 1.0f;
-      if (dat.collisionStrength.y == 0.0f) dat.collisionStrength.y = 1.0f;
-      if (dat.collisionStrength.z == 0.0f) dat.collisionStrength.z = 1.0f;
-      //rotateBy((movedAngle-previousAngle)*(dat.collisionAngle/dat.collisionStrength));
-      //addVelocity((dat.collisionAngle-dat.collisionStrength)/(float)timeStep);
    }
    else {
       bjorn->unsuspend();
@@ -177,11 +186,5 @@ void Hammer::update(double timeStep) {
    }
    //moveBy(getVel()*(float)timeStep);
    //setPos(glm::vec3(bjorn->getPos().x,bjorn->getPos().y + 0.4f,bjorn->getPos().z));
-   hammerTip = getPos();
-   hammerTip.y += sin(d2r(getRot().z + 90.0));
-   if(!hammerSide)
-      hammerTip.x -= cos(d2r(getRot().z + 90.0));
-   else
-      hammerTip.x += cos(d2r(getRot().z + 90.0));
    //updateAngle(hammerTip.x,hammerTip.y);
 }
