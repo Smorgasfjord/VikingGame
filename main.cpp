@@ -73,7 +73,7 @@
 using namespace std;
 
 //GL basics
-int ShadeProg;
+int mainDrawProg, depthBuffProg;
 static float g_width, g_height;
 
 
@@ -90,11 +90,13 @@ GameModel simplePlatformMod;
 //Bjorn
 GameModel bjornMod;
 Bjorn bjorn;
+glm::vec3 bjornResetPos, bjornResetRot;
 static bool moveLeft = false, moveRight = false;
 bool facingRight = true;
 
 //Hammer
 int hammerTime;
+glm::vec3 hammerResetRot;
 GameModel hammerMod;
 Hammer hammer;
 
@@ -111,10 +113,9 @@ glm::vec3 lightPos;
 Jukebox music;
 
 //Camera
-float firstPersonHeight = 1.0f;
 float camDistance = 4.0f;
-glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, firstPersonHeight, g_groundSize / 2.0);
-glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, firstPersonHeight, g_groundSize / 2.0 + 1.0);
+glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1, g_groundSize / 2.0);
+glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
 float camYOffset = 0;
@@ -155,15 +156,19 @@ int diffMs(timeval t1, timeval t2)
            (t1.tv_usec - t2.tv_usec))/1000;
 }
 
-//Resets bjorn to the start of the level, could be updated to add checkpoints
+//Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   eye = lookAt = world.getStart();
+   eye = lookAt = bjornResetPos;
    eye.y += 1.5f;
    eye.z -= camDistance;
    lookAt.y += 1.0f;
-   bjorn.setPos(lookAt);
+   facingRight = true;
+   hammer.setRotation(hammerResetRot);
+   bjorn.setPos(bjornResetPos);
+   bjorn.setRotation(bjornResetRot);
    bjorn.setVelocity(glm::vec3(0.0f));
+   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
 }
 
 /* Initialization of objects in the world. Only occurs Once */
@@ -190,21 +195,24 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(handles, &mountMod);
-   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
+   platforms = Platform::importLevel("cornermountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
-   world = World(platforms, &simplePlatformMod, mount, &handles, ShadeProg);
+   world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = platforms[0].getPos();
+   eye = lookAt = world.getStart();
    eye.y += 1;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
     
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
+   bjornResetPos = bjorn.getPos();
+   bjornResetRot = bjorn.getRot();
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.setInWorld(&world, &bjorn, &hammerMod, handles);
+   hammerResetRot = hammer.getRot();
    cout << "Hammer held\n";
    music.start();
    cout << "Lets play!\n";
@@ -217,6 +225,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    GLuint VS; //handles to shader object
    GLuint FS; //handles to frag shader object
    GLint vCompiled, fCompiled, linked; //status of shader
+   int ShadeProg;
    
    VS = glCreateShader(GL_VERTEX_SHADER);
    FS = glCreateShader(GL_FRAGMENT_SHADER);
@@ -277,7 +286,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.uMatShine = safe_glGetUniformLocation(ShadeProg, "uMat.shine");
    
    printf("sucessfully installed shader %d\n", ShadeProg);
-   return 1;
+   return ShadeProg;
 }
 
 /* Some OpenGL initialization */
@@ -297,7 +306,7 @@ void Draw (void)
 {
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//Start our shader
- 	glUseProgram(ShadeProg);
+ 	glUseProgram(mainDrawProg);
    
    /* set up the projection and camera - do not change */
    SetProjectionMatrix(false);
@@ -433,7 +442,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
-   CollisionData dat;
+   //CollisionData dat;
    glm::vec3 norm;
 
    frames++;
@@ -459,6 +468,7 @@ void Animate()
    hammer.step(timeStep);
    bjorn.update(timeStep);
    hammer.update(timeStep);
+   //updates the spatial data structure
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
   
@@ -470,7 +480,6 @@ void Animate()
       Sound::stopScream();
       reset();
    }
-   //updates the spatial data structure
    
    //Update camera
    lookAt = bjorn.getPos();
@@ -484,6 +493,10 @@ void Animate()
       //This could be used to add a nice animation for the camera swinging around the mountain
       cout << "camera changing sides\n";
       currentSide = bjorn.mountainSide;
+      //Update reset variables for checkpoint
+      bjornResetPos = bjorn.getPos();
+      bjornResetRot = bjorn.getRot();
+      hammerResetRot = hammer.getRot();
    }
    eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    
@@ -503,6 +516,11 @@ int main( int argc, char *argv[] )
    if (!glfwInit())
       exit(EXIT_FAILURE);
    
+   //These may be mac only, not sure
+   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -537,12 +555,18 @@ int main( int argc, char *argv[] )
    //test the openGL version
    getGLversion();
    //install the shader
-
-   if (!InstallShader(textFileRead((char *)"Lab1_vert.glsl"), textFileRead((char *)"Lab1_frag.glsl"))) {
+   
+   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
+   if (mainDrawProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-
+   depthBuffProg = InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"));
+   if (depthBuffProg == 0) {
+	   printf("Error installing shader!\n");
+	   return 0;
+   }
+   
    Initialize();
    setWorld();
    
