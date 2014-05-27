@@ -57,14 +57,15 @@ void Hammer::updateAngle(float x, float y)
       //Rotation is flipped if the hammer is flipped
       if(bjorn->mountainSide == MOUNT_FRONT || bjorn->mountainSide == MOUNT_BACK)
       {
-         if(hammerSide)
+         
+         if(((int)getRot().y % 360) == 180)
             setRotation(glm::vec3(currentAngle.x, currentAngle.y, -angle * (180.0 / pi)));
          else
             setRotation(glm::vec3(currentAngle.x, currentAngle.y, angle * (180.0 / pi)));
       }
       else
       {
-         if(hammerSide)
+         if(((int)getRot().y % 360) == 180)
             setRotation(glm::vec3(angle * (180.0 / pi), currentAngle.y, currentAngle.z));
          else
             setRotation(glm::vec3(-angle * (180.0 / pi), currentAngle.y, currentAngle.z));
@@ -97,7 +98,7 @@ void Hammer::step(double timeStep)
       moveBy(glm::vec3(0, 0, .2));
    else
       moveBy(glm::vec3(.2, 0, 0));
-   
+
    //Update hammer rotation if we're on a different side of the mountain
    if(mountainSide != bjorn->mountainSide)
    {
@@ -124,7 +125,8 @@ void Hammer::update(double timeStep) {
       */
       if (hammerSide) { 
          //m/s         = m/s           
-         activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
+         activeForce = dat.collisionStrength * (float)(GRAVITY * .75f);
+         printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
          //                  m          /       s
          bjorn->addVelocity(-activeForce);//(float)timeStep);
          Sound::hammerSmash();

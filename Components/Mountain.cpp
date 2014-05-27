@@ -96,30 +96,33 @@ void Mountain::loadHeightMaps()
 float interpolateDepth(float x, float y, int side, glm::vec3 & norms) {
    int depths[4];
    float interps[4];
-   float xfrac, yfrac, xint, yint, depth;
+   float xfrac, yfrac, xint, yint, depth = 0;
 
    xfrac = modf(x, &xint);
    yfrac = modf(y, &yint);
+   
+   if(x < IMG_MAX_X && x > 0 && y < IMG_MAX_Y && y > IMG_MIN_Y)
+   {
+      depths[0] = heightMaps[side][((int)y * WIDTH + (int)x) * 4];
+      depths[1] = heightMaps[side][((int)(y+1) * WIDTH + (int)x) * 4];
+      depths[2] = heightMaps[side][((int)y * WIDTH + (int)(x+1)) * 4];
+      depths[3] = heightMaps[side][((int)(y+1) * WIDTH + (int)(x+1)) * 4];
 
-   depths[0] = heightMaps[side][((int)y * WIDTH + (int)x) * 4];
-   depths[1] = heightMaps[side][((int)(y+1) * WIDTH + (int)x) * 4];
-   depths[2] = heightMaps[side][((int)y * WIDTH + (int)(x+1)) * 4];
-   depths[3] = heightMaps[side][((int)(y+1) * WIDTH + (int)(x+1)) * 4];
+      interps[0] = (float)depths[0] * (1.0f - xfrac) * (1.0f - yfrac); 
+      interps[1] = (float)depths[1] * (1.0f - xfrac) * yfrac;
+      interps[2] = (float)depths[2] * xfrac * (1.0f - yfrac);
+      interps[3] = (float)depths[3] * xfrac * yfrac;
+      depth = interps[0];
+      depth += interps[1];
+      depth += interps[2];
+      depth += interps[3];
 
-   interps[0] = (float)depths[0] * (1.0f - xfrac) * (1.0f - yfrac); 
-   interps[1] = (float)depths[1] * (1.0f - xfrac) * yfrac;
-   interps[2] = (float)depths[2] * xfrac * (1.0f - yfrac);
-   interps[3] = (float)depths[3] * xfrac * yfrac;
-   depth = interps[0];
-   depth += interps[1];
-   depth += interps[2];
-   depth += interps[3];
-
-   norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-yfrac) + 
-              sin((float)(depths[1] - depths[3])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*yfrac;
-   norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-xfrac) + 
-              sin((float)(depths[3] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*xfrac;
-   norms.z = sqrt(1.0f - (norms.y*norms.y + norms.x*norms.x));
+      norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-yfrac) + 
+                 sin((float)(depths[1] - depths[3])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*yfrac;
+      norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*(1.0f-xfrac) + 
+                 sin((float)(depths[3] - depths[2])*M_PI/(2.0f*(float)IMG_MAX_DEPTH))*xfrac;
+      norms.z = sqrt(1.0f - (norms.y*norms.y + norms.x*norms.x));
+   }
 
    return depth;
 }
@@ -145,6 +148,9 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
       //Index into the data
       depthOffset = interpolateDepth(x,y,side,norms);
       //printf("Bjorn depth: %f with normal: (%f, %f, %f)\n",depthOffset,norms.x,norms.y,norms.z);
+      //Error catching
+      if(depthOffset == 0)
+         return pos;
       
       //Convert depth back to world
       if(side == MOUNT_FRONT)

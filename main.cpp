@@ -67,7 +67,7 @@
 #define INIT_HEIGHT 600
 #define pi 3.14159
 #define CAMERA_SPRING .15
-#define CAM_Y_MAX_OFFSET 2
+#define CAM_Y_MAX_OFFSET 3
 
 
 using namespace std;
@@ -75,7 +75,7 @@ using namespace std;
 //GL basics
 int ShadeProg;
 static float g_width, g_height;
-static bool moveLeft = false, moveRight = false;
+
 
 //Handles to the shader data
 GLHandles handles;
@@ -90,6 +90,8 @@ GameModel simplePlatformMod;
 //Bjorn
 GameModel bjornMod;
 Bjorn bjorn;
+static bool moveLeft = false, moveRight = false;
+bool facingRight = true;
 
 //Hammer
 int hammerTime;
@@ -363,11 +365,25 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          //Movement left/right
          case GLFW_KEY_D:
             moveRight = true;
+            //Check if this spun bjorn around
+            if(!facingRight)
+            {
+               bjorn.rotateBy(glm::vec3(0, 180, 0));
+               hammer.rotateBy(glm::vec3(0, 180, 0));
+               facingRight = true;
+            }
             moveLeft = false;
             break;
          case GLFW_KEY_A:
-            moveRight = false;
             moveLeft = true;
+            //Check if this spun bjorn around
+            if(facingRight)
+            {
+               bjorn.rotateBy(glm::vec3(0, 180, 0));
+               hammer.rotateBy(glm::vec3(0, 180, 0));
+               facingRight = false;
+            }
+            moveRight = false;
             break;
          //Camera control
          case GLFW_KEY_W:
