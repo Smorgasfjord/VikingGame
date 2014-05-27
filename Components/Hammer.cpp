@@ -126,7 +126,7 @@ void Hammer::update(double timeStep) {
       if (hammerSide) { 
          //m/s         = m/s           
          activeForce = dat.collisionStrength * (float)(GRAVITY * .75f);
-         printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
+         //printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
          //                  m          /       s
          bjorn->addVelocity(-activeForce);//(float)timeStep);
          Sound::hammerSmash();
