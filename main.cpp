@@ -195,7 +195,7 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(handles, &mountMod);
-   platforms = Platform::importLevel("cornermountain.lvl", handles, &platMod);
+   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
    world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
    cout << "World worked\n";
@@ -517,10 +517,12 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    
    //These may be mac only, not sure
+   /* How to specify OpenGL version 3.3 if/when we need it
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    */
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -561,11 +563,14 @@ int main( int argc, char *argv[] )
 	   printf("Error installing shader!\n");
 	   return 0;
    }
+   
+   /* For loading a 2nd shader if/when we need it
    depthBuffProg = InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"));
    if (depthBuffProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
+    */
    
    Initialize();
    setWorld();
