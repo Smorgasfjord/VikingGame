@@ -354,6 +354,7 @@ GameModel loadModel(std::string fName, GLHandles handle) {
 
 void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
 
+   static int wat = 0;
    MeshBufferData aMesh;
    struct MyMaterial aMat;
    //GLsizei stride = (3 + 3 + 2) * sizeof(float);

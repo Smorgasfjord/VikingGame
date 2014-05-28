@@ -247,12 +247,14 @@ glm::vec3 ChunkWorld::interpolateNormal(float beta, float gamma, ObjData dat, gl
 
 CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData & dat) {
    MicroChunk *step;
-   CollisionData ret;
+   CollisionData ret, newRet;
    ObjData cDat;
    glm::vec3 cPoint, cAngle, cNormal;
    glm::vec3 newTransVert;
    glm::vec3 oldTransVert;
    glm::vec3 move, actual, iter;
+   cDat.obj = -1;
+   ret = CollisionData(cDat, dat, glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT));
    for (int i = 0; i < geom.verts.size(); i++) {
       dat.tri = i;
       newTransVert = (newTrans * glm::vec4(geom.verts[i],1.0f)).xyz();
@@ -275,8 +277,9 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
                   }
                   cNormal = interpolateNormal(cPoint.y, cPoint.z, cDat, oldTrans);
                   actual = move * cPoint.x;
-                  ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal, move);
-                  return ret;
+                  if (glm::length(actual) < glm::length(ret.collisionAngle))
+                     ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal, move);
+                  //return ret;
                }
             }
          }
@@ -290,7 +293,7 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
 CollisionData ChunkWorld::checkNodeCollision(ObjectNode & newNod, ObjectNode & oldNod, const vector<BufferContents> & geom, glm::mat4 newCumulative, glm::mat4 oldCumulative, ObjData & dat) {
    glm::mat4 newCurrent = newNod.state.transform * newCumulative;
    glm::mat4 oldCurrent = oldNod.state.transform * oldCumulative;
-   CollisionData ret;
+   CollisionData ret, newRet;
    dat.nod++;
    for (int i = 0; i < newNod.meshes.size(); i++) {
       dat.mesh = i;
