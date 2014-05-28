@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2014-05-12T16:53:23Z</created><keywords></keywords><modified>2014-05-12T16:53:23Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
+  <asset><contributor><author></author><authoring_tool>FBX COLLADA exporter</authoring_tool><comments></comments></contributor><created>2014-05-28T18:15:27Z</created><keywords></keywords><modified>2014-05-28T18:15:27Z</modified><revision></revision><subject></subject><title></title><unit meter="0.010000" name="centimeter"></unit><up_axis>Y_UP</up_axis></asset>
   <library_materials>
     <material id="hammer_handle" name="hammer_handle">
       <instance_effect url="#hammer_handle-fx"/>
@@ -2608,7 +2608,7 @@
   </library_geometries>
   <library_visual_scenes>
     <visual_scene id="bjorn_hammer" name="bjorn_hammer">
-      <node name="pCube1" id="pCube1" sid="pCube1"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#pCube1-lib"><bind_material><technique_common><instance_material symbol="hammer_handle" target="#hammer_handle"/><instance_material symbol="lambert1" target="#lambert1"/><instance_material symbol="hammer_head" target="#hammer_head"/><instance_material symbol="hammer_wood" target="#hammer_wood"/><instance_material symbol="hammer_pick" target="#hammer_pick"/><instance_material symbol="hammer_stud_band" target="#hammer_stud_band"/><instance_material symbol="hammer_studs" target="#hammer_studs"/><instance_material symbol="hammer_handle_grip" target="#hammer_handle_grip"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
+      <node name="pCube1" id="pCube1" sid="pCube1"><matrix sid="matrix">1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 -2.064845 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#pCube1-lib"><bind_material><technique_common><instance_material symbol="hammer_handle" target="#hammer_handle"/><instance_material symbol="lambert1" target="#lambert1"/><instance_material symbol="hammer_head" target="#hammer_head"/><instance_material symbol="hammer_wood" target="#hammer_wood"/><instance_material symbol="hammer_pick" target="#hammer_pick"/><instance_material symbol="hammer_stud_band" target="#hammer_stud_band"/><instance_material symbol="hammer_studs" target="#hammer_studs"/><instance_material symbol="hammer_handle_grip" target="#hammer_handle_grip"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node>
       <extra><technique profile="MAX3D"><frame_rate>24.000000</frame_rate></technique><technique profile="FCOLLADA"><start_time>0.041667</start_time><end_time>2.000000</end_time></technique></extra>
     </visual_scene>
   </library_visual_scenes>
