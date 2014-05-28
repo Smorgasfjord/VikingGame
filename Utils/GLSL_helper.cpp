@@ -16,9 +16,9 @@ int printOglError (const char *file, int line) {
 	GLenum glErr;
 	int    retCode = 0;
 	
-	glErr = glGetError();
+	glErr = glGetError ();
 	while (glErr != GL_NO_ERROR) {
-		printf("glError %d in file %s @ line %d\n", glErr, file, line); // , gluErrorString(glErr));
+		printf("glError in file %s @ line %d\n", file, line); // , gluErrorString(glErr));
 		retCode = 1;
 		glErr = glGetError ();
    }

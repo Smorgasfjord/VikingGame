@@ -36,7 +36,6 @@ struct trans_data {
    glm::mat4 scaling;
    glm::mat4 rotation;
    glm::mat4 transform;
-   glm::mat4 depthMVP;
 };
 
 void initGameObjState(Transform_t *state);
@@ -152,7 +151,6 @@ class GameObject {
       void setScale(glm::vec3 scale);
       void setRotation(glm::vec3 rot);
       void setState(Transform_t state);
-      void setDepthMVP(glm::mat4 mvp);
       //Drawing
       void draw();
       virtual void update(double timeStep);
