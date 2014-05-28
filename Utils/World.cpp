@@ -159,7 +159,7 @@ std::vector<GameObject> World::cull(int mountainSide)
    int i = 0;
    
    for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
-      cout << "Testing platform " << i++ << "\n";
+      //cout << "Testing platform " << i++ << "\n";
       //This will cull any platforms on the opposite side of the mountain
       if (((mountainSide + it->mountainSide) % 2 != 0) || (mountainSide == it->mountainSide)) {
          //Not on the back side, check against each plane of view frustum
