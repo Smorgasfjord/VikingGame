@@ -37,6 +37,7 @@ public:
    void updateAngle(float x, float y);
    void flip();
    int mountainSide;
+   bool locked;
 private:
    World * world;
    Bjorn *bjorn;

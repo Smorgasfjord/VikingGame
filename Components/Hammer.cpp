@@ -56,7 +56,7 @@ void Hammer::updateAngle(float x, float y)
    glm::vec3 currentAngle = getRot();
    //Angle between desired vector and neutral hammer position (straight up)
    float angle = atan2(x, y);
-   if(!isnan(angle))
+   if(!isnan(angle) && !locked)
    {
       //Save the last angle
       previousAngle = currentAngle;
@@ -91,13 +91,12 @@ void Hammer::flip()
 // What hammer does
 void Hammer::step(double timeStep)
 {
-   setVelocity(bjorn->getVel());
+   setVelocity((bjorn->getPos() + glm::vec3(0.0,0.3f,0.0) + bjornOffset - getPos())/((float)timeStep*2.0f));
    if (!collision) {
-      setVelocity(bjorn->getVel());
+      addVelocity(bjorn->getVel());
       //setPos(bjorn->getPos());
 
    }
-   addVelocity((bjorn->getPos() + glm::vec3(0.0,0.3f,0.0) + bjornOffset - getPos())/((float)timeStep*2.0f));
    setRotation(desiredRotation);
    moveBy(getVel()*(float)timeStep);
    //Update hammer rotation if we're on a different side of the mountain
