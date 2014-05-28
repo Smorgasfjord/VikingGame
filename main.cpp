@@ -167,9 +167,9 @@ static void reset()
    //lookAt.y += 1.0f;
    bjorn.facingRight = true;
    hammer.setState(hammerResetState);
-   hammer.rotateBy(glm::vec3(0, 90, 0));
+   hammer.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
    bjorn.setState(bjornResetState);
-   bjorn.rotateBy(glm::vec3(0, 90, 0));
+   bjorn.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
    bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
 }
 
