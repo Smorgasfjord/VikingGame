@@ -91,14 +91,11 @@ GameModel simplePlatformMod;
 GameModel bjornMod;
 Bjorn bjorn;
 Transform_t bjornResetState;
-glm::vec3 bjornResetPos, bjornResetRot;
 static bool moveLeft = false, moveRight = false;
 
 //Hammer
 int hammerTime;
 Transform_t hammerResetState;
-glm::vec3 hammerResetRot;
-glm::vec3 hammerResetPos;
 GameModel hammerMod;
 Hammer hammer;
 
@@ -161,16 +158,17 @@ int diffMs(timeval t1, timeval t2)
 //Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   eye = lookAt = bjornResetPos;
-   eye.y += 1.5f;
-   eye.z -= camDistance;
    //lookAt.y += 1.0f;
    bjorn.facingRight = true;
    hammer.setState(hammerResetState);
-   hammer.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
+   hammer.setVelocity(glm::vec3(0));
    bjorn.setState(bjornResetState);
-   bjorn.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
-   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
+   bjorn.setVelocity(glm::vec3(0));
+   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
+   
+   eye = lookAt = bjorn.getPos();
+   eye.y += 1.5f;
+   eye.z -= camDistance;
 }
 
 /* Initialization of objects in the world. Only occurs Once */
@@ -202,7 +200,7 @@ void setWorld()
    world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = world.getStart();
+   eye = lookAt = glm::vec3(10, 10, 4);//world.getStart();
    eye.y += 1;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;

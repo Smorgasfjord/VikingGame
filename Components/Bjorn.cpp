@@ -62,7 +62,10 @@ void Bjorn::step(double timeStep)
       Sound::walk();
       //Update X velocity due to friction
       if(glm::length(getVel()) > 0.1)
+      {
          setVelocity(getVel() * (float)exp(-1.0 * timeStep));
+         printf("After friction velocity (%f, %f, %f)\n", getVel().x, getVel().y, getVel().z);
+      }
       else
       {
          setVelocity(glm::vec3(0.0f));
@@ -109,14 +112,14 @@ void Bjorn::update(double timeStep) {
    glm::vec3 displacement, newPos;
    cData = world->checkCollision(this, modelIdx);
    if (cData.hitObj.obj >= 0) {
-      /*
+      
       printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) while trying to move (%f, %f, %f)\n",
-             hammer.model.children[dat.thisObj.nod].name.c_str(), cData.thisObj.tri, cData.hitObj.obj, cData.hitObj.tri,
+             /*hammer.model.children[dat.thisObj.nod].name.c_str(),*/ cData.thisObj.tri, cData.hitObj.obj, cData.hitObj.tri,
              cData.collisionPoint.x, cData.collisionPoint.y,cData.collisionPoint.z,cData.collisionNormal.x, cData.collisionNormal.y,cData.collisionNormal.z,
              cData.collisionAngle.x, cData.collisionAngle.y,cData.collisionAngle.z,cData.collisionStrength.x,cData.collisionStrength.y,cData.collisionStrength.z);
-      */
+      
       displacement = cData.collisionAngle-cData.collisionStrength;// + cData.collisionNormal*(float)timeStep*0.0f;
-      //printf("moving Bjorn (%f, %f, %f)\n", displacement.x, displacement.y,displacement.z);
+      printf("moving Bjorn (%f, %f, %f)\n", displacement.x, displacement.y,displacement.z);
       moveBy(displacement); //reevaluate location
 
       collidedWith = world->getObjectByIndex(cData.hitObj.obj);
@@ -125,6 +128,7 @@ void Bjorn::update(double timeStep) {
       moveBy(((newPos+displacement*glm::vec3(-0.6f,0.0f,-0.6f)) - getPos())/30.0f);
       
       setVelocity((getVel()*0.5f + glm::reflect(getVel(), cData.collisionNormal))/2.0f + cData.collisionNormal*(float)timeStep*0.1f);
+      printf("Bjorns velocity set to (%f, %f, %f)\n", getVel().x, getVel().y, getVel().z);
       if (cData.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
          jumping = false;
