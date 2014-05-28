@@ -149,6 +149,11 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
       //Index into the data
       depthOffset = interpolateDepth(x,y,side,norms);
       
+<<<<<<< HEAD
+=======
+      //printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, x, y);
+      
+>>>>>>> FETCH_HEAD
       //Convert depth back to world
       if(side == MOUNT_FRONT)
          depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_FRONT_TOP_DEPTH);
@@ -178,7 +183,11 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
          if(depthOffset > 0.0f) mountPos.x = (float)MOUNT_WIDTH - depth;
          norms = (glm::rotate(glm::mat4(1.0f),270.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
       }
+<<<<<<< HEAD
       printf("Bjorn depth: %f on side %d with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset, side,norms.x,norms.y,norms.z, x, y);
+=======
+      //printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, x, y);
+>>>>>>> FETCH_HEAD
    }
    return mountPos;
 }
