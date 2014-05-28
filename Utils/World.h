@@ -28,6 +28,7 @@
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
+#include "../glm/gtc/matrix_access.hpp" //Getting rows from matrix
 
 #define GROUND_MAT 1
 #define PLATFORM_COLLISION 1

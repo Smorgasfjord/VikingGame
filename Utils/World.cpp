@@ -128,7 +128,6 @@ void World::draw(int mountainSide)
 
 float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point)
 {
-   /*
    float value = 0;
    float A = row1[0] + row2[0];
    float B = row1[1] + row2[1];
@@ -143,8 +142,8 @@ float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point)
    cout << "\t\tPoint (" << point[0] << ", " << point[1] << ", " << point[2] << ", " << point[3] << ")\n";
    cout << "\t\tNormal (" << A << ", " << B << ", " << C << ")" << " D: " << row1[3] + row2[3] << " Length: " << normalize << "\n";
    cout << "\t\tValue: " << value << "\n\n";
-*/
-   return 1;
+
+   return value;
 }
 
 //Returns a vector of GameObjects which need to be drawn
@@ -160,79 +159,80 @@ std::vector<GameObject> World::cull(int mountainSide)
    int i = 0;
    
    for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
-      //cout << "Testing platform " << i++ << "\n";
+      cout << "Testing platform " << i++ << "\n";
       //This will cull any platforms on the opposite side of the mountain
       if (((mountainSide + it->mountainSide) % 2 != 0) || (mountainSide == it->mountainSide)) {
          //Not on the back side, check against each plane of view frustum
          //Get the model transform for this Object
          model = it->model.state.transform;
-         mvp = projection * view * model;
-         /*
+         //model = glm::transpose(model);
+         //view = glm::transpose(view);
+         //projection = glm::transpose(projection);
+         
          cout << "\nModel: \n";
          for(int j = 0; j < 4; j++)
          {
-            for (int k = 0; k < 4; k++) {
-                  cout << " " << model[j][k];
-            }
-            cout << "\n";
+            glm::vec4 row = glm::row(model, j);
+            printf("%f %f %f %f\n", row[0], row[1], row[2], row[3]);
          }
          
          cout << "\nView: \n";
          for(int j = 0; j < 4; j++)
          {
-            for (int k = 0; k < 4; k++) {
-               cout << " " << view[j][k];
-            }
-            cout << "\n";
+            glm::vec4 row = glm::row(view, j);
+            printf("%f %f %f %f\n", row[0], row[1], row[2], row[3]);
          }
          
          cout << "\nProjection: \n";
          for(int j = 0; j < 4; j++)
          {
-            for (int k = 0; k < 4; k++) {
-               cout << " " << projection[j][k];
-            }
-            cout << "\n";
+            glm::vec4 row = glm::row(projection, j);
+            printf("%f %f %f %f\n", row[0], row[1], row[2], row[3]);
          }
          
+         mvp = view * model;
+         cout << "\nMV: \n";
+         for(int j = 0; j < 4; j++)
+         {
+            glm::vec4 row = glm::row(mvp, j);
+            printf("%f %f %f %f\n", row[0], row[1], row[2], row[3]);
+         }
+         
+         mvp = projection * view * model;
          cout << "\nMVP: \n";
          for(int j = 0; j < 4; j++)
          {
-            for (int k = 0; k < 4; k++) {
-               cout << " " << mvp[j][k];
-            }
-            cout << "\n";
+            glm::vec4 row = glm::row(mvp, j);
+            printf("%f %f %f %f\n", row[0], row[1], row[2], row[3]);
          }
-         */
-         //mvp = glm::transpose(mvp);
+         
          point = glm::vec4(it->getPos(), 1);
-         //point = mvp * point;
 
-         //cout << "\tNear\n";
+         cout << "\tNear\n";
          //Negative Z
-         if(testPlane(mvp[2], mvp[3], point) > 0)
+         if(testPlane(glm::column(mvp, 2), glm::column(mvp, 3), point) > 0)
          {
-            //cout << "\tFar\n";
+            cout << "\tFar\n";
             //Positive Z
-            if(testPlane(-mvp[2], mvp[3], point) > 0)
+            if(testPlane(-glm::column(mvp, 2), glm::column(mvp, 3), point) > 0)
             {
-               //cout << "\tBottom\n";
+               cout << "\tBottom\n";
                //Negative Y
-               if(testPlane(mvp[1], mvp[3], point) > 0)
+               if(testPlane(glm::column(mvp, 1), glm::column(mvp, 3), point) > 0)
                {
-                  //cout << "\tTop\n";
+                  cout << "\tTop\n";
                   //Positive Y
-                  if(testPlane(-mvp[1], mvp[3], point) > 0)
+                  if(testPlane(-glm::column(mvp, 1), glm::column(mvp, 3), point) > 0)
                   {
-                     //cout << "\tLeft\n";
+                     cout << "\tLeft\n";
                      //Negative X
-                     testPlane(mvp[0], mvp[3], point);
-                     //{
-                        //cout << "\tRight\n";
+                     if(testPlane(glm::column(mvp, 0), glm::column(mvp, 3), point) > 0)
+                     {
+                        cout << "\tRight\n";
                         //Positive X
-                        if(testPlane(-mvp[0], mvp[3], point) > 0)
+                        if(testPlane(-glm::column(mvp, 0), glm::column(mvp, 3), point) > 0)
                         {
-                           //cout << "\tAdding platform " << i - 1 << "\n";
+                           cout << "\tAdding platform " << i - 1 << "\n";
                            objects.push_back(*it);
                         }
                      }
@@ -242,7 +242,7 @@ std::vector<GameObject> World::cull(int mountainSide)
             }
          }
       }
-   //}
+   }
    return objects;
 }
 

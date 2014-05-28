@@ -33,10 +33,10 @@ void main() {
    vec4 vPosition, transNorm;
    
    /* First model transforms */
-   vPosition = uModelMatrix* vec4(aPosition.x, aPosition.y, aPosition.z, 1);
+   vPosition = uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1);
    vPos = vec3(vPosition.x, vPosition.y, vPosition.z);
-   vPosition = uViewMatrix* vPosition;
-   gl_Position = uProjMatrix*vPosition;
+   vPosition = uViewMatrix * vPosition;
+   gl_Position = uProjMatrix * vPosition;
    transNorm = uNormMatrix * vec4(aNormal.x, aNormal.y, aNormal.z, 0.0);
    /* TO DO REPLACE THIS WITH lighting!!!! */
    vNorm = normalize(vec3(transNorm.x, transNorm.y, transNorm.z));
