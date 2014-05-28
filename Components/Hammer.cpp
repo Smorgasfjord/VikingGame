@@ -93,7 +93,7 @@ void Hammer::flip()
 // What hammer does
 void Hammer::step(double timeStep)
 {
-   setVelocity((bjorn->getPos() + glm::vec3(0.0,0.3f,0.0) + bjornOffset - getPos())/((float)timeStep*2.0f));
+   setVelocity((bjorn->getPos() + bjornOffset - getPos())/((float)timeStep*2.0f));
    if (!collision) {
       addVelocity(bjorn->getVel());
       //setPos(bjorn->getPos());

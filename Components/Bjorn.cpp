@@ -26,6 +26,7 @@
 
 Bjorn::~Bjorn()
 {
+
 }
 
 Bjorn::Bjorn()
@@ -143,7 +144,7 @@ void Bjorn::update(double timeStep) {
       }
    }
    newPos = Mountain::lockOn(getPos(),displacement);
-   moveBy(((newPos+displacement*glm::vec3(-1.2f,0.0f,-1.2f)) - getPos())/10.0f);
+   moveBy(((newPos+displacement*glm::vec3(-1.0f,0.0f,-1.0f)) - getPos())/10.0f*glm::length(getVel()));
 }
 
 void Bjorn::moveRight()
