@@ -46,6 +46,7 @@ class Bjorn : public GameObject
       void unsuspend();
       void update(double timeStep);
       int mountainSide;
+      bool facingRight;
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size);
       bool jumping;

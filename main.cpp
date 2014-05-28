@@ -162,7 +162,7 @@ static void reset()
    eye = lookAt = bjornResetPos;
    eye.y += 1.5f;
    eye.z -= camDistance;
-   lookAt.y += 1.0f;
+   //lookAt.y += 1.0f;
    facingRight = true;
    hammer.setRotation(hammerResetRot);
    bjorn.setPos(bjornResetPos);
@@ -374,24 +374,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          //Movement left/right
          case GLFW_KEY_D:
             moveRight = true;
-            //Check if this spun bjorn around
-            if(!facingRight)
-            {
-               bjorn.rotateBy(glm::vec3(0, 180, 0));
-               hammer.rotateBy(glm::vec3(0, 180, 0));
-               facingRight = true;
-            }
             moveLeft = false;
             break;
          case GLFW_KEY_A:
             moveLeft = true;
-            //Check if this spun bjorn around
-            if(facingRight)
-            {
-               bjorn.rotateBy(glm::vec3(0, 180, 0));
-               hammer.rotateBy(glm::vec3(0, 180, 0));
-               facingRight = false;
-            }
             moveRight = false;
             break;
          //Camera control
@@ -455,6 +441,7 @@ void Animate()
    }
    timeStep = curTime - lastUpdated;
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y);
+   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    prevMouseLoc = currentMouseLoc;
    if (moveLeft) {
       bjorn.moveLeft();
@@ -483,10 +470,11 @@ void Animate()
    
    //Update camera
    lookAt = bjorn.getPos();
+   //lookAt.y += 0.3f;
    Mountain::lockOn(bjorn.getPos(),norm);
-   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.0f + camYOffset);
+   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
    if(!manualCamControl)
-      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.0f);
+      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
       
    if(currentSide != bjorn.mountainSide)
    {

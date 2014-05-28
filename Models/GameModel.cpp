@@ -235,6 +235,7 @@ void color4_to_float4(const aiColor4D *c, float f[4])
 BufferContents findBounds(BufferContents & bc) {
    BufferContents newBc = BufferContents(8,12);
    glm::vec3 min = glm::vec3(0.0f), max = glm::vec3(0.0f), norm;
+   //printf("buffer verts: %i, faces %i\n", bc.verts.size(), bc.faces.size());
    for (int i = 0; i < bc.numVerts; i++) {
       if (bc.verts[i].x > max.x) max.x = bc.verts[i].x;
       else if (bc.verts[i].x < min.x) min.x = bc.verts[i].x;
@@ -243,6 +244,7 @@ BufferContents findBounds(BufferContents & bc) {
       if (bc.verts[i].z > max.z) max.z = bc.verts[i].z;
       else if (bc.verts[i].z < min.z) min.z = bc.verts[i].z;
    }
+   //printf("buffer min: (%f,%f,%f) max (%f,%f,%f)\n", min.x,min.y,min.z, max.x,max.y,max.z);
    norm = glm::normalize(max - min);
    newBc.verts.push_back(glm::vec3(min.x,min.y,min.z)); //lbb
    newBc.verts.push_back(glm::vec3(min.x,min.y,max.z)); //lbf
