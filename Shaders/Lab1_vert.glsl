@@ -19,12 +19,9 @@ uniform vec3 uLColor;
 uniform vec3 uCamPos;
 uniform Material uMat;
 
-
 /*layout(location = 0) in vec3 vertexPosition_modelspace;*/
 
 uniform mat4 uDepthBuff;
-
-
 
 varying vec3 vPos;
 varying vec3 vNorm;

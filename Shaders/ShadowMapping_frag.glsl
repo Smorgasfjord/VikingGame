@@ -1,27 +1,21 @@
 #version 330 core
 
 // Interpolated values from the vertex shaders
-in vec2 UV;
-in vec3 Position_worldspace;
-in vec3 Normal_cameraspace;
+in vec2 vTexCoord;
+in vec3 vPos;
+in vec3 vNorm;
 in vec3 EyeDirection_cameraspace;
 in vec3 LightDirection_cameraspace;
 in vec4 ShadowCoord;
-
-in vec2 vTexCoord;
 
 // Ouput data
 layout(location = 0) out vec3 color;
 
 // Values that stay constant for the whole mesh.
-uniform sampler2D myTextureSampler;
-uniform mat4 MV;
-uniform vec3 LightPosition_worldspace;
-uniform sampler2DShadow shadowMap;
-
 uniform sampler2D uTexUnit;
-
-uniform int simple;
+uniform mat4 MV;
+uniform vec3 LightvPos;
+uniform sampler2DShadow shadowMap;
 
 vec2 poissonDisk[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 
@@ -56,15 +50,15 @@ void main(){
 	float LightPower = 1.0f;
 	
 	// Material properties
-	vec3 MaterialDiffuseColor = texture2D( myTextureSampler, UV ).rgb;
+	vec3 MaterialDiffuseColor = texture( uTexUnit, vTexCoord ).rgb;
 	vec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;
 	vec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);
 
 	// Distance to the light
-	//float distance = length( LightPosition_worldspace - Position_worldspace );
+	//float distance = length( LightvPos - vPos );
 
 	// Normal of the computed fragment, in camera space
-	vec3 n = normalize( Normal_cameraspace );
+	vec3 n = normalize( vNorm );
 	// Direction of the light (from the fragment to the light)
 	vec3 l = normalize( LightDirection_cameraspace );
 	// Cosine of the angle between the normal and the light direction, 
@@ -104,7 +98,7 @@ void main(){
 		// int index = int(16.0*random(gl_FragCoord.xyy, i))%16;
 		//  - A random sample, based on the pixel's position in world space.
 		//    The position is rounded to the millimeter to avoid too much aliasing
-		// int index = int(16.0*random(floor(Position_worldspace.xyz*1000.0), i))%16;
+		// int index = int(16.0*random(floor(vPos.xyz*1000.0), i))%16;
 		
 		// being fully in the shadow will eat up 4*0.2 = 0.8
 		// 0.2 potentially remain, which is quite dark.
@@ -122,17 +116,6 @@ void main(){
 		visibility * MaterialDiffuseColor * LightColor * LightPower * cosTheta+
 		// Specular : reflective highlight, like a mirror
 		visibility * MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5);
-
-   if(simple > .9)
-   {
-      color = vec3(.1, .9, .3);
-//  vec4 texColor0 = vec4(vColor.x, vColor.y, vColor.z, 1);
-  vec3 texColor1 = texture2D(uTexUnit, vTexCoord).rgb;
-
-//   color = vec3(vTexCoord.s, vTexCoord.t, 0);
-   color = vec3(texColor1[0], texColor1[1], texColor1[2]);
-
-   }
 
 }
 

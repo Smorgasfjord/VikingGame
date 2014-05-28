@@ -120,11 +120,12 @@ void Hammer::update(double timeStep) {
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
+      /*
       printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
-                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.thisObj.nod, dat.hitObj.obj, dat.hitObj.tri,
+                //hammer.model.children[dat.thisObj.nod].name.c_str(), dat.thisObj.tri, dat.thisObj.nod, dat.hitObj.obj, dat.hitObj.tri,
                 dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
-
+*/
       if (dat.thisObj.tri == HAMMER_NODE && !collision) {
          setRotation(previousAngle);
          moveBy(-getVel()*(float)timeStep);

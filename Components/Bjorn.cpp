@@ -51,7 +51,6 @@ GameObject("Bjorn")
    this->world = worl;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = Mountain::getSide(pos);
-   cout << "Bjorn is on side " << mountainSide << "\n";
 }
 
 //What Bjorn does

@@ -26,24 +26,26 @@ class GLHandles
 {
    public:
       int ShadeProg;
-      GLint aPosition;
-      GLint aNormal;
+      GLuint aPosition;
+      GLuint aNormal;
       GLuint aUV;
       GLuint uTexUnit;
-      GLint uModelMatrix;
-      GLint uViewMatrix;
-      GLint uProjMatrix;
-      GLint uNormMatrix;
-      GLint uLightPos;
-      GLint uLightColor;
-      GLint uEyePos;
-      GLint uMatAmb;
-      GLint uMatDif;
-      GLint uMatSpec;
-      GLint uMatShine;
-	  GLuint framBuff;
-	  GLuint depthBuff;
-	  GLint depthMatrixID;
+      GLuint uModelMatrix;
+      GLuint uViewMatrix;
+      GLuint uProjMatrix;
+      GLuint uNormMatrix;
+      GLuint uLightPos;
+      GLuint uLightColor;
+      GLuint uEyePos;
+      GLuint uMatAmb;
+      GLuint uMatDif;
+      GLuint uMatSpec;
+      GLuint uMatShine;
+      GLuint frameBuff;
+      //GLuint depthBuff;
+      GLuint depthBiasID;
+      GLuint depthMatrixID;
+      GLuint shadowMapID;
 };
 
 #endif /* defined(___76_Lab1__GLHandles__) */

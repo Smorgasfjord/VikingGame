@@ -69,17 +69,29 @@
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
 
-
 using namespace std;
+
+//Forward Function Declaration
+void SetProjectionMatrix(bool drawText);
+void SetView();
+float p2wx(double in_x);
+float p2wy(double in_y);
+static void error_callback(int error, const char* description);
+void ReshapeGL (GLFWwindow* window, int width, int height);
+static void reset();
+int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName);
+void Initialize();
+void shadow(GameObject *obj);
+void setUpShadows();
+void setUpMainDraw();
 
 //GL basics
 int mainDrawProg, depthBuffProg;
+GLuint depthTexture;
 static float g_width, g_height;
-
 
 //Handles to the shader data
 GLHandles handles;
-
 static const float g_groundSize = 60.0;
 
 //World
@@ -123,237 +135,11 @@ int currentSide;
 float camYOffset = 0;
 bool manualCamControl = false;
 
-glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
-
 //User interaction
 glm::vec2 prevMouseLoc;
 glm::vec2 currentMouseLoc;
 
-/* projection matrix */
-void SetProjectionMatrix(bool drawText) {
-   glm::mat4 Projection;
-   if(!drawText)
-      Projection = glm::perspective(90.0f, (float)g_width/g_height, 0.1f, 45.0f);
-   else
-      Projection = glm::ortho(0.0f, (float)g_width / 2,(float)g_height / 2,0.0f, 0.1f, 100.0f);
-   safe_glUniformMatrix4fv(handles.uProjMatrix, glm::value_ptr(Projection));
-}
-
-/* camera controls */
-void SetView() {
-   glm::mat4 view;
-   view = glm::lookAt(eye, lookAt, upV);
-   safe_glUniformMatrix4fv(handles.uViewMatrix, glm::value_ptr(view));
-}
-
-//Generates a random float within the range min-max
-float randomFloat(float min, float max)
-{
-   return (float)((max - min) * (rand() / (double) RAND_MAX) + min);
-}
-
-int diffMs(timeval t1, timeval t2)
-{
-   return (int)(((t1.tv_sec - t2.tv_sec) * 1000000) +
-           (t1.tv_usec - t2.tv_usec))/1000;
-}
-
-//Resets bjorn to the start of the level, or the last corner he rounded
-static void reset()
-{
-   eye = lookAt = bjornResetPos;
-   eye.y += 1.5f;
-   eye.z -= camDistance;
-   //lookAt.y += 1.0f;
-   bjorn.facingRight = true;
-   hammer.setState(hammerResetState);
-   hammer.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
-   bjorn.setState(bjornResetState);
-   bjorn.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
-   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
-}
-
-/* Initialization of objects in the world. Only occurs Once */
-void setWorld()
-{
-   //Mountain
-   GameModel mountMod;
-   Mountain mount;
-   //Platforms
-   GameModel platMod;
-   std::vector<Platform> platforms;
-   
-   //Initialize models
-   mountMod = loadModel("Models/mountain.dae", handles);
-   platMod = loadModel("Models/platform_2.dae", handles);
-   hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
-   bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
-   simplePlatformMod = genSimpleModel(&platMod);
-   
-   lightPos= glm::vec3(35, 15, -15);
-   
-   //Send light data to shader
-   safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
-   safe_glUniform3f(handles.uLightColor, 1, 1, 1);
-   
-   mount = Mountain(handles, &mountMod);
-   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
-   cout << "Level loaded\n";
-   world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
-   cout << "World worked\n";
-   //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = world.getStart();
-   eye.y += 1;
-   eye.z -= camDistance;
-   currentSide = MOUNT_FRONT;
-    
-   cout << "Platforms placed\n";
-   bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
-   bjornResetState = bjorn.getState();
-   cout << "Bjorn bound\n";
-   hammer = Hammer("homar");
-   hammer.setInWorld(&world, &bjorn, &hammerMod, handles);
-   hammerResetState = hammer.getState();
-   cout << "Hammer held\n";
-   music.start();
-   cout << "Lets play!\n";
-   glfwSetTime(0);
-   lastUpdated = glfwGetTime();
-}
-
-/*function to help load the shaders (both vertex and fragment */
-int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
-   GLuint VS; //handles to shader object
-   GLuint FS; //handles to frag shader object
-   GLint vCompiled, fCompiled, linked; //status of shader
-   int ShadeProg;
-   
-   VS = glCreateShader(GL_VERTEX_SHADER);
-   FS = glCreateShader(GL_FRAGMENT_SHADER);
-   
-   //load the source
-   glShaderSource(VS, 1, &vShaderName, NULL);
-   glShaderSource(FS, 1, &fShaderName, NULL);
-   
-   //compile shader and print log
-   glCompileShader(VS);
-   /* check shader status requires helper functions */
-   printOpenGLError();
-   glGetShaderiv(VS, GL_COMPILE_STATUS, &vCompiled);
-   printShaderInfoLog(VS);
-   
-   //compile shader and print log
-   glCompileShader(FS);
-   /* check shader status requires helper functions */
-   printOpenGLError();
-   glGetShaderiv(FS, GL_COMPILE_STATUS, &fCompiled);
-   printShaderInfoLog(FS);
-   
-   if (!vCompiled || !fCompiled) {
-      printf("Error compiling either shader %s or %s", vShaderName, fShaderName);
-      return 0;
-   }
-   
-   //create a program object and attach the compiled shader
-   ShadeProg = glCreateProgram();
-   glAttachShader(ShadeProg, VS);
-   glAttachShader(ShadeProg, FS);
-   
-   glLinkProgram(ShadeProg);
-   /* check shader status requires helper functions */
-   printOpenGLError();
-   glGetProgramiv(ShadeProg, GL_LINK_STATUS, &linked);
-   printProgramInfoLog(ShadeProg);
-   
-   glUseProgram(ShadeProg);
-   handles.ShadeProg = ShadeProg;
-   /* get handles to attribute and uniform data in shader */
-   handles.aPosition = safe_glGetAttribLocation(ShadeProg, "aPosition");
-   handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
-   handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
-   handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
-   handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
-   handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
-   handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
-   handles.uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
-   handles.uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
-   handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
-   handles.uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
-   handles.uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
-   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uCamPos");
-   handles.uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
-   handles.uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
-   handles.uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");
-   handles.uMatShine = safe_glGetUniformLocation(ShadeProg, "uMat.shine");
-   
-   printf("sucessfully installed shader %d\n", ShadeProg);
-   return ShadeProg;
-}
-
-/* Some OpenGL initialization */
-void Initialize ()
-{
-	// Start Of User Initialization
-	glClearColor(.5, .5, .5, 1.0); // 1.0f, 1.0f, 1.0f, 1.0f);
-	// Black Background
-   //
- 	glClearDepth (1.0f);	// Depth Buffer Setup
- 	glDepthFunc (GL_LEQUAL);	// The Type Of Depth Testing
-	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
-}
-
-/* Main display function */
-void Draw (void)
-{
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//Start our shader
- 	glUseProgram(mainDrawProg);
-   
-   /* set up the projection and camera - do not change */
-   SetProjectionMatrix(false);
-   SetView();
-   
-   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   world.draw(bjorn.mountainSide);
-   bjorn.draw();
-   hammer.draw();
-	//Disable the shader
-	glUseProgram(0);
-}
-
-/* Reshape - note no scaling as perspective viewing*/
-void ReshapeGL (GLFWwindow* window, int width, int height)
-{
-	g_width = (float)width;
-	g_height = (float)height;
-	glViewport (0, 0, (GLsizei)(width), (GLsizei)(height));
-}
-
-float p2wx(double in_x) {
-   if (g_width > g_height) {
-      return g_width / g_height * (2.0 * in_x / g_width - 1.0);
-   }
-   else {
-      return 2.0 * in_x / g_width - 1.0;
-   }
-}
-
-float p2wy(double in_y) {
-   //flip glut y
-   in_y = g_height - in_y;
-   if (g_width < g_height) {
-      return g_height / g_width * (2.0 * in_y / g_height - 1.0);
-   }
-   else {
-      return 2.0 * in_y / g_height - 1.0;
-   }
-}
-
-static void error_callback(int error, const char* description)
-{
-   fputs(description, stderr);
-}
-
+//--------------------------User Interaction-----------------------------------
 /* Tracks mouse movement for the camera */
 void mouse(GLFWwindow* window, double x, double y)
 {
@@ -430,12 +216,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
    }
 }
 
+//-------------------------------State Update---------------------------------
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
    //CollisionData dat;
    glm::vec3 norm;
-
+   
    frames++;
    if ((int)curTime > (int)lastUpdated) {
       frameRate = frames;
@@ -454,7 +241,7 @@ void Animate()
    else if (moveRight) {
       bjorn.moveRight();
    }
-
+   
    //THESE HAVE TO STAY IN THIS ORDER
    bjorn.step(timeStep);
    hammer.step(timeStep);
@@ -463,7 +250,7 @@ void Animate()
    //updates the spatial data structure
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
-  
+   
    //kill bjorn if he's falling too fast
    if(bjorn.getVel().y < -3.0*GRAVITY && !DEBUG_GAME)
       Sound::scream();
@@ -480,7 +267,7 @@ void Animate()
    eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
    if(!manualCamControl)
       camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
-      
+   
    if(currentSide != bjorn.mountainSide)
    {
       //This could be used to add a nice animation for the camera swinging around the mountain
@@ -495,6 +282,163 @@ void Animate()
    lastUpdated = curTime;
 }
 
+//Resets bjorn to the start of the level, or the last corner he rounded
+static void reset()
+{
+   eye = lookAt = bjornResetPos;
+   eye.y += 1.5f;
+   eye.z -= camDistance;
+   //lookAt.y += 1.0f;
+   bjorn.facingRight = true;
+   hammer.setState(hammerResetState);
+   hammer.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
+   bjorn.setState(bjornResetState);
+   bjorn.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
+   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
+}
+
+/* Initialization of objects in the world. Only occurs Once */
+void setWorld()
+{
+   //Mountain
+   GameModel mountMod;
+   Mountain mount;
+   //Platforms
+   GameModel platMod;
+   std::vector<Platform> platforms;
+   
+   //Initialize models
+   mountMod = loadModel("Models/mountain.dae", handles);
+   platMod = loadModel("Models/platform_2.dae", handles);
+   hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
+   bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
+   simplePlatformMod = genSimpleModel(&platMod);
+   
+   lightPos = glm::vec3(35, 15, -15);
+   
+   //Send light data to shader
+   safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
+   safe_glUniform3f(handles.uLightColor, 1, 1, 1);
+   
+   mount = Mountain(handles, &mountMod);
+   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
+   cout << "Level loaded\n";
+   world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
+   cout << "World worked\n";
+   //This stuff all assumes we start on the front of the mountain
+   eye = lookAt = world.getStart();
+   eye.y += 1;
+   eye.z -= camDistance;
+   currentSide = MOUNT_FRONT;
+   
+   cout << "Platforms placed\n";
+   bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
+   bjornResetState = bjorn.getState();
+   cout << "Bjorn bound\n";
+   hammer = Hammer("homar");
+   hammer.setInWorld(&world, &bjorn, &hammerMod, handles);
+   hammerResetState = hammer.getState();
+   cout << "Hammer held\n";
+   music.start();
+   cout << "Lets play!\n";
+   glfwSetTime(0);
+   lastUpdated = glfwGetTime();
+}
+
+//------------------------------Draw Stuff-------------------------------------
+/* Main display function */
+void Draw (void)
+{
+   //Shadows
+   setUpShadows();
+   shadow(&bjorn);
+   shadow(&hammer);
+   
+	//Start the draw shader
+ 	setUpMainDraw();
+   
+   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+   world.draw(bjorn.mountainSide);
+   bjorn.draw();
+   hammer.draw();
+	//Disable the shader
+	glUseProgram(0);
+}
+
+//Sets up some OpenGL State for depth buffer, and starts the shader
+void setUpShadows()
+{
+   //glBindFramebuffer(GL_FRAMEBUFFER, handles.frameBuff);
+   glViewport(0,0,1024,1024); // Render on the whole framebuffer
+   
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
+   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glUseProgram(depthBuffProg);
+}
+
+void setUpMainDraw()
+{
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glViewport(0,0,1024,768); // Render on the whole framebuffer
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
+   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glUseProgram(mainDrawProg);
+   
+   //Pass depth texture
+   glActiveTexture(GL_TEXTURE1);
+   glBindTexture(GL_TEXTURE_2D, depthTexture);
+   glUniform1i(handles.shadowMapID, 1);
+   
+   //set up the projection and camera - do not change
+   SetProjectionMatrix(false);
+   SetView();
+}
+
+void shadow(GameObject *obj)
+{
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+   glm::mat4 dViewMatrix = glm::lookAt(lightPos, glm::vec3(0,0,0), glm::vec3(0,1,0));
+   glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
+   
+   // Send our transformation to the currently bound shader,
+   // in the "MVP" uniform
+   glUniformMatrix4fv(handles.depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+   //All meshes
+   for (int i = 0; i < obj->model.meshes.size(); i++) {
+      // 1rst attribute buffer : vertices
+      glEnableVertexAttribArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, obj->model.meshes[i].buffDat.vbo);
+      glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      
+      // Index buffer
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.meshes[i].buffDat.ibo);
+      // Draw the shadow onto the frame
+      glDrawElements(GL_TRIANGLES,obj->model.meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+   }
+   
+   //All children, this is a little silly since it's so similar oh well
+   for (int j = 0; j < obj->model.children.size(); j++) {
+      for (int i = 0; i < obj->model.children[j].meshes.size(); i++) {
+         // 1rst attribute buffer : position
+         glEnableVertexAttribArray(0);
+         glBindBuffer(GL_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.vbo);
+         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+         
+         // Index buffer
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
+         // Draw the shadow onto the frame
+         glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+      }
+   }
+   
+   glDisableVertexAttribArray(0);
+   //Store the depthMVP in this obj
+   obj->setDepthMVP(depthMVP);
+}
+
+//--------------------------------Main-----------------------------------------
 int main( int argc, char *argv[] )
 {
    GLFWwindow* window;
@@ -509,12 +453,11 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    
    //These may be mac only, not sure
-   /* How to specify OpenGL version 3.3 if/when we need it
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    */
+
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -527,9 +470,10 @@ int main( int argc, char *argv[] )
    GLenum err = glewInit();
    if (GLEW_OK != err)
    {
-        /* Problem: glewInit failed, something is seriously wrong. */
+        // Problem: glewInit failed, something is seriously wrong.
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
    }
+
 
    glfwSetKeyCallback(window, key_callback);
    glfwSetMouseButtonCallback(window, mouseClick);
@@ -537,7 +481,7 @@ int main( int argc, char *argv[] )
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
    glfwSetWindowPos(window, 100, 100);
-   
+
    unsigned int Error = glewInit();
    if (Error != GLEW_OK)
    {
@@ -549,20 +493,18 @@ int main( int argc, char *argv[] )
    //test the openGL version
    getGLversion();
    //install the shader
-   
-   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
+
+   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/ShadowMapping_vert.glsl"), textFileRead((char *)"Shaders/ShadowMapping_frag.glsl"));
    if (mainDrawProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-   
-   /* For loading a 2nd shader if/when we need it
+
    depthBuffProg = InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"));
    if (depthBuffProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-    */
    
    Initialize();
    setWorld();
@@ -583,5 +525,173 @@ int main( int argc, char *argv[] )
    glfwTerminate();
    exit(EXIT_SUCCESS);
    return 0;
+}
+
+//----------------------------Boring GL Stuff---------------------------------
+/* projection matrix */
+void SetProjectionMatrix(bool drawText) {
+   glm::mat4 Projection;
+   if(!drawText)
+      Projection = glm::perspective(90.0f, (float)g_width/g_height, 0.1f, 45.0f);
+   else
+      Projection = glm::ortho(0.0f, (float)g_width / 2,(float)g_height / 2,0.0f, 0.1f, 100.0f);
+   safe_glUniformMatrix4fv(handles.uProjMatrix, glm::value_ptr(Projection));
+}
+
+/* camera controls */
+void SetView() {
+   glm::mat4 view;
+   view = glm::lookAt(eye, lookAt, upV);
+   safe_glUniformMatrix4fv(handles.uViewMatrix, glm::value_ptr(view));
+}
+
+/*function to help load the shaders (both vertex and fragment */
+int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
+   GLuint VS; //handles to shader object
+   GLuint FS; //handles to frag shader object
+   GLint vCompiled, fCompiled, linked; //status of shader
+   int ShadeProg;
+
+   VS = glCreateShader(GL_VERTEX_SHADER);
+   FS = glCreateShader(GL_FRAGMENT_SHADER);
+
+   //load the source
+   glShaderSource(VS, 1, &vShaderName, NULL);
+   glShaderSource(FS, 1, &fShaderName, NULL);
+
+   //compile shader and print log
+   glCompileShader(VS);
+   /* check shader status requires helper functions */
+   printOpenGLError();
+   glGetShaderiv(VS, GL_COMPILE_STATUS, &vCompiled);
+   printShaderInfoLog(VS);
+   
+   //compile shader and print log
+   glCompileShader(FS);
+   /* check shader status requires helper functions */
+   printOpenGLError();
+   glGetShaderiv(FS, GL_COMPILE_STATUS, &fCompiled);
+   printShaderInfoLog(FS);
+   
+   if (!vCompiled || !fCompiled) {
+      printf("Error compiling either shader %s or %s", vShaderName, fShaderName);
+      return 0;
+   }
+   
+   //create a program object and attach the compiled shader
+   ShadeProg = glCreateProgram();
+   glAttachShader(ShadeProg, VS);
+   glAttachShader(ShadeProg, FS);
+   
+   glLinkProgram(ShadeProg);
+   /* check shader status requires helper functions */
+   printOpenGLError();
+   glGetProgramiv(ShadeProg, GL_LINK_STATUS, &linked);
+   printProgramInfoLog(ShadeProg);
+   
+   glUseProgram(ShadeProg);
+   handles.ShadeProg = ShadeProg;
+   /* get handles to attribute and uniform data in shader */
+   
+   //THIS IS SO STUPID
+   handles.aPosition = 0;
+   handles.aUV = 1;
+   handles.aNormal = 2;
+   /*
+   handles.aPosition = safe_glGetAttribLocation(ShadeProg, "aPosition");
+   handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
+   handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
+    */
+   if(safe_glGetUniformLocation(ShadeProg, "uTexUnit") >= 0)
+      handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
+   if(safe_glGetUniformLocation(ShadeProg, "depthMVP") >= 0)
+      handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
+   if(safe_glGetUniformLocation(ShadeProg, "depthBiasID") >= 0)
+      handles.depthBiasID = safe_glGetUniformLocation(ShadeProg, "depthBiasID");
+   if(safe_glGetUniformLocation(ShadeProg, "ShadowMapID") >= 0)
+      handles.shadowMapID = safe_glGetUniformLocation(ShadeProg, "ShadowMapID");
+   if(safe_glGetUniformLocation(ShadeProg, "uProjMatrix") >= 0)
+      handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
+   if(safe_glGetUniformLocation(ShadeProg, "uViewMatrix") >= 0)
+      handles.uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
+   if(safe_glGetUniformLocation(ShadeProg, "uModelMatrix") >= 0)
+      handles.uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
+   //handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
+   if(safe_glGetUniformLocation(ShadeProg, "uLightPos") >= 0)
+      handles.uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
+   //handles.uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
+   //handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uCamPos");
+    /*
+   handles.uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
+   handles.uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
+   handles.uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");
+   handles.uMatShine = safe_glGetUniformLocation(ShadeProg, "uMat.shine");
+   */
+   
+   printf("sucessfully installed shader %d\n", ShadeProg);
+   return ShadeProg;
+}
+
+/* Some OpenGL initialization */
+void Initialize ()
+{
+	// Start Of User Initialization
+	glClearColor(.5, .5, .5, 1.0); // 1.0f, 1.0f, 1.0f, 1.0f);
+	// Black Background
+   //
+ 	glClearDepth (1.0f);	// Depth Buffer Setup
+ 	glDepthFunc (GL_LEQUAL);	// The Type Of Depth Testing
+	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
+   
+   //Create depth texture
+   glGenTextures(1, &depthTexture);
+	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+   
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+   
+   //Create framebuffer for shadows
+   handles.frameBuff = 0;
+	glGenFramebuffers(1, &handles.frameBuff);
+	glBindFramebuffer(GL_FRAMEBUFFER, handles.frameBuff);
+}
+
+/* Reshape - note no scaling as perspective viewing*/
+void ReshapeGL (GLFWwindow* window, int width, int height)
+{
+	g_width = (float)width;
+	g_height = (float)height;
+	glViewport (0, 0, (GLsizei)(width), (GLsizei)(height));
+}
+
+float p2wx(double in_x) {
+   if (g_width > g_height) {
+      return g_width / g_height * (2.0 * in_x / g_width - 1.0);
+   }
+   else {
+      return 2.0 * in_x / g_width - 1.0;
+   }
+}
+
+float p2wy(double in_y) {
+   //flip glut y
+   in_y = g_height - in_y;
+   if (g_width < g_height) {
+      return g_height / g_width * (2.0 * in_y / g_height - 1.0);
+   }
+   else {
+      return 2.0 * in_y / g_height - 1.0;
+   }
+}
+
+static void error_callback(int error, const char* description)
+{
+   fputs(description, stderr);
 }
 #endif

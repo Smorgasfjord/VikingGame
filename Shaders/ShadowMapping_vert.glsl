@@ -1,58 +1,44 @@
 #version 330 core
 
 // Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec2 vertexUV;
-layout(location = 2) in vec3 vertexNormal_modelspace;
-layout(location = 3) in vec2 aTexCoord;
-
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec2 aUV;
+layout(location = 2) in vec3 aNormal;
 
 // Output data; varying per fragment
-out vec2 UV;
-out vec3 Position_worldspace;
-out vec3 Normal_cameraspace;
+out vec3 vPos;
+out vec3 vNorm;
 out vec3 EyeDirection_cameraspace;
 out vec3 LightDirection_cameraspace;
 out vec4 ShadowCoord;
-
 out vec2 vTexCoord;
-out vec2 vColor;
 
-uniform mat4 MVP;
-uniform mat4 V;
-uniform mat4 M;
-uniform vec3 LightInvDirection_worldspace;
+uniform mat4 uProjMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uModelMatrix;
+uniform vec3 uLightPos;
 uniform mat4 DepthBiasMVP;
-uniform int simple;
-
 
 void main(){
-
+   mat4 MVP = uProjMatrix * uViewMatrix * uModelMatrix;
 	// Output position of the vertex, in clip space : MVP * position
-	gl_Position =  MVP * vec4(vertexPosition_modelspace,1);
+	gl_Position =  MVP * vec4(aPosition,1);
 	
-	ShadowCoord = DepthBiasMVP * vec4(vertexPosition_modelspace,1);
+	ShadowCoord = DepthBiasMVP * vec4(aPosition,1);
 	
 	// Position of the vertex, in worldspace : M * position
-	Position_worldspace = (M * vec4(vertexPosition_modelspace,1)).xyz;
+	vPos = (uModelMatrix * vec4(aPosition,1)).xyz;
 	
 	// camera Vector, in camera space.
 	// camera space makes the camera the origin (0,0,0) <thus the vec3(0,0,0)>
-	EyeDirection_cameraspace = vec3(0,0,0) - ( V * M * vec4(vertexPosition_modelspace,1)).xyz;
+	EyeDirection_cameraspace = vec3(0,0,0) - ( uViewMatrix * uModelMatrix * vec4(aPosition,1)).xyz;
 
 	// lightVector, in camera space
-	LightDirection_cameraspace = (V*vec4(LightInvDirection_worldspace,0)).xyz;
+	LightDirection_cameraspace = (uViewMatrix * vec4(uLightPos,0)).xyz;
 	
-	Normal_cameraspace = ( V * M * vec4(vertexNormal_modelspace,0)).xyz;
+	vNorm = (uViewMatrix * uModelMatrix * vec4(aNormal,0)).xyz;
 	
 	// UV of the vertex. No special space for this one.
-	UV = vertexUV;
-
-   if(simple > .9)
-   {
-     vTexCoord = aTexCoord;
-   }
-
-
+	vTexCoord = aUV;
 }
 
