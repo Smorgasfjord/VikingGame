@@ -90,13 +90,15 @@ GameModel simplePlatformMod;
 //Bjorn
 GameModel bjornMod;
 Bjorn bjorn;
+Transform_t bjornResetState;
 glm::vec3 bjornResetPos, bjornResetRot;
 static bool moveLeft = false, moveRight = false;
-bool facingRight = true;
 
 //Hammer
 int hammerTime;
+Transform_t hammerResetState;
 glm::vec3 hammerResetRot;
+glm::vec3 hammerResetPos;
 GameModel hammerMod;
 Hammer hammer;
 
@@ -163,11 +165,11 @@ static void reset()
    eye.y += 1.5f;
    eye.z -= camDistance;
    //lookAt.y += 1.0f;
-   facingRight = true;
-   hammer.setRotation(hammerResetRot);
-   bjorn.setPos(bjornResetPos);
-   bjorn.setRotation(bjornResetRot);
-   bjorn.setVelocity(glm::vec3(0.0f));
+   bjorn.facingRight = true;
+   hammer.setState(hammerResetState);
+   hammer.rotateBy(glm::vec3(0, 90, 0));
+   bjorn.setState(bjornResetState);
+   bjorn.rotateBy(glm::vec3(0, 90, 0));
    bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
 }
 
@@ -207,12 +209,11 @@ void setWorld()
     
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
-   bjornResetPos = bjorn.getPos();
-   bjornResetRot = bjorn.getRot();
+   bjornResetState = bjorn.getState();
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.setInWorld(&world, &bjorn, &hammerMod, handles);
-   hammerResetRot = hammer.getRot();
+   hammerResetState = hammer.getState();
    cout << "Hammer held\n";
    music.start();
    cout << "Lets play!\n";
@@ -482,9 +483,8 @@ void Animate()
       cout << "camera changing sides\n";
       currentSide = bjorn.mountainSide;
       //Update reset variables for checkpoint
-      bjornResetPos = bjorn.getPos();
-      bjornResetRot = bjorn.getRot();
-      hammerResetRot = hammer.getRot();
+      bjornResetState = bjorn.getState();
+      hammerResetState = hammer.getState();
    }
    eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    

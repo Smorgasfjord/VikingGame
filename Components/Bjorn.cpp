@@ -51,6 +51,7 @@ GameObject("Bjorn")
    this->world = worl;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = Mountain::getSide(pos);
+   cout << "Bjorn is on side " << mountainSide << "\n";
 }
 
 //What Bjorn does
@@ -75,7 +76,6 @@ void Bjorn::step(double timeStep)
    addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
    moveBy(getVel()*(float)timeStep);
    
-   //setPos(Mountain::lockOn(getPos()));
    glm::vec3 newPos = getPos();
    newPos.z += 1.0f;
    newSide = Mountain::getSide(newPos);

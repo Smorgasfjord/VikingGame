@@ -106,6 +106,10 @@ vec3 GameObject::getScale() {
    return model.state.scale;
 }
 
+Transform_t GameObject::getState() {
+   return model.state;
+}
+
 //------------------------------Set-ers------------------------------
 
 void GameObject::setPos(glm::vec3 pos)
@@ -129,6 +133,11 @@ void GameObject::setRotation(glm::vec3 rot)
    model.state.rotation *= rotate(mat4(1.0f), rot.y, vec3(0.0f, 1.0f, 0.0f));
    model.state.rotation *= rotate(mat4(1.0f), rot.z, vec3(0.0f, 0.0f, 1.0f));
    updateTransformMatrix();
+}
+
+void GameObject::setState(Transform_t state)
+{
+   model.state = state;
 }
 
 //-----------------------------Updaters------------------------------

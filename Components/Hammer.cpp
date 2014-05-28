@@ -8,6 +8,8 @@
 
 #include "Hammer.h"
 #define pi 3.14159
+#define HAMMER_NODE 4
+#define PICK_NODE 2
 
 Hammer::~Hammer()
 {
@@ -100,6 +102,7 @@ void Hammer::step(double timeStep)
    addVelocity((bjorn->getPos() + glm::vec3(0.0,0.3f,0.0) + bjornOffset - getPos())/((float)timeStep*2.0f));
    setRotation(desiredRotation);
    moveBy(getVel()*(float)timeStep);
+   
    //Update hammer rotation if we're on a different side of the mountain
    if(mountainSide != bjorn->mountainSide)
    {
@@ -123,11 +126,11 @@ void Hammer::update(double timeStep) {
                 dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
 
-      if (dat.thisObj.tri == 4 && !collision) {
+      if (dat.thisObj.tri == HAMMER_NODE && !collision) {
          setRotation(previousAngle);
          moveBy(-getVel()*(float)timeStep);
          //m/s         = m/s           
-         activeForce = dat.collisionStrength * (float)(GRAVITY * .75f);
+         activeForce = dat.collisionStrength * (float)(GRAVITY * 2.0f);
          //printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
          //                  m          /       s
          //moveBy(-getVel()*(float)timeStep);
@@ -135,7 +138,7 @@ void Hammer::update(double timeStep) {
          setVelocity(bjorn->getVel());
          Sound::hammerSmash();
       }
-      else if (dat.thisObj.tri == 2 && !collision) {
+      else if (dat.thisObj.tri == PICK_NODE && !collision) {
          moveBy(-getVel()*(float)timeStep);
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
@@ -151,7 +154,7 @@ void Hammer::update(double timeStep) {
          activeForce = dat.collisionStrength*(float)GRAVITY; 
          //                  m/s
          if (glm::length(getPos() - bjorn->getPos()+glm::vec3(0.0,0.3f,0.0)) < 1.79f) {
-            if (dat.thisObj.tri == 2) {
+            if (dat.thisObj.tri == PICK_NODE) {
                bjorn->setVelocity(-activeForce);//(float)timeStep);
             }
             else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*0.2f));//(float)timeStep);

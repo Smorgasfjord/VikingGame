@@ -141,6 +141,7 @@ class GameObject {
       glm::vec3 getRot();
       glm::mat4 getRotMat();
       glm::vec3 getScale();
+      Transform_t getState();
       //Update object
       void moveBy(glm::vec3 amount);
       void scaleBy(glm::vec3 amount);
@@ -149,6 +150,7 @@ class GameObject {
       void setPos(glm::vec3 pos);
       void setScale(glm::vec3 scale);
       void setRotation(glm::vec3 rot);
+      void setState(Transform_t state);
       //Drawing
       void draw();
       virtual void update(double timeStep);

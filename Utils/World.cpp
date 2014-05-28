@@ -168,7 +168,8 @@ std::vector<GameObject> World::cull(int mountainSide)
          //model = glm::transpose(model);
          //view = glm::transpose(view);
          //projection = glm::transpose(projection);
-         
+         objects.push_back(*it);
+         /*
          cout << "\nModel: \n";
          for(int j = 0; j < 4; j++)
          {
@@ -241,6 +242,7 @@ std::vector<GameObject> World::cull(int mountainSide)
                }
             }
          }
+          */
       }
    }
    return objects;
