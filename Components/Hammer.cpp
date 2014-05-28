@@ -25,13 +25,15 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .25));
    scaleBy(glm::vec3(.3f));
-   rotateBy(glm::vec3(0, 180, -90));
+   rotateBy(glm::vec3(0, 180, 270));
    this->world = world;
    bjorn = character;
    previousAngle = glm::vec3(0.0f);
    hammerSide = true;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = bjorn->mountainSide;
+   bjornOffset = glm::vec3(0.0f);
+   desiredRotation = previousAngle;
 }
 
 float d2r(float val)
@@ -41,7 +43,11 @@ float d2r(float val)
 
 void Hammer::updatePos(float x, float y)
 {
-   moveBy(glm::vec3(-.5, 0, 0));
+   if (!bjorn->facingRight) x *= -1.0;
+   bjornOffset = glm::vec3(bjorn->getRotMat() * glm::vec4(-0.2f,y,x,0.0));
+   if (glm::length(bjornOffset) > 0.7) {
+      bjornOffset *= 0.7f / glm::length(bjornOffset);
+   }
 }
 
 void Hammer::updateAngle(float x, float y)
@@ -57,17 +63,18 @@ void Hammer::updateAngle(float x, float y)
       //Rotation is flipped if the hammer is flipped
       if(bjorn->mountainSide == MOUNT_FRONT || bjorn->mountainSide == MOUNT_BACK)
       {
-         if(hammerSide)
-            setRotation(glm::vec3(currentAngle.x, currentAngle.y, -angle * (180.0 / pi)));
+         
+         if(((int)getRot().y % 360) == 180)
+            desiredRotation = glm::vec3(currentAngle.x, currentAngle.y, 360.0-angle * (180.0 / pi));
          else
-            setRotation(glm::vec3(currentAngle.x, currentAngle.y, angle * (180.0 / pi)));
+            desiredRotation = glm::vec3(currentAngle.x, currentAngle.y, 360.0 + angle * (180.0 / pi));
       }
       else
       {
-         if(hammerSide)
-            setRotation(glm::vec3(angle * (180.0 / pi), currentAngle.y, currentAngle.z));
+         if(((int)getRot().y % 360) == 180)
+            desiredRotation = glm::vec3(360.0 + angle * (180.0 / pi), currentAngle.y, currentAngle.z);
          else
-            setRotation(glm::vec3(-angle * (180.0 / pi), currentAngle.y, currentAngle.z));
+            desiredRotation = glm::vec3(360.0-angle * (180.0 / pi), currentAngle.y, currentAngle.z);
       }
    }
 }
@@ -86,18 +93,12 @@ void Hammer::step(double timeStep)
 {
    setVelocity(bjorn->getVel());
    if (!collision) {
-      setPos(bjorn->getPos());
+      setVelocity(bjorn->getVel());
+      //setPos(bjorn->getPos());
 
-      //Move the hammer to the proper position
-      if(bjorn->mountainSide == MOUNT_FRONT)
-         moveBy(glm::vec3(0, 0, -.2));
-      else if(bjorn->mountainSide == MOUNT_RIGHT)
-         moveBy(glm::vec3(-.2, 0, 0));
-      else if(bjorn->mountainSide == MOUNT_BACK)
-         moveBy(glm::vec3(0, 0, .2));
-      else
-         moveBy(glm::vec3(.2, 0, 0));
    }
+   addVelocity((bjorn->getPos() + glm::vec3(0.0,0.3f,0.0) + bjornOffset - getPos())/((float)timeStep*2.0f));
+   setRotation(desiredRotation);
    moveBy(getVel()*(float)timeStep);
    //Update hammer rotation if we're on a different side of the mountain
    if(mountainSide != bjorn->mountainSide)
@@ -105,36 +106,15 @@ void Hammer::step(double timeStep)
       if(mountainSide < bjorn->mountainSide)
          rotateBy(glm::vec3(0, 90, 0));
       else
-         rotateBy(glm::vec3(0, -90, 0));
+         rotateBy(glm::vec3(0, 270, 0));
       mountainSide = bjorn->mountainSide;
    }
-   
-   /*glm::vec3 hammerTip = getPos();
-   hammerTip.y += sin(d2r(getRot().z + 90));
-   if(hammerSide)
-      hammerTip.x -= cos(d2r(getRot().z + 90));
-   else
-      hammerTip.x += cos(d2r(getRot().z + 90));
-   if(world.detectCollision(hammerTip))
-   {
-      if(hammerSide && abs(previousAngle - getRot().z) > 4)
-      {
-         bjorn->launch(d2r(35));
-      }
-      else if(!hammerSide)
-         bjorn->suspend();
-      collision = true;
-   }
-   else
-   {
-      bjorn->unsuspend();
-   }*/
    return;
 }
 
 // How the world reacts to Hommur
 void Hammer::update(double timeStep) {
-   glm::vec3 hammerTip, movedAngle;
+   glm::vec3 hammerTip, movedAngle, newPos, displacement;
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
@@ -144,14 +124,19 @@ void Hammer::update(double timeStep) {
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
 
       if (dat.thisObj.tri == 4 && !collision) {
+         setRotation(previousAngle);
+         moveBy(-getVel()*(float)timeStep);
          //m/s         = m/s           
-         activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
+         activeForce = dat.collisionStrength * (float)(GRAVITY * .75f);
+         //printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
          //                  m          /       s
-         bjorn->addVelocity(-activeForce);//(float)timeStep);
+         //moveBy(-getVel()*(float)timeStep);
+         bjorn->addVelocity(-activeForce);///(float)timeStep);
+         setVelocity(bjorn->getVel());
          Sound::hammerSmash();
       }
       else if (dat.thisObj.tri == 2 && !collision) {
-      moveBy(-getVel()*(float)timeStep);
+         moveBy(-getVel()*(float)timeStep);
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
          bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
@@ -159,16 +144,17 @@ void Hammer::update(double timeStep) {
          bjorn->suspend();
       }
       else if (collision) {
+         //setRotation(previousAngle);
+         moveBy(-getVel()*(float)timeStep);
          bjorn->suspend();
          //m/s         = m/s                     - (m/s^2                * s)
-         activeForce = dat.collisionStrength*(float)GRAVITY/2.0f; 
+         activeForce = dat.collisionStrength*(float)GRAVITY; 
          //                  m/s
-         if (glm::length(getPos() - bjorn->getPos()) < 0.4f) {
+         if (glm::length(getPos() - bjorn->getPos()+glm::vec3(0.0,0.3f,0.0)) < 1.79f) {
             if (dat.thisObj.tri == 2) {
                bjorn->setVelocity(-activeForce);//(float)timeStep);
-               moveBy(-getVel()*(float)timeStep);
             }
-            else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*0.1f));//(float)timeStep);
+            else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*0.2f));//(float)timeStep);
          }
          else {
             bjorn->addVelocity((getPos() - bjorn->getPos())*0.05f);
@@ -178,13 +164,9 @@ void Hammer::update(double timeStep) {
       collision = true;
       //bjorn->suspend();
       movedAngle = getRot();
-      setRotation(previousAngle);
    }
    else {
       bjorn->unsuspend();
       collision = false;
    }
-   //moveBy(getVel()*(float)timeStep);
-   //setPos(glm::vec3(bjorn->getPos().x,bjorn->getPos().y + 0.4f,bjorn->getPos().z));
-   //updateAngle(hammerTip.x,hammerTip.y);
 }

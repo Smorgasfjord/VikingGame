@@ -85,46 +85,43 @@ void Mountain::loadHeightMaps()
          /* Convert image to RGBA */
          ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
          
-         cout << "Loaded height map " << filename << "\n";
-         heightMaps[i] = ilGetData();
-         
-      }
-      else
-         printf("Couldn't load Image: %s\n", filename.c_str());
+      cout << "Loaded height map " << filename << "\n";
+      heightMaps[i] = ilGetData();
    }
+   else
+      printf("Couldn't load Image: %s\n", filename.c_str());
+}
 }
 
 float interpolateDepth(float x, float y, int side, glm::vec3 & norms) {
    int depths[4];
    float interps[4];
-   float xfrac, yfrac, xint, yint, depth;
+   float xfrac, yfrac, xint, yint, depth = 0;
 
    xfrac = modf(x, &xint);
    yfrac = modf(y, &yint);
 
-   depths[0] = heightMaps[side][((int)y * WIDTH + (int)x) * 4];
-   depths[1] = heightMaps[side][((int)(y+1) * WIDTH + (int)x) * 4];
-   depths[2] = heightMaps[side][((int)y * WIDTH + (int)(x+1)) * 4];
-   depths[3] = heightMaps[side][((int)(y+1) * WIDTH + (int)(x+1)) * 4];
+   if(x < IMG_MAX_X && x > 0 && y < IMG_MAX_Y && y > IMG_MIN_Y)
+   {
+      depths[0] = heightMaps[side][((int)y * WIDTH + (int)x) * 4];
+      depths[1] = heightMaps[side][((int)(y+1) * WIDTH + (int)x) * 4];
+      depths[2] = heightMaps[side][((int)y * WIDTH + (int)(x+1)) * 4];
+      depths[3] = heightMaps[side][((int)(y+1) * WIDTH + (int)(x+1)) * 4];
 
-   interps[0] = (float)depths[0] * (1.0f - xfrac) * (1.0f - yfrac); 
-   interps[1] = (float)depths[1] * (1.0f - xfrac) * yfrac;
-   interps[2] = (float)depths[2] * xfrac * (1.0f - yfrac);
-   interps[3] = (float)depths[3] * xfrac * yfrac;
-   depth = interps[0];
-   depth += interps[1];
-   depth += interps[2];
-   depth += interps[3];
+      interps[0] = (float)depths[0] * (1.0f - xfrac) * (1.0f - yfrac); 
+      interps[1] = (float)depths[1] * (1.0f - xfrac) * yfrac;
+      interps[2] = (float)depths[2] * xfrac * (1.0f - yfrac);
+      interps[3] = (float)depths[3] * xfrac * yfrac;
+      depth = interps[0];
+      depth += interps[1];
+      depth += interps[2];
+      depth += interps[3];
 
-   norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*255.0f))*(1.0f-yfrac) + 
-              sin((float)(depths[1] - depths[3])*M_PI/(2.0f*255.0f))*yfrac;
-   norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*255.0f))*(1.0f-xfrac) + 
-              sin((float)(depths[3] - depths[2])*M_PI/(2.0f*255.0f))*xfrac;
-   if (norms.y*norms.y + norms.x*norms.x < 1.0f) {
+      norms.x = sin((float)(depths[0] - depths[2])*M_PI/(2.0f*255.0f))*(1.0f-yfrac) + 
+                 sin((float)(depths[1] - depths[3])*M_PI/(2.0f*255.0f))*yfrac;
+      norms.y = sin((float)(depths[1] - depths[0])*M_PI/(2.0f*255.0f))*(1.0f-xfrac) + 
+                 sin((float)(depths[3] - depths[2])*M_PI/(2.0f*255.0f))*xfrac;
       norms.z = sqrt(1.0f - (norms.y*norms.y + norms.x*norms.x));
-   }
-   else {
-      norms.z = -sqrt(norms.y*norms.y + norms.x*norms.x - 1.0f);
    }
 
    norms = glm::normalize(norms);
@@ -134,36 +131,25 @@ float interpolateDepth(float x, float y, int side, glm::vec3 & norms) {
 glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
 {
    int side = Mountain::getSide(pos);
-   int x,y;
-   float depthOffset;
-   float depth, testDepth, testx, testy;
+   float x, y, depthOffset, depth;
    glm::vec3 mountPos = pos;
    
    //map position into texture coordinates, x value changes based on side, y is constant
-   if(side == MOUNT_FRONT ) {
-      x = (MOUNT_WIDTH - pos.x) * (IMG_MAX_X / MOUNT_WIDTH);
-      testx = ((float)MOUNT_WIDTH - pos.x) * ((float)IMG_MAX_X / MOUNT_WIDTH);
-   }
-   else if(side == MOUNT_BACK) {
-      x = pos.x * (IMG_MAX_X / MOUNT_WIDTH);
-      testx = pos.x * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
-   }
-   else if(side == MOUNT_LEFT) {
-      x = (MOUNT_WIDTH - pos.z) * (IMG_MAX_X / MOUNT_WIDTH);
-      testx = ((float)MOUNT_WIDTH - pos.z) * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
-   }
-   else {
-      x = pos.z * (IMG_MAX_X / MOUNT_WIDTH);
-      testx = pos.z * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
-   }
+   if(side == MOUNT_FRONT )
+      x = ((float)MOUNT_WIDTH - pos.x) * ((float)IMG_MAX_X / MOUNT_WIDTH);
+   else if(side == MOUNT_BACK)
+      x = pos.x * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
+   else if(side == MOUNT_LEFT)
+      x = ((float)MOUNT_WIDTH - pos.z) * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
+   else
+      x = pos.z * ((float)IMG_MAX_X / (float)MOUNT_WIDTH);
    
-   y = ((MOUNT_HEIGHT - pos.y) * ((IMG_MAX_Y - IMG_MIN_Y) / MOUNT_HEIGHT)) + IMG_MIN_Y;
-   testy = (((float)MOUNT_HEIGHT - pos.y) * (((float)IMG_MAX_Y - (float)IMG_MIN_Y) / (float)MOUNT_HEIGHT)) + (float)IMG_MIN_Y;
+   y = (((float)MOUNT_HEIGHT - pos.y) * (((float)IMG_MAX_Y - (float)IMG_MIN_Y) / (float)MOUNT_HEIGHT)) + (float)IMG_MIN_Y;
    if (y > 0) { 
       //Index into the data
-      depthOffset = interpolateDepth(testx,testy,side,norms);
+      depthOffset = interpolateDepth(x,y,side,norms);
       
-      printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, testx, testy);
+      printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, x, y);
       
       //Convert depth back to world
       if(side == MOUNT_FRONT)
@@ -172,8 +158,8 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
          depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_BACK_TOP_DEPTH);
       //Set the depth based on what side of the mountain the object is on
       if (depthOffset == 0.0f) {
-         norms.x = (testx - (float)IMG_MAX_X/2.0f)/((float)IMG_MAX_X*0.5f);
-         norms.z = fabsf((float)IMG_MAX_X/2.0f-testx)/((float)IMG_MAX_X*0.5f);
+         norms.x = (x - (float)IMG_MAX_X/2.0f)/((float)IMG_MAX_X*0.5f);
+         norms.z = fabsf((float)IMG_MAX_X/2.0f-x)/((float)IMG_MAX_X*0.5f);
          norms.y = 0.0f;
          norms = glm::normalize(norms);
       }
@@ -191,7 +177,7 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
          if(depthOffset > 0.0f) mountPos.x = (float)MOUNT_WIDTH - depth;
          norms = (glm::rotate(glm::mat4(1.0f),270.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
       }
-      printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, testx, testy);
+      printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, x, y);
    }
    return mountPos;
 }
@@ -218,7 +204,6 @@ int Mountain::getSide(glm::vec3 pos)
    int side;
    float fl = Mountain::testLeftDiagonal(pos);
    float fr = Mountain::testRightDiagonal(pos);
-   //cout << "Front left: " << fl << " Front Right: " << fr << "\n";
    
    //Determine which mountain side we're on
    if(fr > 0 && fl < 0)
@@ -231,65 +216,4 @@ int Mountain::getSide(glm::vec3 pos)
       side = MOUNT_BACK;
    return side;
 }
-/*
-//Given a vector position determine the proper x
-float Mountain::getX(glm::vec3 pos)
-{
-   //ax + by + cz + d = 0 -> x = (-by - cz -d) / a
-   //d = - ax0 -by0 - cz0
-   float x;
-   float fl = testLeftDiagonal(pos);
-   float fr = testRightDiagonal(pos);
-   
-   //Right face
-   if(fr > 0 && fl < 0)
-   {
-      //cout << "RIGHT\n";
-      //center:<15, 15, 30> normal<-1, 1, 0>
-      float d = -(-1 * 15) - (1 * 15);
-      x = (-(1 * pos.y) - d) / -1;
-   }
-   //Left face
-   else if(fr < 0 && fl > 0)
-   {
-      //cout << "LEFT\n";
-      //center:<45, 15, 30> normal <1, 1, 0>
-      float d = -(1 * 45) - (1 * 15);
-      x = (-(1 * pos.y) - d) / 1;
-   }
-   else
-      x = pos.x;
-   
-   return x;
-}
-
-//Given a vector position determine the proper z
-float Mountain::getZ(glm::vec3 pos)
-{
-   //ax + by + cz + d = 0 -> z = (-ax - by -d) / c
-   //d = - ax0 -by0 - cz0
-   float z;
-   float fl = testLeftDiagonal(pos);
-   float fr = testRightDiagonal(pos);
-   
-   //Front face
-   if(fr > 0 && fl > 0)
-   {
-      //center:<30, 15, 15> normal<0, 1, -1>
-      float d = -(1 * 15) - (-1 * 15);
-      z = (-(1 * pos.y) - d) / -1;
-   }
-   //Back face
-   else if(fr < 0 && fl < 0)
-   {
-      //center:<30, 15, 45> normal:<0, 1, 1>
-      float d = -(1 * 15) - (1 * 45);
-      z = (-(1 * pos.y) - d) / 1;
-   }
-   else
-      z = pos.z;
-   
-   return z;
-}
-*/
 #endif

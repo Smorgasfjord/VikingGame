@@ -45,10 +45,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.0.0.dylib; path = ../../../../../../../opt/local/lib/libassimp.3.0.0.dylib; sourceTree = "<group>"; };
-		7B256D84191BF31800616E09 /* libIL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIL.a; path = ../../../../../../../opt/local/lib/libIL.a; sourceTree = "<group>"; };
+		7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libassimp.3.0.0.dylib; path = /opt/local/lib/libassimp.3.0.0.dylib; sourceTree = "<absolute>"; };
+		7B256D84191BF31800616E09 /* libIL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libIL.a; path = /opt/local/lib/libIL.a; sourceTree = "<absolute>"; };
 		7B355979191B0DAA005FAD21 /* GameModel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameModel.cpp; sourceTree = "<group>"; };
 		7B35597A191B0DAA005FAD21 /* GameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameModel.h; sourceTree = "<group>"; };
+		7B7C52B61934386600E82CC2 /* DepthRTT_frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = DepthRTT_frag.glsl; path = Shaders/DepthRTT_frag.glsl; sourceTree = "<group>"; };
+		7B7C52B71934386600E82CC2 /* DepthRTT_vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = DepthRTT_vert.glsl; path = Shaders/DepthRTT_vert.glsl; sourceTree = "<group>"; };
+		7B7C52B81934386700E82CC2 /* ShadowMapping_frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = ShadowMapping_frag.glsl; path = Shaders/ShadowMapping_frag.glsl; sourceTree = "<group>"; };
+		7B7C52B91934386700E82CC2 /* ShadowMapping_vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = ShadowMapping_vert.glsl; path = Shaders/ShadowMapping_vert.glsl; sourceTree = "<group>"; };
+		7B7C52BC193438AC00E82CC2 /* Lab1_frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = Lab1_frag.glsl; path = Shaders/Lab1_frag.glsl; sourceTree = "<group>"; };
+		7B7C52BD193438AC00E82CC2 /* Lab1_vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = Lab1_vert.glsl; path = Shaders/Lab1_vert.glsl; sourceTree = "<group>"; };
 		7BCD4879191995B100576A2E /* Bjorn.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bjorn.cpp; sourceTree = "<group>"; };
 		7BCD487A191995B100576A2E /* Bjorn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bjorn.h; sourceTree = "<group>"; };
 		7BCD487C191995B100576A2E /* Hammer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hammer.cpp; sourceTree = "<group>"; };
@@ -318,7 +324,7 @@
 		7BE396A51915ADE0005A026B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7BE396A71915AE05005A026B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		7BF7373719212C870057AF67 /* MyGame */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MyGame; sourceTree = BUILT_PRODUCTS_DIR; };
-		7BF7373819216DC90057AF67 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = ../../../../../../../usr/local/lib/libfmodex.dylib; sourceTree = "<group>"; };
+		7BF7373819216DC90057AF67 /* libfmodex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodex.dylib; path = /usr/local/lib/libfmodex.dylib; sourceTree = "<absolute>"; };
 		7BF7374519216E380057AF67 /* fmod.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod.h; sourceTree = "<group>"; };
 		7BF7374619216E380057AF67 /* fmod.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fmod.hpp; sourceTree = "<group>"; };
 		7BF7374719216E380057AF67 /* fmod_codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_codec.h; sourceTree = "<group>"; };
@@ -328,7 +334,7 @@
 		7BF7374B19216E380057AF67 /* fmod_output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fmod_output.h; sourceTree = "<group>"; };
 		7BF7374C19216E620057AF67 /* Sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sound.cpp; sourceTree = "<group>"; };
 		7BF7374D19216E620057AF67 /* Sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sound.h; sourceTree = "<group>"; };
-		7BF7374F19216FA70057AF67 /* libfmodexL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodexL.dylib; path = ../../../../../../../usr/local/lib/libfmodexL.dylib; sourceTree = "<group>"; };
+		7BF7374F19216FA70057AF67 /* libfmodexL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfmodexL.dylib; path = /usr/local/lib/libfmodexL.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -352,6 +358,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B7C52BA1934387200E82CC2 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				7B7C52BC193438AC00E82CC2 /* Lab1_frag.glsl */,
+				7B7C52BD193438AC00E82CC2 /* Lab1_vert.glsl */,
+				7B7C52B61934386600E82CC2 /* DepthRTT_frag.glsl */,
+				7B7C52B71934386600E82CC2 /* DepthRTT_vert.glsl */,
+				7B7C52B81934386700E82CC2 /* ShadowMapping_frag.glsl */,
+				7B7C52B91934386700E82CC2 /* ShadowMapping_vert.glsl */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		7B7C52BB1934388A00E82CC2 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				7BF7374F19216FA70057AF67 /* libfmodexL.dylib */,
+				7BF7373819216DC90057AF67 /* libfmodex.dylib */,
+				7B256D84191BF31800616E09 /* libIL.a */,
+				7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */,
+				7BE396991915AD6C005A026B /* libglfw3.a */,
+				7BCD497A19199AAD00576A2E /* libGLEW.a */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
 		7BCD4878191995B100576A2E /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -690,11 +722,8 @@
 			isa = PBXGroup;
 			children = (
 				7BCFD2BB192415590069E59A /* mountain.lvl */,
-				7BF7374F19216FA70057AF67 /* libfmodexL.dylib */,
+				7B7C52BA1934387200E82CC2 /* Shaders */,
 				7BF7374319216E380057AF67 /* Audio */,
-				7BF7373819216DC90057AF67 /* libfmodex.dylib */,
-				7B256D84191BF31800616E09 /* libIL.a */,
-				7B256D82191BF27700616E09 /* libassimp.3.0.0.dylib */,
 				7BCD4878191995B100576A2E /* Components */,
 				7BCD4882191995B100576A2E /* glm */,
 				7BCD4965191995B200576A2E /* main.cpp */,
@@ -704,8 +733,7 @@
 				7BE396A51915ADE0005A026B /* Cocoa.framework */,
 				7BE396A31915ADDA005A026B /* CoreVideo.framework */,
 				7BE396A11915ADCF005A026B /* OpenGL.framework */,
-				7BE396991915AD6C005A026B /* libglfw3.a */,
-				7BCD497A19199AAD00576A2E /* libGLEW.a */,
+				7B7C52BB1934388A00E82CC2 /* Libraries */,
 				7BF7373719212C870057AF67 /* MyGame */,
 			);
 			sourceTree = "<group>";

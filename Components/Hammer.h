@@ -41,6 +41,8 @@ private:
    World * world;
    Bjorn *bjorn;
    glm::vec3 pickAngle;
+   glm::vec3 bjornOffset;
+   glm::vec3 desiredRotation;
    float rotation;
    float angularVelocity;
    bool hammerSide;
