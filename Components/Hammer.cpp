@@ -9,7 +9,7 @@
 #include "Hammer.h"
 #define pi 3.14159
 #define HAMMER_NODE 4
-#define PICK_NODE 2
+#define PICK_NODE 6
 
 Hammer::~Hammer()
 {
@@ -58,7 +58,7 @@ void Hammer::updateAngle(float x, float y)
    glm::vec3 currentAngle = getRot();
    //Angle between desired vector and neutral hammer position (straight up)
    float angle = atan2(x, y);
-   if(!isnan(angle) && !locked)
+   if(!isnan(angle) && !(locked || manualLocked))
    {
       //Save the last angle
       previousAngle = currentAngle;
@@ -84,7 +84,7 @@ void Hammer::updateAngle(float x, float y)
 
 void Hammer::flip()
 {
-   if (!collision) {
+   if (!collision && !(locked || manualLocked)) {
       hammerSide = !hammerSide;
       rotateBy(glm::vec3(0, 180, 0));
    }
@@ -116,21 +116,21 @@ void Hammer::step(double timeStep)
 
 // How the world reacts to Hommur
 void Hammer::update(double timeStep) {
-   static double lockTime;
+   static double lockTime = 0.0;
    glm::vec3 hammerTip, movedAngle, newPos, displacement;
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
       printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
-                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.thisObj.nod, dat.hitObj.obj, dat.hitObj.tri,
+                /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.thisObj.mesh, dat.hitObj.obj, dat.hitObj.tri,
                 dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
       displacement = dat.collisionAngle-dat.collisionStrength;
-      if (dat.thisObj.tri == HAMMER_NODE && !collision) {
+      if (dat.thisObj.mesh == HAMMER_NODE && !collision) {
          setRotation(previousAngle);
          moveBy(displacement);
          //m/s         = m/s           
-         activeForce = dat.collisionStrength * (float)(GRAVITY * 2.0f);
+         activeForce = dat.collisionStrength * (float)(GRAVITY / 2.0f);
          printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
          //                  m          /       s
          moveBy(-getVel()*(float)timeStep);
@@ -139,9 +139,10 @@ void Hammer::update(double timeStep) {
          lockTime = 3.0;
          Sound::hammerSmash();
       }
-      else if (dat.thisObj.tri == PICK_NODE && !collision) {
+      else if (dat.thisObj.mesh == PICK_NODE && !collision) {
          //moveBy(displacement);
-      collision = true;
+         locked = true;
+         collision = true;
          moveBy(-getVel()*(float)timeStep);
          printf("shunk\n");
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
@@ -153,18 +154,18 @@ void Hammer::update(double timeStep) {
       }
       else if (collision) {
          //moveBy(displacement);
-      collision = true;
+         collision = true;
          moveBy(-getVel()*(float)timeStep);
          bjorn->suspend();
          //m/s         = m/s                     - (m/s^2                * s)
-         activeForce = dat.collisionStrength*(float)GRAVITY; 
+         activeForce = dat.collisionStrength*(float)GRAVITY/4.0f; 
          //                  m/s
          if (glm::length(bjornOffset) < 1.79f) {
-            if (dat.thisObj.tri == PICK_NODE) {
+            if (dat.thisObj.mesh == PICK_NODE) {
                bjorn->setVelocity(-activeForce);//(float)timeStep);
                setRotation(previousAngle);
             }
-            else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*0.2f));//(float)timeStep);
+            else bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          }
          else {
             bjorn->addVelocity((getPos() - bjorn->getPos())*0.05f);

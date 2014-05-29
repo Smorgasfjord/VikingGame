@@ -74,7 +74,7 @@ void Bjorn::step(double timeStep)
       Sound::stopWalk();
    }
    //                         (m/s^2  * s)
-   addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
+   if (!suspended) addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
    moveBy(getVel()*(float)timeStep);
    
    glm::vec3 newPos = getPos();
@@ -144,7 +144,7 @@ void Bjorn::update(double timeStep) {
       }
    }
    newPos = Mountain::lockOn(getPos(),displacement);
-   moveBy(((newPos+displacement*glm::vec3(-1.0f,0.0f,-1.0f)) - getPos())/10.0f*glm::length(getVel()));
+   moveBy(((newPos+displacement*glm::vec3(-0.8f,0.0f,-0.8f)) - getPos())/10.0f*glm::length(getVel()));
 }
 
 void Bjorn::moveRight()

@@ -37,7 +37,7 @@ public:
    void updateAngle(float x, float y);
    void flip();
    int mountainSide;
-   bool locked;
+   bool manualLocked;
 private:
    World * world;
    Bjorn *bjorn;
@@ -48,6 +48,7 @@ private:
    float angularVelocity;
    bool hammerSide;
    bool collision;
+   bool locked;
    //float mass;
    glm::vec3 previousAngle;
 };

@@ -1,6 +1,8 @@
 #define GLM_SWIZZLE
 #include "chunks.h"
 
+ObjData gDat;
+
 bool operator==(const ChunkData a, const ChunkData b) {
    return a.x == b.x && a.y == b.y && a.z == b.z;
 }
@@ -254,9 +256,9 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
    glm::vec3 oldTransVert;
    glm::vec3 move, actual, iter;
    cDat.obj = -1;
-   ret = CollisionData(cDat, dat, glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT));
+   ret = CollisionData(cDat, gDat, glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT));
    for (int i = 0; i < geom.verts.size(); i++) {
-      dat.tri = i;
+      gDat.tri = i;
       newTransVert = (newTrans * glm::vec4(geom.verts[i],1.0f)).xyz();
       oldTransVert = (oldTrans * glm::vec4(geom.verts[i],1.0f)).xyz();
       move = newTransVert - oldTransVert;
@@ -266,7 +268,7 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
          step = findMicroChunk(iter.x, iter.y, iter.z);
          if (step->isValid()) {
             for (map<ObjData,glm::vec3>::iterator it=step->objects.begin(); it!=step->objects.end(); ++it) {
-               if (objects[it->first.obj].collisionGroup != objects[dat.obj].collisionGroup) {
+               if (objects[it->first.obj].collisionGroup != objects[gDat.obj].collisionGroup) {
                   cDat = it->first;
                   move = newTransVert - oldTransVert;
                   cPoint = findCollisionPoint(glm::normalize(move),oldTransVert,cDat,findTransform(cDat));
@@ -278,7 +280,7 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
                   cNormal = interpolateNormal(cPoint.y, cPoint.z, cDat, oldTrans);
                   actual = move * cPoint.x;
                   if (glm::length(actual) < glm::length(ret.collisionAngle))
-                     ret = CollisionData(cDat, dat, glm::vec3(oldTransVert) + actual, actual, cNormal, move);
+                     ret = CollisionData(cDat, gDat, glm::vec3(oldTransVert) + actual, actual, cNormal, move);
                   //return ret;
                }
             }
@@ -294,19 +296,22 @@ CollisionData ChunkWorld::checkNodeCollision(ObjectNode & newNod, ObjectNode & o
    glm::mat4 newCurrent = newNod.state.transform * newCumulative;
    glm::mat4 oldCurrent = oldNod.state.transform * oldCumulative;
    CollisionData ret, newRet;
-   dat.nod++;
+   ObjData cDat;
+   cDat.obj = -1;
+   ret = CollisionData(cDat, gDat, glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT), glm::vec3(COLL_LIMIT));
+   gDat.nod++;
    for (int i = 0; i < newNod.meshes.size(); i++) {
-      dat.mesh = i;
-      ret = checkMeshCollision(geom[newNod.meshes[i].meshIdx], newCurrent, oldCurrent, dat);
-      if (ret.hitObj.obj >= 0) {
-         return ret;
+      gDat.mesh = i;
+      newRet = checkMeshCollision(geom[newNod.meshes[i].meshIdx], newCurrent, oldCurrent, gDat);
+      if (newRet.hitObj.obj >= 0 && glm::length(newRet.collisionAngle) < glm::length(ret.collisionAngle)) {
+         ret = newRet;
       }
    }
    //SOMETHING IN HERE IS BREAKING, i think its if oldNod has no children
    for (int j = 0; j < newNod.children.size(); j++) { 
-      ret = checkNodeCollision(newNod.children[j], oldNod.children[j], geom, newCurrent, oldCurrent, dat);
-      if (ret.hitObj.obj >= 0) {
-         return ret;
+      newRet = checkNodeCollision(newNod.children[j], oldNod.children[j], geom, newCurrent, oldCurrent, gDat);
+      if (newRet.hitObj.obj >= 0 && glm::length(newRet.collisionAngle) < glm::length(ret.collisionAngle)) {
+         ret = newRet;
       }
    }
    return ret;
@@ -314,10 +319,9 @@ CollisionData ChunkWorld::checkNodeCollision(ObjectNode & newNod, ObjectNode & o
 
 CollisionData ChunkWorld::checkForCollision(GameObject *obj, int objIndex) {
    GameObject & old = objects[objIndex];
-   ObjData dat;
-   dat.obj = objIndex;
-   dat.nod = -1;
-   return checkNodeCollision(obj->model, old.model, models[objIndex], glm::mat4(1.0f), glm::mat4(1.0f), dat);
+   gDat.nod = -1;
+   gDat.obj = objIndex;
+   return checkNodeCollision(obj->model, old.model, models[objIndex], glm::mat4(1.0f), glm::mat4(1.0f), gDat);
 }
 
 

@@ -362,12 +362,12 @@ void mouse(GLFWwindow* window, double x, double y)
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT)
       hammer.flip();
-   else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_2)
-      hammer.locked = true;
-   else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_2)
-      hammer.locked = false;
+   else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
+      hammer.manualLocked = true;
+   else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_RIGHT)
+      hammer.manualLocked = false;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
