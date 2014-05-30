@@ -14,6 +14,8 @@
 #include <cstdio>
 using namespace std;
 
+float volume;
+
 //-----------------------------Timer Callback Class----------------------------
 class later
 {
@@ -40,7 +42,7 @@ public:
 
 void nextSong()
 {
-   int msDuration = Sound::nextSong();
+   int msDuration = Sound::nextSong(volume);
    //Will play the next song after the duration has passed
    later playNext(msDuration, true, &nextSong);
    return;

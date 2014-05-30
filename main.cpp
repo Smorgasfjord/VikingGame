@@ -466,9 +466,9 @@ void Animate()
    world.updateObject(&hammer, hammer.modelIdx);
   
    //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < -3.0 * GRAVITY && !DEBUG_GAME)
+   if(bjorn.getVel().y < (-3.0 * GRAVITY) && !DEBUG_GAME)
       Sound::scream();
-   if(bjorn.getVel().y < -4.0 * GRAVITY && !DEBUG_GAME)
+   if(bjorn.getVel().y < (-4.0 * GRAVITY) && !DEBUG_GAME)
    {
       Sound::stopScream();
       reset();

@@ -98,13 +98,7 @@ void Sound::loadAll () {
 
 //-----------------------------------Jukebox-----------------------------------
 
-//Not really implemented
-unsigned int Sound::startJukebox()
-{
-   return nextSong();
-}
-
-unsigned int Sound::nextSong()
+unsigned int Sound::nextSong(float volume)
 {
    unsigned int duration;
    if (jukeboxIndex == backgroundFiles) {
@@ -112,6 +106,7 @@ unsigned int Sound::nextSong()
    }
    loadOnBackgroundChannel(jukeboxIndex++);
    play(BACKGROUND_CHANNEL);
+   setJukeboxVolume(volume);
    FMOD_Sound_GetLength(sounds[BACKGROUND_CHANNEL], &duration, FMOD_TIMEUNIT_MS);
    return duration;
 }
