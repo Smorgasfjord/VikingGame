@@ -10,6 +10,8 @@
 #define pi 3.14159
 #define HAMMER_NODE 4
 #define PICK_NODE 6
+#define STUD_BAND 7
+#define STUDS 8
 
 Hammer::~Hammer()
 {
@@ -128,7 +130,8 @@ void Hammer::update(double timeStep) {
              dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
       displacement = dat.collisionAngle-dat.collisionStrength;
       //hammer collides with object
-      if (dat.thisObj.mesh == HAMMER_NODE && !pickCollision && !hammerCollision) {
+      if ((dat.thisObj.mesh == HAMMER_NODE || 
+               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& !pickCollision && !hammerCollision) {
          // rotate back
          setRotation(previousAngle);
          // move back
@@ -150,7 +153,8 @@ void Hammer::update(double timeStep) {
          hammerCollision = true;
       }
       //pick sank into object
-      else if (dat.thisObj.mesh == HAMMER_NODE && pickCollision && !hammerCollision) {
+      else if ((dat.thisObj.mesh == HAMMER_NODE || 
+               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& pickCollision && !hammerCollision) {
          // move back slightly
          moveBy(displacement*1.2f);
          // set bjorn's velocity
@@ -165,7 +169,8 @@ void Hammer::update(double timeStep) {
          hammerCollision = true;
       }
       //pick moved while in object
-      else if (dat.thisObj.mesh == HAMMER_NODE && pickCollision && hammerCollision) {
+      else if ((dat.thisObj.mesh == HAMMER_NODE || 
+               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& pickCollision && hammerCollision) {
          // rotate back
          setRotation(previousAngle);
          // move back
@@ -228,7 +233,8 @@ void Hammer::update(double timeStep) {
          bjorn->suspend();
          setVelocity(bjorn->getVel());
       }
-      else if ((dat.thisObj.mesh == PICK_NODE || dat.thisObj.mesh == HAMMER_NODE) && hammerCollision && !pickCollision) {
+      else if ((dat.thisObj.mesh == PICK_NODE || dat.thisObj.mesh == HAMMER_NODE || 
+               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND) && hammerCollision && !pickCollision) {
          //moveBy(displacement);
          moveBy(-getVel()*(float)timeStep);
          bjorn->suspend();
