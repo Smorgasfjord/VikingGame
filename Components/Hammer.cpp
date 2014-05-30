@@ -183,7 +183,7 @@ void Hammer::update(double timeStep) {
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
-         bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
+         //bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
       }
       //pick hit object
       else if (dat.thisObj.mesh == PICK_NODE && !hammerCollision && !pickCollision) {
