@@ -26,6 +26,7 @@
 
 Bjorn::~Bjorn()
 {
+
 }
 
 Bjorn::Bjorn()
@@ -74,7 +75,7 @@ void Bjorn::step(double timeStep)
       Sound::stopWalk();
    }
    //                         (m/s^2  * s)
-   addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
+   if (!suspended) addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
    moveBy(getVel()*(float)timeStep);
    
    glm::vec3 newPos = getPos();
