@@ -124,10 +124,12 @@ void Hammer::update(double timeStep) {
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
+      /*
       printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
-             /*hammer.model.children[dat.thisObj.nod].name.c_str(), */dat.thisObj.tri, dat.thisObj.mesh, dat.hitObj.obj, dat.hitObj.tri,
+             dat.thisObj.tri, dat.thisObj.mesh, dat.hitObj.obj, dat.hitObj.tri,
              dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
              dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
+       */
       displacement = dat.collisionAngle-dat.collisionStrength;
       //hammer collides with object
       if ((dat.thisObj.mesh == HAMMER_NODE || 
@@ -143,7 +145,6 @@ void Hammer::update(double timeStep) {
          //m/s         = m/s
          activeForce = dat.collisionStrength * (float)(GRAVITY * 1.5f);
          bjorn->addVelocity(-activeForce);///(float)timeStep);
-         printf("Clunk (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
          //                  m          /       s
          // lock rotation temporarily
          lockTime = 0.2;
@@ -165,7 +166,6 @@ void Hammer::update(double timeStep) {
          // lock rotation
          locked = true;
          lockTime = 1.0;
-         printf("shunk\n");
          hammerCollision = true;
       }
       //pick moved while in object
@@ -178,7 +178,6 @@ void Hammer::update(double timeStep) {
          // lock rotation
          locked = true;
          lockTime = 1.0;
-         printf("crunk\n");
          // move bjorn
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = dat.collisionStrength*(float)GRAVITY/2.0f;
@@ -190,7 +189,6 @@ void Hammer::update(double timeStep) {
          // lock rotation
          lockTime = 1.0;
          pickCollision = true;
-         printf("shink\n");
          // set bjorn velocity
          bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
          // set hit angle
@@ -203,7 +201,6 @@ void Hammer::update(double timeStep) {
          // lock rotation
          lockTime = 1.0;
          pickCollision = true;
-         printf("crank\n");
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          // move back
          moveBy(-getVel()*(float)timeStep);
@@ -225,7 +222,6 @@ void Hammer::update(double timeStep) {
          // lock rotation
          lockTime = 1.0;
          locked = true;
-         printf("unshunk\n");
          hammerCollision = false;
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = getVel() - projection;

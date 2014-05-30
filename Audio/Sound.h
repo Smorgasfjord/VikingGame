@@ -46,9 +46,8 @@ public:
    static void initialise (void); //initialises sound
    static void loadAll(); //loads all soundfiles
    
-   //Background music jukebox, this needs work
-   static unsigned int startJukebox();
-   static unsigned int nextSong();
+   //Background music jukebox
+   static unsigned int nextSong(float volume);
    static void pauseJukebox();
    static void setJukeboxVolume(float volume);
 
