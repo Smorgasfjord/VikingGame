@@ -126,22 +126,15 @@ void Hammer::update(double timeStep) {
                 hammer.model.children[dat.thisObj.nod].name.c_str(), dat.thisObj.tri, dat.thisObj.nod, dat.hitObj.obj, dat.hitObj.tri,
                 dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
                 dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
-<<<<<<< HEAD
 */
-=======
       displacement = dat.collisionAngle-dat.collisionStrength;
->>>>>>> FETCH_HEAD
       if (dat.thisObj.tri == HAMMER_NODE && !collision) {
          setRotation(previousAngle);
          moveBy(displacement);
-         //m/s         = m/s           
-<<<<<<< HEAD
-         activeForce = dat.collisionStrength * (float)(GRAVITY * 7.0f);
+         //m/s         = m/s
          //printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
-=======
-         activeForce = dat.collisionStrength * (float)(GRAVITY * 2.0f);
-         printf("Collision Strength (%f %f %f)\n", activeForce.x, activeForce.y, activeForce.z);
->>>>>>> FETCH_HEAD
+         activeForce = dat.collisionStrength * (float)(GRAVITY / 1.25f);
+
          //                  m          /       s
          moveBy(-getVel()*(float)timeStep);
          bjorn->addVelocity(-activeForce);///(float)timeStep);
@@ -151,7 +144,7 @@ void Hammer::update(double timeStep) {
       }
       else if (dat.thisObj.tri == PICK_NODE && !collision) {
          //moveBy(displacement);
-      collision = true;
+         collision = true;
          moveBy(-getVel()*(float)timeStep);
          printf("shunk\n");
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
@@ -163,7 +156,7 @@ void Hammer::update(double timeStep) {
       }
       else if (collision) {
          //moveBy(displacement);
-      collision = true;
+         collision = true;
          moveBy(-getVel()*(float)timeStep);
          bjorn->suspend();
          //m/s         = m/s                     - (m/s^2                * s)
@@ -174,7 +167,7 @@ void Hammer::update(double timeStep) {
                bjorn->setVelocity(-activeForce);//(float)timeStep);
                setRotation(previousAngle);
             }
-            else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*0.2f));//(float)timeStep);
+            else bjorn->addVelocity(-activeForce/(1.0f+glm::length(bjorn->getVel())*20.0f));//(float)timeStep);
          }
          else {
             bjorn->addVelocity((getPos() - bjorn->getPos())*0.05f);

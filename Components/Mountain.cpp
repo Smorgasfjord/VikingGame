@@ -128,9 +128,16 @@ float interpolateDepth(float x, float y, int side, glm::vec3 & norms) {
    return depth;
 }
 
+//Round float f to decimal precision pres
+float round(float f,int pres)
+{
+   return floorf(f * pow(10, pres) + 0.5) / pow(10, pres);
+}
+
 glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
 {
-   int side = Mountain::getSide(pos);
+   glm::vec3 roughPos = glm::vec3(round(pos.x, 1), round(pos.y, 1), round(pos.z, 1));
+   int side = Mountain::getSide(roughPos);
    float x, y, depthOffset, depth;
    glm::vec3 mountPos = pos;
    
@@ -149,28 +156,24 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
       //Index into the data
       depthOffset = interpolateDepth(x,y,side,norms);
       
-<<<<<<< HEAD
-=======
-      //printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, x, y);
-      
->>>>>>> FETCH_HEAD
       //Convert depth back to world
       if(side == MOUNT_FRONT)
          depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_FRONT_TOP_DEPTH);
       else
          depth = ((float)IMG_MAX_DEPTH - depthOffset) / ((float)IMG_MAX_DEPTH / (float)MOUNT_BACK_TOP_DEPTH);
-      
       //Set the depth based on what side of the mountain the object is on
       if (depthOffset == 0.0f) {
          //Set to 45 degrees, for bad indicies
-         norms.x = -1 * (x - (float)IMG_MAX_X/2.0f)/((float)IMG_MAX_X*0.5f);
-         norms.z = fabsf((float)IMG_MAX_X/2.0f-x)/((float)IMG_MAX_X*0.5f);
+         norms.x = x - ((float)IMG_MAX_X / 2.0f) / ((float)IMG_MAX_X * 0.5f);
+         norms.z = fabsf((float)IMG_MAX_X / 2.0f - x) / ((float)IMG_MAX_X * 0.5f);
          norms.y = 0.0f;
          norms = glm::normalize(norms);
       }
       
       if(side == MOUNT_FRONT)
+      {
          if(depthOffset > 0.0f) mountPos.z = depth;
+      }
       else if(side == MOUNT_BACK) {
          if(depthOffset > 0.0f) mountPos.z = (float)MOUNT_DEPTH - depth;
          norms = (glm::rotate(glm::mat4(1.0f),180.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
@@ -183,11 +186,7 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
          if(depthOffset > 0.0f) mountPos.x = (float)MOUNT_WIDTH - depth;
          norms = (glm::rotate(glm::mat4(1.0f),270.0f,glm::vec3(0.0,1.0f,0.0))*glm::vec4(norms,0.0f)).xyz();
       }
-<<<<<<< HEAD
-      printf("Bjorn depth: %f on side %d with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset, side,norms.x,norms.y,norms.z, x, y);
-=======
-      //printf("Bjorn depth: %f with normal: (%f, %f, %f) at coords (%f, %f)\n",depthOffset,norms.x,norms.y,norms.z, x, y);
->>>>>>> FETCH_HEAD
+      //printf("depth: %f on side %d with normal: (%f, %f, %f) at coords (%f, %f) with position (%f %f %f)\n",depthOffset, side,norms.x,norms.y,norms.z, x, y, roughPos.x, roughPos.y, roughPos.z);
    }
    return mountPos;
 }

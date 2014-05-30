@@ -165,6 +165,8 @@ static void reset()
    bjorn.setState(bjornResetState);
    bjorn.setVelocity(glm::vec3(0));
    bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
+   world.updateObject(&bjorn, bjorn.modelIdx);
+   world.updateObject(&hammer, hammer.modelIdx);
    
    eye = lookAt = bjorn.getPos();
    eye.y += 1.5f;
@@ -442,6 +444,7 @@ void Animate()
    if (curTime - lastUpdated < 1.0/REFRESH_RATE) {
       return;
    }
+   
    timeStep = curTime - lastUpdated;
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
@@ -463,9 +466,9 @@ void Animate()
    world.updateObject(&hammer, hammer.modelIdx);
   
    //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < -3.0*GRAVITY && !DEBUG_GAME)
+   if(bjorn.getVel().y < -3.0 * GRAVITY && !DEBUG_GAME)
       Sound::scream();
-   if(bjorn.getVel().y < -4.0*GRAVITY && !DEBUG_GAME)
+   if(bjorn.getVel().y < -4.0 * GRAVITY && !DEBUG_GAME)
    {
       Sound::stopScream();
       reset();
@@ -473,16 +476,16 @@ void Animate()
    
    //Update camera
    lookAt = bjorn.getPos();
-   //lookAt.y += 0.3f;
+
+   //Get the normal to move the camera along
    Mountain::lockOn(bjorn.getPos(),norm);
    eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
    if(!manualCamControl)
       camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
-      
-   if(currentSide != bjorn.mountainSide)
+   
+   //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
+   if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
    {
-      //This could be used to add a nice animation for the camera swinging around the mountain
-      cout << "camera changing sides\n";
       currentSide = bjorn.mountainSide;
       //Update reset variables for checkpoint
       bjornResetState = bjorn.getState();
