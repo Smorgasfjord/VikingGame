@@ -77,9 +77,9 @@ void Hammer::updateAngle(float x, float y)
       else
       {
          if(((int)getRot().y % 360) == 180)
-            desiredRotation = glm::vec3(360.0 + angle * (180.0 / pi), currentAngle.y, currentAngle.z);
+            desiredRotation = glm::vec3(3600.0 - angle * (180.0 / pi), currentAngle.y, currentAngle.z);
          else
-            desiredRotation = glm::vec3(360.0-angle * (180.0 / pi), currentAngle.y, currentAngle.z);
+            desiredRotation = glm::vec3(3600.0+angle * (180.0 / pi), currentAngle.y, currentAngle.z);
       }
    }
 }
