@@ -47,7 +47,8 @@ private:
    float rotation;
    float angularVelocity;
    bool hammerSide;
-   bool collision;
+   bool pickCollision;
+   bool hammerCollision;
    bool locked;
    //float mass;
    glm::vec3 previousAngle;
