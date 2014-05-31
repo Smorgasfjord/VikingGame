@@ -68,6 +68,7 @@
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
+#define NUM_LIGHTS 5
 
 
 using namespace std;
@@ -106,7 +107,7 @@ static float frameRate = 0.0;
 static int frames = 0;
 
 //Light
-glm::vec3 lightPos;
+glm::vec3 lightPos[NUM_LIGHTS];
 
 //Audio
 Jukebox music;
@@ -190,10 +191,13 @@ void setWorld()
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
    simplePlatformMod = genSimpleModel(&platMod);
    
-   lightPos= glm::vec3(50, 5, -5);
+   for(int i = 0; i < NUM_LIGHTS; i++)
+   {
+      lightPos[i] = glm::vec3((10 * i) + 15, 10, 0);
+   }
    
    //Send light data to shader
-   safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
+   glUniform1fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(handles, &mountMod);
