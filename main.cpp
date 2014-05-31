@@ -113,11 +113,11 @@ Jukebox music;
 
 //Camera
 float camDistance = 4.0f;
-glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1, g_groundSize / 2.0);
-glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1, g_groundSize / 2.0 + 1.0);
+glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1.0, g_groundSize / 2.0);
+glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1.0, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
-float camYOffset = 0;
+float camYOffset = 0.0f;
 bool manualCamControl = false;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
@@ -190,11 +190,11 @@ void setWorld()
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
    simplePlatformMod = genSimpleModel(&platMod);
    
-   lightPos= glm::vec3(35, 15, -15);
+   lightPos= glm::vec3(35.0f, 15.0, -15.0);
    
    //Send light data to shader
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
-   safe_glUniform3f(handles.uLightColor, 1, 1, 1);
+   safe_glUniform3f(handles.uLightColor, 1.0f, 1.0, 1.0);
    
    mount = Mountain(handles, &mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);

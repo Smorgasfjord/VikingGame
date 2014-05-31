@@ -8,6 +8,7 @@
 
 #include "Hammer.h"
 #define pi 3.14159
+#define HANDLE_NODE 0
 #define HAMMER_NODE 4
 #define PICK_NODE 6
 #define STUD_BAND 7
@@ -28,7 +29,7 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    initialize(hammerMod, 0, 0, handles);
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .25));
-   scaleBy(glm::vec3(.3f));
+   scaleBy(glm::vec3(.25f));
    rotateBy(glm::vec3(0, 180, 270));
    this->world = world;
    bjorn = character;
@@ -50,8 +51,8 @@ void Hammer::updatePos(float x, float y)
 {
    if (!bjorn->facingRight) x *= -1.0;
    bjornOffset = glm::vec3(bjorn->getRotMat() * glm::vec4(-0.2f,y,x,0.0));
-   if (glm::length(bjornOffset) > 1.7) {
-      bjornOffset *= 1.7f / glm::length(bjornOffset);
+   if (glm::length(bjornOffset) > 1.4) {
+      bjornOffset *= 1.4f / glm::length(bjornOffset);
    }
 }
 
@@ -154,7 +155,7 @@ void Hammer::update(double timeStep) {
          hammerCollision = true;
       }
       //pick sank into object
-      else if ((dat.thisObj.mesh == HAMMER_NODE || 
+      else if ((dat.thisObj.mesh == HAMMER_NODE || dat.thisObj.mesh == HANDLE_NODE || 
                dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& pickCollision && !hammerCollision) {
          // move back slightly
          moveBy(displacement*1.2f);
@@ -169,7 +170,7 @@ void Hammer::update(double timeStep) {
          hammerCollision = true;
       }
       //pick moved while in object
-      else if ((dat.thisObj.mesh == HAMMER_NODE || 
+      else if ((dat.thisObj.mesh == HAMMER_NODE || dat.thisObj.mesh == HANDLE_NODE || 
                dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& pickCollision && hammerCollision) {
          // rotate back
          setRotation(previousAngle);
@@ -218,7 +219,7 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          // allow movement along insertion angle
          projection = glm::dot(getVel(),pickAngle)*pickAngle;
-         moveBy(projection*(float)timeStep);
+         moveBy(projection*(float)timeStep*0.5f);
          // lock rotation
          lockTime = 1.0;
          locked = true;
@@ -230,7 +231,7 @@ void Hammer::update(double timeStep) {
          setVelocity(bjorn->getVel());
       }
       else if ((dat.thisObj.mesh == PICK_NODE || dat.thisObj.mesh == HAMMER_NODE || 
-               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND) && hammerCollision && !pickCollision) {
+               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND || dat.thisObj.mesh == HANDLE_NODE) && hammerCollision && !pickCollision) {
          //moveBy(displacement);
          moveBy(-getVel()*(float)timeStep);
          bjorn->suspend();

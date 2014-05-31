@@ -164,8 +164,8 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
       //Set the depth based on what side of the mountain the object is on
       if (depthOffset == 0.0f) {
          //Set to 45 degrees, for bad indicies
-         norms.x = x - ((float)IMG_MAX_X / 2.0f) / ((float)IMG_MAX_X * 0.5f);
-         norms.z = fabsf((float)IMG_MAX_X / 2.0f - x) / ((float)IMG_MAX_X * 0.5f);
+         norms.x = x - ((float)WIDTH / 2.0f) / ((float)WIDTH);
+         norms.z = fabsf((float)WIDTH / 2.0f - x) / ((float)WIDTH);
          norms.y = 0.0f;
          norms = glm::normalize(norms);
       }
