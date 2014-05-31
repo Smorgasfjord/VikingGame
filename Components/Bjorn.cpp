@@ -125,7 +125,7 @@ void Bjorn::update(double timeStep) {
       //Nudge bjorn towards the correct position on the platform
       newPos = Mountain::lockOn(getPos(),displacement);
       glm::vec3 movement = ((newPos + displacement * glm::vec3(-0.6f,0.0f,-0.6f)) - getPos()) / 30.0f;
-      moveBy(((newPos + displacement * glm::vec3(-0.6f,0.0f,-0.6f)) - getPos()) / 30.0f);
+      moveBy(((newPos + displacement * glm::vec3(-1.0f,0.0f,-1.0f)) - getPos()) / 30.0f);
       
       setVelocity((getVel() * 0.5f + glm::reflect(getVel(), cData.collisionNormal)) / 2.0f + cData.collisionNormal * (float)timeStep * 0.1f);
       if (cData.collisionNormal.y > 0.5) {
@@ -144,7 +144,7 @@ void Bjorn::update(double timeStep) {
          grounded = false;
          jumping = true;
          newPos = Mountain::lockOn(getPos(),displacement);
-         moveBy(((newPos+displacement*glm::vec3(-1.2f,0.0f,-1.2f)) - getPos())/10.0f);
+         moveBy(((newPos+displacement*glm::vec3(-1.0f+(0.2*getVel().y),0.0f,-1.0f+(0.2*getVel().y))) - getPos())/10.0f);
       }
    }
 }
