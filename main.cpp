@@ -190,7 +190,7 @@ void setWorld()
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
    simplePlatformMod = genSimpleModel(&platMod);
    
-   lightPos= glm::vec3(35.0f, 15.0, -15.0);
+   lightPos= glm::vec3(50.0, 5.0f, -5.0);
    
    //Send light data to shader
    safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
@@ -280,7 +280,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
    handles.uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
    handles.uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
-   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uCamPos");
+   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uEyePos");
    handles.uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
    handles.uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
    handles.uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");

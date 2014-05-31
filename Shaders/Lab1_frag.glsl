@@ -13,7 +13,7 @@ varying vec2 vTexCoord;
 
 uniform vec3 uLightPos;
 uniform vec3 uLColor;
-uniform vec3 uCamPos;
+uniform vec3 uEyePos;
 uniform Material uMat;
 uniform sampler2D uTexUnit;
 
@@ -23,14 +23,24 @@ void main() {
    if (length(texColor.xyz) < 0.01) {
       texColor = vec4(1.0);
    }
-   vec3 norm = normalize(vNorm) * (texColor.x + texColor.y + texColor.z) / 3.0;
-   vec3 light = normalize(uLightPos);
-   vec3 rVec = normalize(reflect(-light, norm));
-   vec3 view = normalize(uCamPos - vPos);
+   vec3 norm = normalize(vNorm) * ((texColor.x + texColor.y + texColor.z) / 3.0);
+   vec3 light = uLightPos - vPos;
+   float lightDist = length(light); //get the distance from the light
+   lightDist *= lightDist; //Square the distance not currently used, we don't have enough light
+   light = normalize(light); //Normalize the light
+   vec3 view = normalize(uEyePos - vPos);
    float maxCol = 1.0;
-   diffuse = uLColor*normalize(max(dot(vNorm,light),0.0))*uMat.dColor;
-   specular = uLColor*normalize(pow(max(dot(rVec,view),0.0),uMat.shine))*uMat.sColor;
-   ambient = uLColor*uMat.aColor;
+   
+   //Intensity of the diffuse light. Clamp within the 0-1 range.
+   float intensity = clamp(dot(norm, light), 0.0, 1.0);
+   diffuse = intensity * uLColor * uMat.dColor; // lightDist;
+   
+   //Intensity of the specular light, Clamp within 0-1 range
+   vec3 halfVec = normalize(light + view);
+   intensity = pow(clamp(dot(norm, halfVec), 0.0, 1.0), uMat.shine);
+   specular = intensity * uMat.sColor; // lightDist;
+   
+   ambient = uLColor * uMat.aColor;
    vec3 phong = (diffuse + specular + ambient);
    if (phong.x > maxCol) maxCol = phong.x;
    if (phong.y > maxCol) maxCol = phong.y;
