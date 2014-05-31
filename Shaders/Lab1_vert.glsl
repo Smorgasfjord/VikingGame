@@ -19,12 +19,7 @@ uniform vec3 uLColor;
 uniform vec3 uCamPos;
 uniform Material uMat;
 
-
-/*layout(location = 0) in vec3 vertexPosition_modelspace;*/
-
 uniform mat4 uDepthBuff;
-
-
 
 varying vec3 vPos;
 varying vec3 vNorm;
@@ -38,7 +33,7 @@ void main() {
    vPosition = uViewMatrix * vPosition;
    gl_Position = uProjMatrix * vPosition;
    transNorm = uNormMatrix * vec4(aNormal.x, aNormal.y, aNormal.z, 0.0);
-   /* TO DO REPLACE THIS WITH lighting!!!! */
+
    vNorm = normalize(vec3(transNorm.x, transNorm.y, transNorm.z));
    vTexCoord = aUV;
 }
