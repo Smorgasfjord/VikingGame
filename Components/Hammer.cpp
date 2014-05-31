@@ -34,16 +34,15 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .2));
    scaleBy(glm::vec3(.25f));
-   rotateBy(glm::vec3(0, 180, 270));
+   desiredRotation = previousAngle = glm::vec3(0.0f,180.0,270.0);
+   rotateBy(desiredRotation);
    this->world = world;
    bjorn = character;
-   previousAngle = glm::vec3(0.0f);
    hammerSide = true;
    hammerCollision = pickCollision = false;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = bjorn->mountainSide;
    bjornOffset = glm::vec3(0.0f);
-   desiredRotation = previousAngle;
 }
 
 float d2r(float val)
@@ -82,11 +81,18 @@ void Hammer::updateAngle(float x, float y)
       else
       {
          if(((int)getRot().y % 360) == 180)
-            desiredRotation = glm::vec3(3600.0 - angle * (180.0 / pi), currentAngle.y, currentAngle.z);
+            desiredRotation = glm::vec3(-angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
          else
-            desiredRotation = glm::vec3(3600.0+angle * (180.0 / pi), currentAngle.y, currentAngle.z);
+            desiredRotation = glm::vec3(angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
       }
+
    }
+   if (desiredRotation.x > 180.0) desiredRotation.x -= 360.0;
+   else if (desiredRotation.x < -180.0) desiredRotation.x += 360.0;
+   if (desiredRotation.y > 180.0) desiredRotation.y -= 360.0;
+   else if (desiredRotation.y < -180.0) desiredRotation.y += 360.0;
+   if (desiredRotation.z > 180.0) desiredRotation.z -= 360.0;
+   else if (desiredRotation.z < -180.0) desiredRotation.z += 360.0;
 }
 
 
@@ -96,7 +102,7 @@ void Hammer::flip()
       hammerSide = !hammerSide;
       rotateBy(glm::vec3(0.0f, 180.0, 0.0));
       desiredRotation += glm::vec3(0.0,180.0f,0.0);
-      //previousAngle += glm::vec3(0.0,180.0f,0.0);
+      previousAngle += glm::vec3(0.0,180.0f,0.0);
    }
 }
 
@@ -114,6 +120,11 @@ void Hammer::step(double timeStep)
    previousAngle = rotFix;
    setRotation(rotFix);
    rotIncrement = (desiredRotation - rotFix) / 2.0f;
+   if (glm::length(rotIncrement) > MAX_ROT * 2.0f) {
+      rotIncrement = -rotIncrement;
+   }
+   printf("desired: (%f,%f,%f), current: (%f,%f,%f), increment: (%f,%f,%f)\n", 
+         desiredRotation.x,desiredRotation.y,desiredRotation.z, rotFix.x, rotFix.y, rotFix.z, rotIncrement.x, rotIncrement.y, rotIncrement.z);
    if (glm::length(rotIncrement) > MAX_ROT) {
       rotIncrement *= MAX_ROT / glm::length(rotIncrement);
    }
