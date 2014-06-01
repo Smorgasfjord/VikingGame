@@ -136,6 +136,7 @@ class ChunkWorld {
       MicroChunk invalidM;
       glm::vec3 scale;
       vector<GameObject> objects;
+      vector<CollisionData> lastColls;
       vector< vector<BufferContents> > models;
 //      vector<LightSource> lights;
       int objCount;

@@ -453,7 +453,7 @@ void Animate()
    }
    
    timeStep = curTime - lastUpdated;
-   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y);
+   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    prevMouseLoc = currentMouseLoc;
    if (moveLeft) {
