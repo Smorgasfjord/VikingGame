@@ -193,11 +193,14 @@ void setWorld()
    
    for(int i = 0; i < NUM_LIGHTS; i++)
    {
-      lightPos[i] = glm::vec3((10 * i) + 15, 10, 0);
+      lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
    
+   //lightPos[0] = glm::vec3(50.188667, 2.512615, -0.142857);
+   
    //Send light data to shader
-   glUniform1fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+   glUniform3fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+   //safe_glUniform3f(handles.uLightPos, lightPos[0].x, lightPos[0].y, lightPos[0].z);
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(handles, &mountMod);
@@ -206,7 +209,7 @@ void setWorld()
    world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = world.getStart();
+   eye = lookAt = world.getStart();//glm::vec3(58, 15, 45);//world.getStart();
    eye.y += 1;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
