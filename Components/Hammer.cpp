@@ -200,7 +200,8 @@ void Hammer::update(double timeStep) {
       else if ((dat.thisObj.mesh != PICK_NODE) && pickCollision && !hammerCollision) {
          printf("pick sank into object\n");
          // move back slightly
-         moveBy(displacement*1.2f);
+         //moveBy(displacement*1.2f);
+         moveBy(-getVel()*(float)timeStep);
          setRotation(previousAngle);
          // set bjorn's velocity
          bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
@@ -226,13 +227,15 @@ void Hammer::update(double timeStep) {
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
          activeForce = getVel() - projection;
-         moveBy(-projection*(float)timeStep*0.25f);
+         if (glm::dot(projection,pickNormal) > 0.0) {
+            moveBy(projection*(float)timeStep*0.25f);
+         }
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          //bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
       }
       //pick hit object
       else if (dat.thisObj.mesh == PICK_NODE && !hammerCollision && !pickCollision && 
-            glm::length(pickNormal * glm::normalize(dat.collisionAngle)) > 0.6f) {
+            glm::length(pickNormal * glm::normalize(dat.collisionAngle)) > 0.8f) {
          printf("pick hit object\n");
          // lock rotation
          lockTime = 2.0;
