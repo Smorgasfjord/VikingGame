@@ -151,9 +151,9 @@ void Hammer::step(double timeStep)
    if(mountainSide != bjorn->mountainSide)
    {
       if(mountainSide < bjorn->mountainSide)
-         rotateBy(glm::vec3(0, 90, 0));
+         desiredRotation.y += 90.0f;
       else
-         rotateBy(glm::vec3(0, 270, 0));
+         desiredRotation.y += 270.0f;
       mountainSide = bjorn->mountainSide;
    }
    return;

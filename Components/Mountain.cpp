@@ -195,8 +195,8 @@ float Mountain::testLeftDiagonal(glm::vec3 pos)
 {
    //Front left diagonal
    //NEW center: <30, 22.25, 30> normal<-1, 0, -1>
-   float fld = -(-1 * (MOUNT_WIDTH / 2)) - (-1 * (MOUNT_DEPTH / 2));
-   return (-1 * pos.x) + (-1 * pos.z) + fld;
+   float fld = -(-1.0 * (MOUNT_WIDTH / 2.0)) - (-1.0 * (MOUNT_DEPTH / 2.0));
+   return (-1.0 * pos.x) + (-1.0 * pos.z) + fld;
    
 }
 
@@ -204,25 +204,33 @@ float Mountain::testRightDiagonal(glm::vec3 pos)
 {
    //Front right diagonal
    //NEW center: <30, 22.25, 30> normal:<1, 0, -1>
-   float frd = -(1 * (MOUNT_WIDTH / 2)) - (-1 * (MOUNT_DEPTH / 2));
-   return (1 * pos.x) + (-1 * pos.z) + frd;
+   float frd = -(1.0 * (MOUNT_WIDTH / 2.0)) - (-1.0 * (MOUNT_DEPTH / 2.0));
+   return (1.0 * pos.x) + (-1.0 * pos.z) + frd;
 }
 
 int Mountain::getSide(glm::vec3 pos)
 {
    int side;
+   glm::vec3 norms;
    float fl = Mountain::testLeftDiagonal(pos);
    float fr = Mountain::testRightDiagonal(pos);
-   
+   float x,y,z, off;
+   off = (float)MOUNT_WIDTH/2.0;
+   x = ((float)MOUNT_WIDTH - pos.x) * ((float)IMG_MAX_X / MOUNT_WIDTH);
+   y = (((float)MOUNT_HEIGHT - pos.y) * (((float)IMG_MAX_Y - (float)IMG_MIN_Y) / (float)MOUNT_HEIGHT)) + (float)IMG_MIN_Y;
+   y = interpolateDepth(x,y,0,norms);
+   x = 30.0f;
+   z = 30.0f;
+   off -= (1.0 - y / 255.0) * off;
    //Determine which mountain side we're on
-   if(fr > 0 && fl < 0)
+   if(pos.x < x-off && pos.z < z+off)
       side = MOUNT_LEFT;
-   else if(fr < 0 && fl > 0)
+   else if(pos.x > x+off && pos.z > z-off)
       side = MOUNT_RIGHT;
-   else if(fr > 0 && fl > 0)
-      side = MOUNT_FRONT;
-   else
+   else if(pos.x < x+off && pos.z > z+off)
       side = MOUNT_BACK;
+   else
+      side = MOUNT_FRONT;
    return side;
 }
 #endif

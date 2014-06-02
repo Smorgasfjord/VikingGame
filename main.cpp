@@ -160,12 +160,14 @@ int diffMs(timeval t1, timeval t2)
 static void reset()
 {
    //lookAt.y += 1.0f;
-   bjorn.facingRight = true;
+   bjorn.facingRight = true; //THIS CAN BE WRONG
    hammer.setState(hammerResetState);
    hammer.setVelocity(glm::vec3(0));
    bjorn.setState(bjornResetState);
    bjorn.setVelocity(glm::vec3(0));
    bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
+   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
+   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
    
@@ -189,6 +191,8 @@ void setWorld()
    platMod = loadModel("Models/platform_2.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
+
+   glUniform1i(handles.uFogUnit, LoadGLTextures("Models/FogTexture.png"));
    simplePlatformMod = genSimpleModel(&platMod);
    
    for(int i = 0; i < NUM_LIGHTS; i++)
@@ -279,6 +283,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
    handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
+   handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
    handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
    handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
@@ -307,6 +312,12 @@ void Initialize ()
  	glClearDepth (1.0f);	// Depth Buffer Setup
  	glDepthFunc (GL_LEQUAL);	// The Type Of Depth Testing
 	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
+   glEnable(GL_TEXTURE_2D);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 }
 
 /* Main display function */

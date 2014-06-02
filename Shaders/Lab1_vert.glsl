@@ -27,7 +27,7 @@ void main() {
    vec4 vPosition, transNorm;
    
    /* First model transforms */
-   vPosition = uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1);
+   vPosition = uModelMatrix * vec4(aPosition.x, aPosition.y, aPosition.z, 1.0);
    vPos = vec3(vPosition.x, vPosition.y, vPosition.z);
    vPosition = uViewMatrix * vPosition;
    gl_Position = uProjMatrix * vPosition;
