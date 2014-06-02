@@ -68,6 +68,7 @@
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
+#define NUM_LIGHTS 5
 
 
 using namespace std;
@@ -91,14 +92,11 @@ GameModel simplePlatformMod;
 GameModel bjornMod;
 Bjorn bjorn;
 Transform_t bjornResetState;
-glm::vec3 bjornResetPos, bjornResetRot;
 static bool moveLeft = false, moveRight = false;
 
 //Hammer
 int hammerTime;
 Transform_t hammerResetState;
-glm::vec3 hammerResetRot;
-glm::vec3 hammerResetPos;
 GameModel hammerMod;
 Hammer hammer;
 
@@ -109,18 +107,18 @@ static float frameRate = 0.0;
 static int frames = 0;
 
 //Light
-glm::vec3 lightPos;
+glm::vec3 lightPos[NUM_LIGHTS];
 
 //Audio
 Jukebox music;
 
 //Camera
 float camDistance = 4.0f;
-glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1, g_groundSize / 2.0);
-glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1, g_groundSize / 2.0 + 1.0);
+glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1.0, g_groundSize / 2.0);
+glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1.0, g_groundSize / 2.0 + 1.0);
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
-float camYOffset = 0;
+float camYOffset = 0.0f;
 bool manualCamControl = false;
 
 glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
@@ -161,16 +159,19 @@ int diffMs(timeval t1, timeval t2)
 //Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   eye = lookAt = bjornResetPos;
-   eye.y += 1.5f;
-   eye.z -= camDistance;
    //lookAt.y += 1.0f;
    bjorn.facingRight = true;
    hammer.setState(hammerResetState);
-   hammer.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
+   hammer.setVelocity(glm::vec3(0));
    bjorn.setState(bjornResetState);
-   bjorn.rotateBy(glm::vec3(0, 90, 0)); //I don't know why this is necessary
-   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjornResetPos);
+   bjorn.setVelocity(glm::vec3(0));
+   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
+   world.updateObject(&bjorn, bjorn.modelIdx);
+   world.updateObject(&hammer, hammer.modelIdx);
+   
+   eye = lookAt = bjorn.getPos();
+   eye.y += 1.5f;
+   eye.z -= camDistance;
 }
 
 /* Initialization of objects in the world. Only occurs Once */
@@ -190,10 +191,16 @@ void setWorld()
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
    simplePlatformMod = genSimpleModel(&platMod);
    
-   lightPos= glm::vec3(35, 15, -15);
+   for(int i = 0; i < NUM_LIGHTS; i++)
+   {
+      lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
+   }
+   
+   //lightPos[0] = glm::vec3(50.188667, 2.512615, -0.142857);
    
    //Send light data to shader
-   safe_glUniform3f(handles.uLightPos, lightPos.x, lightPos.y, lightPos.z);
+   glUniform3fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+   //safe_glUniform3f(handles.uLightPos, lightPos[0].x, lightPos[0].y, lightPos[0].z);
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    mount = Mountain(handles, &mountMod);
@@ -202,7 +209,7 @@ void setWorld()
    world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = world.getStart();
+   eye = lookAt = world.getStart();//glm::vec3(58, 15, 45);//world.getStart();
    eye.y += 1;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
@@ -280,7 +287,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
    handles.uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
    handles.uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
-   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uCamPos");
+   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uEyePos");
    handles.uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
    handles.uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
    handles.uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");
@@ -362,12 +369,12 @@ void mouse(GLFWwindow* window, double x, double y)
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT)
       hammer.flip();
-   else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_2)
-      hammer.locked = true;
-   else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_2)
-      hammer.locked = false;
+   else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
+      hammer.manualLocked = true;
+   else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_RIGHT)
+      hammer.manualLocked = false;
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -444,8 +451,9 @@ void Animate()
    if (curTime - lastUpdated < 1.0/REFRESH_RATE) {
       return;
    }
+   
    timeStep = curTime - lastUpdated;
-   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y);
+   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    prevMouseLoc = currentMouseLoc;
    if (moveLeft) {
@@ -465,9 +473,9 @@ void Animate()
    world.updateObject(&hammer, hammer.modelIdx);
   
    //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < -3.0*GRAVITY && !DEBUG_GAME)
+   if(bjorn.getVel().y < (-3.0 * GRAVITY) && !DEBUG_GAME)
       Sound::scream();
-   if(bjorn.getVel().y < -4.0*GRAVITY && !DEBUG_GAME)
+   if(bjorn.getVel().y < (-4.0 * GRAVITY) && !DEBUG_GAME)
    {
       Sound::stopScream();
       reset();
@@ -475,16 +483,16 @@ void Animate()
    
    //Update camera
    lookAt = bjorn.getPos();
-   //lookAt.y += 0.3f;
+
+   //Get the normal to move the camera along
    Mountain::lockOn(bjorn.getPos(),norm);
    eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
    if(!manualCamControl)
       camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
-      
-   if(currentSide != bjorn.mountainSide)
+   
+   //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
+   if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
    {
-      //This could be used to add a nice animation for the camera swinging around the mountain
-      cout << "camera changing sides\n";
       currentSide = bjorn.mountainSide;
       //Update reset variables for checkpoint
       bjornResetState = bjorn.getState();

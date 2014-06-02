@@ -14,8 +14,6 @@
 
 class Jukebox
 {
-   private:
-      float volume;
    public:
       Jukebox();
       void start();

@@ -26,6 +26,7 @@
 
 Bjorn::~Bjorn()
 {
+
 }
 
 Bjorn::Bjorn()
@@ -51,7 +52,6 @@ GameObject("Bjorn")
    this->world = worl;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = Mountain::getSide(pos);
-   cout << "Bjorn is on side " << mountainSide << "\n";
 }
 
 //What Bjorn does
@@ -62,7 +62,9 @@ void Bjorn::step(double timeStep)
       Sound::walk();
       //Update X velocity due to friction
       if(glm::length(getVel()) > 0.1)
+      {
          setVelocity(getVel() * (float)exp(-1.0 * timeStep));
+      }
       else
       {
          setVelocity(glm::vec3(0.0f));
@@ -73,11 +75,10 @@ void Bjorn::step(double timeStep)
       Sound::stopWalk();
    }
    //                         (m/s^2  * s)
-   addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
+   if (!suspended) addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
    moveBy(getVel()*(float)timeStep);
    
    glm::vec3 newPos = getPos();
-   newPos.z += 1.0f;
    newSide = Mountain::getSide(newPos);
    //Check if we've changed sides of the mountain
    if(newSide != mountainSide)
@@ -90,11 +91,12 @@ void Bjorn::step(double timeStep)
          rotateBy(glm::vec3(0, -90, 0));
       
       //Transfer velocity
-      //if (getVel().x != 0)
-      //setVelocity(glm::vec3(0, getVel().y, getVel().x));
-      //else
-      //setVelocity(glm::vec3(getVel().z, getVel().y, 0));
-      
+      /*
+      if (getVel().x != 0)
+         setVelocity(glm::vec3(0, getVel().y, getVel().x));
+      else
+         setVelocity(glm::vec3(getVel().z, getVel().y, 0));
+   */
       mountainSide = newSide;
    }
    
@@ -111,20 +113,21 @@ void Bjorn::update(double timeStep) {
    if (cData.hitObj.obj >= 0) {
       /*
       printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) while trying to move (%f, %f, %f)\n",
-             hammer.model.children[dat.thisObj.nod].name.c_str(), cData.thisObj.tri, cData.hitObj.obj, cData.hitObj.tri,
+             cData.thisObj.tri, cData.hitObj.obj, cData.hitObj.tri,
              cData.collisionPoint.x, cData.collisionPoint.y,cData.collisionPoint.z,cData.collisionNormal.x, cData.collisionNormal.y,cData.collisionNormal.z,
              cData.collisionAngle.x, cData.collisionAngle.y,cData.collisionAngle.z,cData.collisionStrength.x,cData.collisionStrength.y,cData.collisionStrength.z);
       */
-      displacement = cData.collisionAngle-cData.collisionStrength;// + cData.collisionNormal*(float)timeStep*0.0f;
-      //printf("moving Bjorn (%f, %f, %f)\n", displacement.x, displacement.y,displacement.z);
+      
+      displacement = cData.collisionAngle-cData.collisionStrength;
       moveBy(displacement); //reevaluate location
 
       collidedWith = world->getObjectByIndex(cData.hitObj.obj);
       //Nudge bjorn towards the correct position on the platform
       newPos = Mountain::lockOn(getPos(),displacement);
-      moveBy(((newPos+displacement*glm::vec3(-0.6f,0.0f,-0.6f)) - getPos())/30.0f);
+      glm::vec3 movement = ((newPos + displacement * glm::vec3(-0.6f,0.0f,-0.6f)) - getPos()) / 30.0f;
+      moveBy(((newPos + displacement * glm::vec3(-1.0f,0.0f,-1.0f)) - getPos()) / 30.0f);
       
-      setVelocity((getVel()*0.5f + glm::reflect(getVel(), cData.collisionNormal))/2.0f + cData.collisionNormal*(float)timeStep*0.1f);
+      setVelocity((getVel() * 0.5f + glm::reflect(getVel(), cData.collisionNormal)) / 2.0f + cData.collisionNormal * (float)timeStep * 0.1f);
       if (cData.collisionNormal.y > 0.5) {
          jumpCount = 0.0;
          jumping = false;
@@ -140,10 +143,10 @@ void Bjorn::update(double timeStep) {
       else {
          grounded = false;
          jumping = true;
+         newPos = Mountain::lockOn(getPos(),displacement);
+         moveBy(((newPos+displacement*glm::vec3(-1.0f+(0.2*getVel().y),0.0f,-1.0f+(0.2*getVel().y))) - getPos())/10.0f);
       }
    }
-   newPos = Mountain::lockOn(getPos(),displacement);
-   moveBy(((newPos+displacement*glm::vec3(-1.2f,0.0f,-1.2f)) - getPos())/10.0f);
 }
 
 void Bjorn::moveRight()
