@@ -55,5 +55,6 @@ void main() {
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
    phong += ambient;
-   gl_FragColor = vec4(phong * texColor.xyz, 1.0);
+   //gl_FragColor = vec4(phong * texColor.xyz, 1.0);
+   gl_FragColor = vec4(vNorm, 1.0);
 }
