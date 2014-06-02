@@ -1,5 +1,6 @@
+//#version 120
 #define NUM_LIGHTS 5
-#define LIGHT_RADIUS 10.0
+#define LIGHT_RADIUS 8.0
 #define ATTENUATION_CONST 1.0
 #define ATTENUATION_LINEAR 2.0 / LIGHT_RADIUS
 #define ATTENUATION_QUADRATIC 1.0 / (LIGHT_RADIUS * LIGHT_RADIUS)
@@ -30,12 +31,13 @@ void main() {
    if (length(texColor.xyz) < 0.01) {
       texColor = vec4(1.0);
    }
-   vec3 norm = normalize(vNorm) * ((texColor.x + texColor.y + texColor.z) / 3.0);
+   vec3 norm = ((vNorm + vec3(1.0)) / 2.0) * ((texColor.x + texColor.y + texColor.z) / 3.0);
    for(int i = 0; i < NUM_LIGHTS; i++)
    {
       light = normalize(uLightPos[i] - vPos);
       distance = length(uLightPos[i] - vPos);
-      attenuation = 1.0 / (ATTENUATION_CONST + (ATTENUATION_LINEAR * distance) + (ATTENUATION_QUADRATIC * distance * distance));
+      //attenuation = 1.0 / (ATTENUATION_CONST + (ATTENUATION_LINEAR * distance) + (ATTENUATION_QUADRATIC * distance * distance));
+      attenuation = 1.0 / (distance * distance);
       
       //Intensity of the diffuse light. Clamp within the 0-1 range.
       intensity = clamp(dot(norm, light), 0.0, 1.0);
@@ -45,7 +47,7 @@ void main() {
       halfVec = normalize(light + view);
       intensity = pow(clamp(dot(normalize(vNorm), halfVec), 0.0, 1.0), uMat.shine);
       specular = intensity * uMat.sColor;
-      lightSum += (diffuse + specular) * attenuation;
+      lightSum += (diffuse + specular);// * attenuation;
    }
 
    ambient = uLColor * uMat.aColor;
@@ -55,6 +57,6 @@ void main() {
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
    phong += ambient;
-   //gl_FragColor = vec4(phong * texColor.xyz, 1.0);
-   gl_FragColor = vec4(vNorm, 1.0);
+   gl_FragColor = vec4(phong * texColor.xyz, 1.0);
+   //gl_FragColor = vec4((vNorm + vec3(1.0)) / 2.0, 1.0);
 }
