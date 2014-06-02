@@ -1,5 +1,5 @@
 #define NUM_LIGHTS 5
-#define LIGHT_RADIUS 15.0
+#define LIGHT_RADIUS 10.0
 #define ATTENUATION_CONST 1.0
 #define ATTENUATION_LINEAR 2.0 / LIGHT_RADIUS
 #define ATTENUATION_QUADRATIC 1.0 / (LIGHT_RADIUS * LIGHT_RADIUS)
@@ -47,11 +47,13 @@ void main() {
       specular = intensity * uMat.sColor;
       lightSum += (diffuse + specular) * attenuation;
    }
+
    ambient = uLColor * uMat.aColor;
    vec3 phong = (lightSum + ambient);
    if (phong.x > maxCol) maxCol = phong.x;
    if (phong.y > maxCol) maxCol = phong.y;
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
+   phong += ambient;
    gl_FragColor = vec4(phong * texColor.xyz, 1.0);
 }

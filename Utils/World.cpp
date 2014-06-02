@@ -115,6 +115,7 @@ void World::draw(int mountainSide)
    mount.draw();
    
    objectsInScene = cull(mountainSide);
+   cout << "Drawing platforms " << objectsInScene.size() << "\n";
    SetMaterial(0);
    for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
       it->draw();
@@ -158,7 +159,7 @@ std::vector<GameObject> World::cull(int mountainSide)
          //Not on the back side, check against each plane of view frustum
          //Get the model transform for this Object
          model = it->model.state.transform;
-
+         mvp = projection * view * model;
          //Negative Z
          if(testPlane(glm::row(mvp, 2), glm::row(mvp, 3), platformCenter) > 0)
          {
