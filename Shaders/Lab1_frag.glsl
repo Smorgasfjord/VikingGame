@@ -1,10 +1,10 @@
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
-#define LIGHT_RADIUS 15.0
-#define VIEW_DIST 100.0 
-#define ATTENUATION_CONST 0.9
-#define ATTENUATION_LINEAR 0.8 / LIGHT_RADIUS
-#define ATTENUATION_QUADRATIC 0.7 / (LIGHT_RADIUS * LIGHT_RADIUS)
+#define VIEW_DIST 400.0 
+#define LIGHT_RADIUS 10.0
+#define ATTENUATION_CONST 1.0
+#define ATTENUATION_LINEAR 2.0 / LIGHT_RADIUS
+#define ATTENUATION_QUADRATIC 1.0 / (LIGHT_RADIUS * LIGHT_RADIUS)
 
 struct Material {
    vec3 aColor;
@@ -50,9 +50,8 @@ void main() {
       halfVec = normalize(light + view);
       intensity = pow(clamp(dot(norm, halfVec), 0.0, 1.0), uMat.shine);
       specular = intensity * uLColor * uMat.sColor;
-      preFog = (diffuse + specular) * attenuation;
-      attenuation = max(eyeDist * eyeDist / VIEW_DIST, 1.0);
-      lightSum += preFog;// * (1.0-attenuation) + fogCol.xyz * attenuation;
+      
+      lightSum += (diffuse + specular) * attenuation;
    }
    lightSum /= NUM_LIGHTS_F;
    ambient = uLColor * uMat.aColor;
@@ -61,5 +60,7 @@ void main() {
    if (phong.y > maxCol) maxCol = phong.y;
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
-   gl_FragColor = vec4(phong * texColor.xyz, 1.0);
+   phong += ambient;
+   attenuation = clamp(eyeDist * eyeDist / VIEW_DIST, 0.0, 1.0);
+   gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation, 1.0);
 }

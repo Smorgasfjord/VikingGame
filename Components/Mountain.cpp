@@ -48,7 +48,7 @@ Mountain::Mountain()
 
 Mountain::Mountain(GLHandles hand, GameModel *model)
 {
-   initialize(model, 0, 1, hand);
+   initialize(*model, 0, 1, hand);
    setScale(glm::vec3(1.0f));
    setPos(glm::vec3(30, 22.5, 30));
    

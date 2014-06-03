@@ -19,28 +19,28 @@ void initGameObjState(Transform_t *state) {
       = mat4(1.0);
 }
 
-void ObjectNode::initialize(ModelNode *modNod) {
+void ObjectNode::initialize(ModelNode & modNod) {
    ObjectMesh mesh;
    ObjectNode nod;
-   for (int i = 0; i < modNod->meshes.size(); i++) {
-      mesh = ObjectMesh(modNod->meshes[i].mIdx, modNod->meshes[i].buffDat);
+   for (int i = 0; i < modNod.meshes.size(); i++) {
+      mesh = ObjectMesh(modNod.meshes[i].mIdx, modNod.meshes[i].buffDat);
       meshes.push_back(mesh);
    }
-   for (int j = 0; j < modNod->children.size(); j++) {
-      nod = ObjectNode(modNod->children[j].name.c_str());
-      nod.initialize(&(modNod->children[j]));
+   for (int j = 0; j < modNod.children.size(); j++) {
+      nod = ObjectNode(modNod.children[j].name.c_str());
+      nod.initialize(modNod.children[j]);
       children.push_back(nod);
    }
-   state.transform = modNod->transform;
+   state.transform = modNod.transform;
 }
 
-void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandles handles) {
+void GameObject::initialize(GameModel & model, int modIdx, int collGroup, GLHandles handles) {
    ObjectNode nod;
    this->handles = handles;
    this->collisionGroup = collGroup;
    this->modelIdx = modIdx;
-   nod = ObjectNode(model->rootNode.name.c_str());
-   nod.initialize(&(model->rootNode));
+   nod = ObjectNode(model.rootNode.name.c_str());
+   nod.initialize(model.rootNode);
    this->model = nod;
 }
 
@@ -251,6 +251,7 @@ void ObjectMesh::render(GLHandles handle) {
    safe_glUniform1f(handle.uMatShine, buffDat.mat.shininess);
 
    // bind texture
+   glActiveTexture(GL_TEXTURE0);
    glBindTexture(GL_TEXTURE_2D, buffDat.texIndex);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffDat.ibo);

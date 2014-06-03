@@ -246,7 +246,7 @@ class GameModel {
 };
 
 GameModel genSimpleModel(GameModel *mod);
-ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> meshData);
+ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> & meshData);
 GameModel loadModel(std::string fName, GLHandles handle);
 
 #endif

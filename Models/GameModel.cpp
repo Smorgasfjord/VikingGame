@@ -353,7 +353,7 @@ GameModel genSimpleModel(GameModel *mod) {
    return newMod;
 }
 
-ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData) {
+ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshData) {
    ModelNode nod;
    ModelMesh mesh;
    MeshBufferData mDat;
@@ -379,7 +379,7 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData)
    return nod;
 }
 
-ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> meshData) {
+ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> & meshData) {
    ModelNode mod;
 
    mod = genModelNode(sc->mRootNode, meshData);

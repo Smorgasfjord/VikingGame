@@ -36,7 +36,7 @@ Platform::Platform(glm::vec3 pos, GLHandles hand, GameModel *model) :
    GameObject("platform")
 {
    glm::vec3 rot;
-   initialize(model, 0, 1, hand);
+   initialize(*model, 0, 1, hand);
    setPos(Mountain::lockOn(pos,rot));
    setScale(glm::vec3(1.0f, 1.0, 3.0));
    setVelocity(glm::vec3(0));
@@ -50,7 +50,7 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
 {
    glm::vec3 rot;
    mountainSide = mountSide;
-   initialize(model, 0, 1, hand);
+   initialize(*model, 0, 1, hand);
    setPos(Mountain::lockOn(pos,rot));
    setScale(size);
    setRotation(glm::vec3(0, 0, rotation));

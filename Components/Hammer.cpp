@@ -33,7 +33,7 @@ GameObject(n)
 void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, GLHandles handles)
 {
    GameModel simple = genSimpleModel(hammerMod);
-   initialize(hammerMod, 0, 0, handles);
+   initialize(*hammerMod, 0, 0, handles);
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .2));
    scaleBy(glm::vec3(.25f));
@@ -183,12 +183,9 @@ void Hammer::update(double timeStep) {
          //moveBy(displacement);
          moveBy(-getVel()*(float)timeStep);
          setVelocity(-activeForce);
-         //moveBy(getVel()*(float)timeStep);
          // give bjorn force
-         //m/s         = m/s
          activeForce = dat.collisionStrength * (float)(GRAVITY * 1.5f);
          bjorn->addVelocity(-activeForce);///(float)timeStep);
-         //                  m          /       s
          // lock rotation temporarily
          lockTime = 0.2;
          locked = true;
@@ -200,7 +197,6 @@ void Hammer::update(double timeStep) {
       else if ((dat.thisObj.mesh != PICK_NODE) && pickCollision && !hammerCollision) {
          printf("pick sank into object\n");
          // move back slightly
-         //moveBy(displacement*1.2f);
          moveBy(-getVel()*(float)timeStep);
          setRotation(previousAngle);
          // set bjorn's velocity
