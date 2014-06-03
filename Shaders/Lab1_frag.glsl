@@ -1,6 +1,5 @@
 //#version 120
 #define NUM_LIGHTS 5
-<<<<<<< HEAD
 #define NUM_LIGHTS_F 5.0
 #define VIEW_DIST 400.0 
 #define LIGHT_RADIUS 8.0
@@ -63,7 +62,8 @@ void main() {
    phong = phong / maxCol;
    phong += ambient;
    eyeDist = length(vPos - uEyePos);
-   attenuation = clamp(eyeDist * eyeDist / VIEW_DIST, 0.0, 1.0);
+   attenuation = clamp(eyeDist * eyeDist / VIEW_DIST, 0.05, 0.95);
+   attenuation += 0.05;
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation, 1.0);
    //gl_FragColor = vec4((vNorm + vec3(1.0)) / 2.0, 1.0);
 }
