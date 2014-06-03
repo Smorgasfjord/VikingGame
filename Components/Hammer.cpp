@@ -14,12 +14,12 @@
 #define PICK_TIP2 2
 #define HANDLE_NODE 0
 #define WTF_NODE 0
-#define WOOD_NODE 3
-#define HAMMER_NODE 4
-#define PICK_NODE 6
-#define STUD_BAND 7
-#define STUDS 8
-#define GRIP_NODE 9
+#define WOOD_NODE 2
+#define HAMMER_NODE 1
+#define PICK_NODE 3
+#define STUD_BAND 5
+#define STUDS 6
+#define GRIP_NODE 7
 
 Hammer::~Hammer()
 {

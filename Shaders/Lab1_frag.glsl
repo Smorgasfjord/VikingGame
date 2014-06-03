@@ -1,7 +1,10 @@
 //#version 120
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
-#define VIEW_DIST 400.0 
+#define VIEW_DIST 20.0 
+#define FOG_CONST 0.05
+#define FOG_LINEAR 0.2 / VIEW_DIST
+#define FOG_QUAD 0.9 / (VIEW_DIST * VIEW_DIST)
 #define LIGHT_RADIUS 8.0
 #define ATTENUATION_CONST 1.0
 #define ATTENUATION_LINEAR 2.0 / LIGHT_RADIUS
@@ -40,8 +43,8 @@ void main() {
    {
       light = normalize(uLightPos[i] - vPos);
       distance = length(uLightPos[i] - vPos);
-      //attenuation = 1.0 / (ATTENUATION_CONST + (ATTENUATION_LINEAR * distance) + (ATTENUATION_QUADRATIC * distance * distance));
-      attenuation = 1.0 / (distance * distance);
+      attenuation = 1.0 / (ATTENUATION_CONST + (ATTENUATION_LINEAR * distance) + (ATTENUATION_QUADRATIC * distance * distance));
+      //attenuation = 1.0 / (distance * distance);
       
       //Intensity of the diffuse light. Clamp within the 0-1 range.
       intensity = clamp(dot(norm, light), 0.0, 1.0);
@@ -62,8 +65,8 @@ void main() {
    phong = phong / maxCol;
    phong += ambient;
    eyeDist = length(vPos - uEyePos);
-   attenuation = clamp(eyeDist * eyeDist / VIEW_DIST, 0.05, 0.95);
+   attenuation = clamp(eyeDist * eyeDist * FOG_QUAD + eyeDist * FOG_LINEAR + FOG_CONST, 0.0, 1.0);
    attenuation += 0.05;
-   gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation, 1.0);
+   gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
    //gl_FragColor = vec4((vNorm + vec3(1.0)) / 2.0, 1.0);
 }
