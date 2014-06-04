@@ -1,14 +1,14 @@
 //#version 120
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
-#define VIEW_DIST 10.0 
-#define FOG_CONST 0.05
+#define HEIGHT_TO_VIEW_DIST 300.0
+#define VIEW_DIST 5.0//15.0 -  5.0
 #define FOG_LINEAR 0.6 / VIEW_DIST
 #define FOG_QUAD 0.4 / (VIEW_DIST * VIEW_DIST)
 #define LIGHT_RADIUS 8.0
 #define ATTENUATION_CONST 1.0
-#define ATTENUATION_LINEAR 2.0 / LIGHT_RADIUS
-#define ATTENUATION_QUADRATIC 1.0 / (LIGHT_RADIUS * LIGHT_RADIUS)
+#define ATTENUATION_LINEAR .8 / LIGHT_RADIUS
+#define ATTENUATION_QUADRATIC .6 / (LIGHT_RADIUS * LIGHT_RADIUS)
 
 struct Material {
    vec3 aColor;
@@ -27,6 +27,7 @@ uniform vec3 uEyePos;
 uniform Material uMat;
 uniform sampler2D uTexUnit;
 uniform sampler2D uFogUnit;
+uniform float uFogStrength;
 
 void main() {
    vec4 texColor = texture2D(uTexUnit, vTexCoord), fogCol;
@@ -34,8 +35,12 @@ void main() {
    vec3 lightSum = vec3(0.0);
    vec3 view = normalize(uEyePos - vPos);
    vec3 normEye = normalize(uEyePos);
-   vec2 fogIdx = vec2((normEye.x + 2.0 + vTexCoord.x + normEye.z) * 0.2, (-normEye.y + 2.0 + vTexCoord.y + normEye.z) * 0.2);
    float attenuation, eyeDist, distance, intensity, maxCol = 1.0;
+   //Fog stuff
+   vec2 fogIdx = vec2((normEye.x + 2.0 + vTexCoord.x + normEye.z) * 0.2, (-normEye.y + 2.0 + vTexCoord.y + normEye.z) * 0.2);
+   float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
+   float fogLinear = 0.6 / viewDist;
+   float fogQuad = 0.4 / (viewDist * viewDist);
    if (length(texColor.xyz) < 0.01) {
       texColor = vec4(1.0);
    }
@@ -44,8 +49,7 @@ void main() {
    {
       light = normalize(uLightPos[i] - vPos);
       distance = length(uLightPos[i] - vPos);
-      //attenuation = 1.0 / (ATTENUATION_CONST + (ATTENUATION_LINEAR * distance) + (ATTENUATION_QUADRATIC * distance * distance));
-      attenuation = 1.0 / (distance * distance);
+      attenuation = 1.0 / (ATTENUATION_CONST + (ATTENUATION_LINEAR * distance) + (ATTENUATION_QUADRATIC * distance * distance));
       
       //Intensity of the diffuse light. Clamp within the 0-1 range.
       intensity = clamp(dot(norm, light), 0.0, 1.0);
@@ -55,7 +59,7 @@ void main() {
       halfVec = normalize(light + view);
       intensity = pow(clamp(dot(normalize(vNorm), halfVec), 0.0, 1.0), uMat.shine);
       specular = intensity * uMat.sColor;
-      lightSum += (diffuse + specular);// * attenuation;
+      lightSum += (diffuse + specular) * attenuation;
    }
    lightSum /= NUM_LIGHTS_F;
    ambient = vec3(1.0) * (length(uMat.aColor) > 0.01 ? uMat.aColor : vec3(0.1));
@@ -66,9 +70,7 @@ void main() {
    phong = phong / maxCol;
    phong += ambient;
    eyeDist = length(uEyePos-vPos);
-   attenuation = clamp(eyeDist * eyeDist * FOG_QUAD + eyeDist * FOG_LINEAR + FOG_CONST, 0.0, 1.0);
-   attenuation += 0.05;
+   attenuation = clamp(eyeDist * eyeDist * fogQuad + eyeDist * fogLinear + (uFogStrength / 100.0), 0.0, 1.0);
    fogCol = texture2D(uFogUnit,fogIdx);
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
-   //gl_FragColor = vec4((vNorm + vec3(1.0)) / 2.0, 1.0);
 }

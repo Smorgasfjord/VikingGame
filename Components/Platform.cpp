@@ -51,11 +51,16 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
    glm::vec3 rot;
    mountainSide = mountSide;
    initialize(*model, 0, 1, hand);
-   setPos(Mountain::lockOn(pos,rot));
+   setPos(pos);
    setScale(size);
    setRotation(glm::vec3(0, 0, rotation));
    if(mountSide == MOUNT_LEFT || mountSide == MOUNT_RIGHT)
+   {
       rotateBy(glm::vec3(0, 90, 0));
+      //I think that rotateBy doesn't work the way we think it does
+      if(abs(rotation) > 80 )
+         rotateBy(glm::vec3(0, 0, 90));
+   }
    setVelocity(glm::vec3(0));
 }
 
