@@ -39,7 +39,6 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    scaleBy(glm::vec3(.25f));
    pickNormal = glm::vec3(1.0f,0.0,0.0);
    desiredRotation = previousAngle = glm::vec3(0.0f,180.0,270.0);
-   //pick normal = (-1.0, 0, 0)
    rotateBy(desiredRotation);
    pickNormal = (getRotMat() * glm::vec4(pickNormal,0.0f)).xyz();
    this->world = world;
@@ -143,7 +142,7 @@ void Hammer::step(double timeStep)
    if (!locked && !manualLocked) {
       rotateBy(rotIncrement);
       pickNormal = glm::vec3(getRotMat() * glm::vec4(1.0,0.0,0.0,0.0f)) * glm::vec3(1.0,-1.0f,1.0);
-      printf("pick normal: (%f,%f,%f)\n",pickNormal.x,pickNormal.y,pickNormal.z);
+      //printf("pick normal: (%f,%f,%f)\n",pickNormal.x,pickNormal.y,pickNormal.z);
    }
    moveBy(getVel()*(float)timeStep);
    
@@ -304,7 +303,6 @@ void Hammer::update(double timeStep) {
    }
    else {
       if (glm::length(getVel()) > 0.1) {
-      printf("NOOOOO COLLLLLISIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOON\n");
       bjorn->unsuspend();
       pickCollision = false;
       hammerCollision = false;

@@ -115,7 +115,6 @@ void World::draw(int mountainSide)
    mount.draw();
    
    objectsInScene = cull(mountainSide);
-   cout << "Drawing platforms " << objectsInScene.size() << "\n";
    SetMaterial(0);
    for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
       it->draw();

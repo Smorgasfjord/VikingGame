@@ -75,6 +75,8 @@ using namespace std;
 //GL basics
 int mainDrawProg, depthBuffProg;
 static float g_width, g_height;
+GLuint shadowFrameBuffer;
+GLuint shadowDepthTexture;
 
 GLuint fogTex;
 
@@ -204,11 +206,9 @@ void setWorld()
       lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
    
-   //lightPos[0] = glm::vec3(50.188667, 2.512615, -0.142857);
-   
    //Send light data to shader
    glUniform3fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-   //safe_glUniform3f(handles.uLightPos, lightPos[0].x, lightPos[0].y, lightPos[0].z);
+
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    skyBox = GameObject("skybox");
@@ -223,6 +223,7 @@ void setWorld()
    eye.y += 1.0;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
+   skyBox.setPos(eye);
    
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
@@ -325,6 +326,30 @@ void Initialize ()
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   
+   //FRAME_BUFFER_STUFF  (The Second)
+	shadowFrameBuffer = 0;
+	glGenFramebuffers(1, &shadowFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+   
+	// Depth texture
+	glGenTextures(1, &shadowDepthTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+   
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0);
+   
+	CheckedGLCall(glDrawBuffer(GL_NONE));
+   
+	// Always check that our framebuffer is ok
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		cout << "BADNESS WITH FRAMEBUFFER\n";
 
 }
 
@@ -346,11 +371,14 @@ void Draw (void)
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, fogTex);
    
+   
+   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
+   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+   
    glDisable( GL_DEPTH_TEST );
    //skyBox.draw();
    glEnable( GL_DEPTH_TEST );
-   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
-   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+   
    world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
@@ -548,13 +576,13 @@ int main( int argc, char *argv[] )
    if (!glfwInit())
       exit(EXIT_FAILURE);
    
-   //glfwWindowHint(GLFW_SAMPLES, 4);
+   glfwWindowHint(GLFW_SAMPLES, 4);
    /*
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-*/
+    */
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -575,12 +603,15 @@ int main( int argc, char *argv[] )
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
    glfwSetWindowPos(window, 100, 100);
-
+   
+   int major;
    //test the openGL version
    CheckedGLCall(getGLversion());
+   glGetIntegerv(GL_MAJOR_VERSION, &major);
+   cout << "Version: " << major;
    //install the shader
    
-   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/lab1_vert.glsl"), textFileRead((char *)"Shaders/lab1_frag.glsl"));
+   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
    if (mainDrawProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
