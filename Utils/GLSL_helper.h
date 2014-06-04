@@ -30,6 +30,11 @@
 
 int printOglError (const char *file, int line);
 
+void PrintOpenGLErrors(char const * const Function, char const * const File, int const Line);
+
+#define CheckedGLCall(x) do { PrintOpenGLErrors("before "#x, __FILE__, __LINE__); (x); PrintOpenGLErrors(#x, __FILE__, __LINE__); } while (0)
+
+
 /* Print out the information log for a program object */
 void printProgramInfoLog (GLuint program);
 

@@ -70,7 +70,6 @@
 #define CAM_Y_MAX_OFFSET 3
 #define NUM_LIGHTS 5
 
-
 using namespace std;
 
 //GL basics
@@ -120,8 +119,6 @@ glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
 float camYOffset = 0.0f;
 bool manualCamControl = false;
-
-glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
 //User interaction
 glm::vec2 prevMouseLoc;
@@ -242,8 +239,9 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    glShaderSource(VS, 1, &vShaderName, NULL);
    glShaderSource(FS, 1, &fShaderName, NULL);
    
+
    //compile shader and print log
-   glCompileShader(VS);
+   CheckedGLCall(glCompileShader(VS));
    /* check shader status requires helper functions */
    printOpenGLError();
    glGetShaderiv(VS, GL_COMPILE_STATUS, &vCompiled);
@@ -305,14 +303,18 @@ void Initialize ()
 	// Black Background
    //
  	glClearDepth (1.0f);	// Depth Buffer Setup
- 	glDepthFunc (GL_LEQUAL);	// The Type Of Depth Testing
+ 	glDepthFunc (GL_LESS);	// The Type Of Depth Testing
 	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
 }
 
 /* Main display function */
 void Draw (void)
 {
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glViewport(0,0,g_width,g_height);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
 	//Start our shader
  	glUseProgram(mainDrawProg);
    
@@ -516,13 +518,13 @@ int main( int argc, char *argv[] )
    if (!glfwInit())
       exit(EXIT_FAILURE);
    
-   //These may be mac only, not sure
+   //glfwWindowHint(GLFW_SAMPLES, 4);
    /*
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    */
+*/
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -530,35 +532,25 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    }
    
-   glfwMakeContextCurrent(window);
-   glewExperimental = GL_TRUE;
-   GLenum err = glewInit();
-   if (GLEW_OK != err)
-   {
-        /* Problem: glewInit failed, something is seriously wrong. */
-        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-   }
+   CheckedGLCall(glfwMakeContextCurrent(window));
+   glewExperimental = true; // Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return -1;
+	}
 
-   glfwSetKeyCallback(window, key_callback);
+   CheckedGLCall(glfwSetKeyCallback(window, key_callback));
    glfwSetMouseButtonCallback(window, mouseClick);
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
    glfwSetWindowPos(window, 100, 100);
-   
-   unsigned int Error = glewInit();
-   if (Error != GLEW_OK)
-   {
-	   std::cerr << "Error initializing glew! " << glewGetErrorString(Error) << std::endl;
-	   system("PAUSE");
-	   exit(33);
-   }
 
    //test the openGL version
-   getGLversion();
+   CheckedGLCall(getGLversion());
    //install the shader
    
-   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
+   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/lab1_vert.glsl"), textFileRead((char *)"Shaders/lab1_frag.glsl"));
    if (mainDrawProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;

@@ -251,6 +251,7 @@ void ObjectMesh::render(GLHandles handle) {
    safe_glUniform1f(handle.uMatShine, buffDat.mat.shininess);
 
    // bind texture
+   glActiveTexture(GL_TEXTURE0); //I dont know if this is necessary
    glBindTexture(GL_TEXTURE_2D, buffDat.texIndex);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffDat.ibo);

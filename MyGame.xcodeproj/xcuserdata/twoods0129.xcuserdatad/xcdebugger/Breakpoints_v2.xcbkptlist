@@ -31,7 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "302"
             endingLineNumber = "302"
-            landmarkName = "ChunkWorld::checkNodeCollision(ObjectNode &amp; newNod, ObjectNode &amp; oldNod, const vector&lt;BufferContents&gt; &amp; geom, glm::mat4 newCumulative, glm::mat4 oldCumulative, ObjData &amp; dat)"
+            landmarkName = "ChunkWorld::checkMeshCollision(const BufferContents &amp; geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData &amp; dat)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
