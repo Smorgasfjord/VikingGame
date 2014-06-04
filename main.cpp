@@ -191,7 +191,7 @@ void setWorld()
    std::vector<Platform> platforms;
    
    //Initialize models
-   //skyBoxMod = loadModel("Models/SkyBox.dae", handles);
+   skyBoxMod = loadModel("Models/SkyBox.dae", handles);
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
@@ -214,7 +214,7 @@ void setWorld()
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    skyBox = GameObject("skybox");
-   //skyBox.initialize(skyBoxMod, 0, 4, handles);
+   skyBox.initialize(skyBoxMod, 0, 4, handles);
    mount = Mountain(handles, &mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";

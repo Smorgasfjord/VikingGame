@@ -33,8 +33,8 @@ void main() {
    vec3 diffuse, specular, ambient ,light, halfVec, preFog;
    vec3 lightSum = vec3(0.0);
    vec3 view = normalize(uEyePos - vPos);
-   vec3 normEye = normalize(uEyePos);
-   vec2 fogIdx = vec2((normEye.x + 2.0 + vTexCoord.x + normEye.z) * 0.2, (-normEye.y + 2.0 + vTexCoord.y + normEye.z) * 0.2);
+   vec3 normEye = normalize(uEyePos), normPos = normalize(vPos);
+   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
    float attenuation, eyeDist, distance, intensity, maxCol = 1.0;
    if (length(texColor.xyz) < 0.01) {
       texColor = vec4(1.0);
@@ -60,11 +60,11 @@ void main() {
    lightSum /= NUM_LIGHTS_F;
    ambient = vec3(1.0) * (length(uMat.aColor) > 0.01 ? uMat.aColor : vec3(0.1));
    vec3 phong = (lightSum + ambient);
+   phong += ambient;
    if (phong.x > maxCol) maxCol = phong.x;
    if (phong.y > maxCol) maxCol = phong.y;
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
-   phong += ambient;
    eyeDist = length(uEyePos-vPos);
    attenuation = clamp(eyeDist * eyeDist * FOG_QUAD + eyeDist * FOG_LINEAR + FOG_CONST, 0.0, 1.0);
    attenuation += 0.05;
