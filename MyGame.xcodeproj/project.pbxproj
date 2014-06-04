@@ -318,6 +318,8 @@
 		7BCFD2C71929604C0069E59A /* platform_snow.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = platform_snow.jpg; sourceTree = "<group>"; };
 		7BD073E8191ED2AC006327F3 /* chunks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chunks.cpp; sourceTree = "<group>"; };
 		7BD073E9191ED2AC006327F3 /* chunks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chunks.h; sourceTree = "<group>"; };
+		7BD6E600193E3C91005C0CE9 /* blinnPhong_frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = blinnPhong_frag.glsl; path = build/Debug/Shaders/blinnPhong_frag.glsl; sourceTree = "<group>"; };
+		7BD6E601193E3C91005C0CE9 /* blinnPhong_vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; name = blinnPhong_vert.glsl; path = build/Debug/Shaders/blinnPhong_vert.glsl; sourceTree = "<group>"; };
 		7BE396991915AD6C005A026B /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
 		7BE396A11915ADCF005A026B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		7BE396A31915ADDA005A026B /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -361,6 +363,8 @@
 		7B7C52BA1934387200E82CC2 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
+				7BD6E600193E3C91005C0CE9 /* blinnPhong_frag.glsl */,
+				7BD6E601193E3C91005C0CE9 /* blinnPhong_vert.glsl */,
 				7B7C52BC193438AC00E82CC2 /* Lab1_frag.glsl */,
 				7B7C52BD193438AC00E82CC2 /* Lab1_vert.glsl */,
 				7B7C52B61934386600E82CC2 /* DepthRTT_frag.glsl */,
