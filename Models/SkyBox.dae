@@ -228,7 +228,7 @@
         <polylist material="Material-material" count="2">
           <input semantic="VERTEX" source="#Plane-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane-mesh-normals" offset="1"/>
-          <input semantic="COLOR" source="#Plane-mesh-UV" offset="2"/>
+          <input semantic="TEXCOORD" source="#Plane-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
@@ -271,7 +271,7 @@
         <polylist material="Material_009-material" count="2">
           <input semantic="VERTEX" source="#Plane_001-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_001-mesh-normals" offset="1"/>
-          <input semantic="COLOR" source="#Plane_001-mesh-UV" offset="2"/>
+          <input semantic="TEXCOORD" source="#Plane_001-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
@@ -314,7 +314,7 @@
         <polylist material="Material_004-material" count="2">
           <input semantic="VERTEX" source="#Plane_003-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_003-mesh-normals" offset="1"/>
-          <input semantic="COLOR" source="#Plane_003-mesh-UV" offset="2"/>
+          <input semantic="TEXCOORD" source="#Plane_003-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
@@ -357,7 +357,7 @@
         <polylist material="Material_005-material" count="2">
           <input semantic="VERTEX" source="#Plane_004-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_004-mesh-normals" offset="1"/>
-          <input semantic="COLOR" source="#Plane_004-mesh-UV" offset="2"/>
+          <input semantic="TEXCOORD" source="#Plane_004-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
@@ -400,7 +400,7 @@
         <polylist material="Material_007-material" count="2">
           <input semantic="VERTEX" source="#Plane_006-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_006-mesh-normals" offset="1"/>
-          <input semantic="COLOR" source="#Plane_006-mesh-UV" offset="2"/>
+          <input semantic="TEXCOORD" source="#Plane_006-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
@@ -443,7 +443,7 @@
         <polylist material="Material_008-material" count="2">
           <input semantic="VERTEX" source="#Plane_007-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_007-mesh-normals" offset="1"/>
-          <input semantic="COLOR" source="#Plane_007-mesh-UV" offset="2"/>
+          <input semantic="TEXCOORD" source="#Plane_007-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
