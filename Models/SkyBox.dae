@@ -454,7 +454,7 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="SkyTop" name="SkyTop" type="NODE">
-        <matrix sid="transform">-1 0 0 0 0 -1 0 0 0 0 1 1 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <instance_geometry url="#Plane-mesh">
           <bind_material>
             <technique_common>
@@ -464,7 +464,7 @@
         </instance_geometry>
       </node>
       <node id="SkyBottom" name="SkyBottom" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 -1 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <instance_geometry url="#Plane_001-mesh">
           <bind_material>
             <technique_common>
@@ -474,7 +474,7 @@
         </instance_geometry>
       </node>
       <node id="SkyLeft" name="SkyLeft" type="NODE">
-        <matrix sid="transform">0 0 1 1 1 0 0 0 0 1 0 0 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <instance_geometry url="#Plane_003-mesh">
           <bind_material>
             <technique_common>
@@ -484,7 +484,7 @@
         </instance_geometry>
       </node>
       <node id="SkyFront" name="SkyFront" type="NODE">
-        <matrix sid="transform">-1 0 0 0 0 0 -1 1 0 1 0 0 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <instance_geometry url="#Plane_004-mesh">
           <bind_material>
             <technique_common>
@@ -494,7 +494,7 @@
         </instance_geometry>
       </node>
       <node id="SkyBack" name="SkyBack" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 0 -1 -1 0 1 0 0 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <instance_geometry url="#Plane_006-mesh">
           <bind_material>
             <technique_common>
@@ -504,7 +504,7 @@
         </instance_geometry>
       </node>
       <node id="SkyRight" name="SkyRight" type="NODE">
-        <matrix sid="transform">0 0 1 -1 -1 0 0 0 0 1 0 0 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <instance_geometry url="#Plane_007-mesh">
           <bind_material>
             <technique_common>

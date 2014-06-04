@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "setWorld():main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "mount">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ObjectMesh::render(GLHandles):GameObject.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "skyBox">
+            </PersistentString>
+            <PersistentString
+               value = "mountain">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

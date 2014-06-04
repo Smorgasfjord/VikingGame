@@ -191,12 +191,14 @@ void setWorld()
    
    //Initialize models
    
+   glActiveTexture(GL_TEXTURE0);
    skyBoxMod = loadModel("Models/SkyBox.dae", handles);
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
 
+   glActiveTexture(GL_TEXTURE1);
    fogTex = LoadGLTextures("Models/FogTexture.png");
    glUniform1i(handles.uFogUnit, 1);
    simplePlatformMod = genSimpleModel(&platMod);
@@ -234,6 +236,7 @@ void setWorld()
    hammerResetState = hammer.getState();
    cout << "Hammer held\n";
    music.start();
+   
    cout << "Lets play!\n";
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
@@ -343,13 +346,29 @@ void Initialize ()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
    
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0);
+	CheckedGLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0));
    
 	CheckedGLCall(glDrawBuffer(GL_NONE));
    
 	// Always check that our framebuffer is ok
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		cout << "BADNESS WITH FRAMEBUFFER\n";
+   {
+      cout << "BADNESS\n";
+      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+      {
+         cout << "Incomplete\n";
+      }
+      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)
+      {
+         cout << "DIMENSIONS\n";
+      }
+      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
+      {
+         cout << "Missing attachment\n";
+      }
+      else
+         cout << "Unsupported\n";
+   }
 
 }
 
@@ -370,15 +389,15 @@ void Draw (void)
    glEnable(GL_TEXTURE_2D);
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, fogTex);
-   
+   glActiveTexture(GL_TEXTURE0);
    
    safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    
    glDisable( GL_DEPTH_TEST );
-   //skyBox.draw();
+   skyBox.draw();
    glEnable( GL_DEPTH_TEST );
-   
+
    world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
@@ -577,12 +596,12 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    
    glfwWindowHint(GLFW_SAMPLES, 4);
-   /*
+/*
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    */
+*/
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -608,7 +627,7 @@ int main( int argc, char *argv[] )
    //test the openGL version
    CheckedGLCall(getGLversion());
    glGetIntegerv(GL_MAJOR_VERSION, &major);
-   cout << "Version: " << major;
+   cout << "Version: " << major << "\n";
    //install the shader
    
    mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
