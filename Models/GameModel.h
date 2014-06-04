@@ -151,6 +151,7 @@ void get_bounding_box (aiVector3D* min, aiVector3D* max);
 bool Import3DFromFile( const std::string& pFile, aiVector3D *min, aiVector3D *max, aiVector3D *center);
 
 int LoadGLTextures();
+int LoadGLTextures(std::string fName);
 
 //// Can't send color down as a pointer to aiColor4D because AI colors are ABGR.
 //void Color4f(const aiColor4D *color)
@@ -245,7 +246,7 @@ class GameModel {
 };
 
 GameModel genSimpleModel(GameModel *mod);
-ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> meshData);
+ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> & meshData);
 GameModel loadModel(std::string fName, GLHandles handle);
 
 #endif

@@ -88,7 +88,7 @@ class ObjectNode {
       void copyTo(ObjectNode & obj);
       ObjectNode & copy();
 
-      void initialize(ModelNode *modNod);
+      void initialize(ModelNode & modNod);
       void render(GLHandles handle, glm::mat4 cumulative);
 };
 
@@ -126,7 +126,7 @@ class GameObject {
       void copyTo(GameObject & obj);
       GameObject & copy();
      
-      void initialize(GameModel *gMod, int modIdx, int collGroup, GLHandles handle);
+      void initialize(GameModel & gMod, int modIdx, int collGroup, GLHandles handle);
       //Physics
       void setPhysProps(float mass, int gravAffect);
    

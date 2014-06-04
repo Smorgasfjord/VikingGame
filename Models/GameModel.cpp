@@ -1,3 +1,4 @@
+#define AI_CONFIG_PP_GSN_MAX_SMOOTHING_ANGLE 80.0
 #include "GameModel.h"
 
 #define PI 3.14157
@@ -109,7 +110,7 @@ bool Import3DFromFile( const std::string& pFile, aiVector3D *min, aiVector3D *ma
       return false;
    }
 
-   scene = importer.ReadFile( pFile, aiProcessPreset_TargetRealtime_Quality);
+   scene = importer.ReadFile( pFile, aiProcessPreset_TargetRealtime_Quality | aiProcess_GenSmoothNormals);
 
    // If the import failed, report it
    if( !scene)
@@ -131,6 +132,51 @@ bool Import3DFromFile( const std::string& pFile, aiVector3D *min, aiVector3D *ma
 
    // We're done. Everything will be cleaned up by the importer destructor
    return true;
+}
+
+int LoadGLTextures(std::string fName)
+{
+   ILboolean success;
+
+   /* initialization of DevIL */
+   ilInit();
+
+      /* create and fill array with DevIL texture ids */
+   ILuint imageId;
+   ilGenImages(1, &imageId);
+
+   /* create and fill array with GL texture ids */
+   GLuint textureId;;
+   glGenTextures(1, &textureId); /* Texture name generation */
+
+   //save IL image ID
+   std::string filename = fName;  // get filename
+
+   ilBindImage(imageId); /* Binding of DevIL image name */
+   ilEnable(IL_ORIGIN_SET);
+   ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+   success = ilLoadImage((ILstring)filename.c_str());
+
+   if (success) {
+      /* Convert image to RGBA */
+      ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+      /* Create and load textures to OpenGL */
+      glBindTexture(GL_TEXTURE_2D, textureId);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH),
+         ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+         ilGetData());
+   }
+   else
+      printf("Couldn't load Image: %s\n", filename.c_str());
+   /* Because we have already copied image data into texture data
+   we can release memory used by image. */
+   ilDeleteImages(1, &imageId);
+
+   //return success;
+   return textureId;
 }
 
 
@@ -307,7 +353,7 @@ GameModel genSimpleModel(GameModel *mod) {
    return newMod;
 }
 
-ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData) {
+ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshData) {
    ModelNode nod;
    ModelMesh mesh;
    MeshBufferData mDat;
@@ -333,7 +379,7 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> meshData)
    return nod;
 }
 
-ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> meshData) {
+ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> & meshData) {
    ModelNode mod;
 
    mod = genModelNode(sc->mRootNode, meshData);

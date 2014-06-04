@@ -38,7 +38,7 @@ Bjorn::Bjorn(glm::vec3 pos, GLHandles hand, GameModel *model, World * worl) :
 GameObject("Bjorn")
 {
    GameModel simple = genSimpleModel(model);
-   initialize(model, 0, 0, hand);
+   initialize(*model, 0, 0, hand);
    setPos(pos + glm::vec3(0.0, 0.95f, 0.5f));
    setScale(glm::vec3(0.1f));
    setRotation(glm::vec3(0.0, 270.0, 0.0));
@@ -72,6 +72,10 @@ void Bjorn::step(double timeStep)
       }
    }
    else {
+      if(glm::length(getVel()) > 0.1)
+      {
+         setVelocity(getVel() * (float)exp(-0.2 * timeStep));
+      } 
       Sound::stopWalk();
    }
    //                         (m/s^2  * s)
@@ -83,12 +87,7 @@ void Bjorn::step(double timeStep)
    //Check if we've changed sides of the mountain
    if(newSide != mountainSide)
    {
-      //Moving right around the mountain
-      if(newSide > mountainSide)
-         rotateBy(glm::vec3(0, 90, 0));
-      //Moving left
-      else
-         rotateBy(glm::vec3(0, -90, 0));
+         setRotation(glm::vec3(0, 90.0 * newSide, 0));
       
       //Transfer velocity
       /*
@@ -154,7 +153,7 @@ void Bjorn::moveRight()
    glm::vec4 speed;
    if(!facingRight)
    {
-      rotateBy(glm::vec3(0, 180, 0));
+      rotateBy(glm::vec3(0, 180.0, 0));
       facingRight = true;
    }
 
@@ -174,7 +173,7 @@ void Bjorn::moveLeft()
    glm::vec4 speed;
    if(facingRight)
    {
-      rotateBy(glm::vec3(0, 180, 0));
+      rotateBy(glm::vec3(0, 180.0, 0));
       facingRight = false;
    }
 

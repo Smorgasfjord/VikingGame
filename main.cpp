@@ -76,6 +76,7 @@ using namespace std;
 int mainDrawProg, depthBuffProg;
 static float g_width, g_height;
 
+GLuint fogTex;
 
 //Handles to the shader data
 GLHandles handles;
@@ -98,6 +99,9 @@ int hammerTime;
 Transform_t hammerResetState;
 GameModel hammerMod;
 Hammer hammer;
+
+GameObject skyBox;
+GameModel skyBoxMod;
 
 //Text
 int playerScore = 0;
@@ -157,12 +161,14 @@ int diffMs(timeval t1, timeval t2)
 static void reset()
 {
    //lookAt.y += 1.0f;
-   bjorn.facingRight = true;
+   bjorn.facingRight = true; //THIS CAN BE WRONG
    hammer.setState(hammerResetState);
    hammer.setVelocity(glm::vec3(0));
    bjorn.setState(bjornResetState);
    bjorn.setVelocity(glm::vec3(0));
    bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
+   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
+   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
    
@@ -182,10 +188,14 @@ void setWorld()
    std::vector<Platform> platforms;
    
    //Initialize models
+   //skyBoxMod = loadModel("Models/SkyBox.dae", handles);
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
+
+   fogTex = LoadGLTextures("Models/FogTexture.png");
+   glUniform1i(handles.uFogUnit, 1);
    simplePlatformMod = genSimpleModel(&platMod);
    
    for(int i = 0; i < NUM_LIGHTS; i++)
@@ -200,6 +210,8 @@ void setWorld()
    //safe_glUniform3f(handles.uLightPos, lightPos[0].x, lightPos[0].y, lightPos[0].z);
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
+   skyBox = GameObject("skybox");
+   //skyBox.initialize(skyBoxMod, 0, 4, handles);
    mount = Mountain(handles, &mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
@@ -207,10 +219,10 @@ void setWorld()
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
    eye = lookAt = world.getStart();//glm::vec3(58, 15, 45);//world.getStart();
-   eye.y += 1;
+   eye.y += 1.0;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
-    
+   
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
    bjornResetState = bjorn.getState();
@@ -277,6 +289,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
    handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
+   handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
    handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
    handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
@@ -305,6 +318,12 @@ void Initialize ()
  	glClearDepth (1.0f);	// Depth Buffer Setup
  	glDepthFunc (GL_LESS);	// The Type Of Depth Testing
 	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
+   glEnable(GL_TEXTURE_2D);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 }
 
 /* Main display function */
@@ -321,7 +340,13 @@ void Draw (void)
    /* set up the projection and camera - do not change */
    SetProjectionMatrix(false);
    SetView();
+   glEnable(GL_TEXTURE_2D);
+   glActiveTexture(GL_TEXTURE1);
+   glBindTexture(GL_TEXTURE_2D, fogTex);
    
+   glDisable( GL_DEPTH_TEST );
+   //skyBox.draw();
+   glEnable( GL_DEPTH_TEST );
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    world.draw(bjorn.mountainSide);
    bjorn.draw();
@@ -455,6 +480,7 @@ void Animate()
    }
    
    timeStep = curTime - lastUpdated;
+   
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    prevMouseLoc = currentMouseLoc;
@@ -502,6 +528,7 @@ void Animate()
    }
    eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    
+   skyBox.setPos(eye);
    lastUpdated = curTime;
 }
 

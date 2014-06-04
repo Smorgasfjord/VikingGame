@@ -30,6 +30,7 @@ class GLHandles
       GLint aNormal;
       GLuint aUV;
       GLuint uTexUnit;
+      GLuint uFogUnit;
       GLint uModelMatrix;
       GLint uViewMatrix;
       GLint uProjMatrix;
