@@ -32,6 +32,7 @@ class GLHandles
       GLuint uTexUnit;
       GLuint uFogUnit;
       GLuint uFogStrength;
+      GLuint uWindVec;
       GLint uModelMatrix;
       GLint uViewMatrix;
       GLint uProjMatrix;

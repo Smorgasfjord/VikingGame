@@ -79,6 +79,7 @@ GLuint shadowFrameBuffer;
 GLuint shadowDepthTexture;
 
 GLuint fogTex;
+glm::vec3 wind = glm::vec3(0.0f);
 
 //Handles to the shader data
 GLHandles handles;
@@ -296,6 +297,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
    handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
    handles.uFogStrength = safe_glGetUniformLocation(ShadeProg, "uFogStrength");
+   handles.uWindVec = safe_glGetUniformLocation(ShadeProg, "uWindVec");
    handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
    handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
@@ -332,11 +334,11 @@ void Initialize ()
    
    //FRAME_BUFFER_STUFF  (The Second)
 	shadowFrameBuffer = 0;
-	glGenFramebuffers(1, &shadowFrameBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+	//glGenFramebuffers(1, &shadowFrameBuffer);
+	//glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
    
 	// Depth texture
-	glGenTextures(1, &shadowDepthTexture);
+	/*glGenTextures(1, &shadowDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -344,14 +346,14 @@ void Initialize ()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);*/
    
-	CheckedGLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0));
+	//CheckedGLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0));
    
-	CheckedGLCall(glDrawBuffer(GL_NONE));
+	//CheckedGLCall(glDrawBuffer(GL_NONE));
    
 	// Always check that our framebuffer is ok
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	/*if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
    {
       cout << "BADNESS\n";
       if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
@@ -368,14 +370,14 @@ void Initialize ()
       }
       else
          cout << "Unsupported\n";
-   }
+   }*/
 
 }
 
 /* Main display function */
 void Draw (void)
 {
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   //glBindFramebuffer(GL_FRAMEBUFFER, 0);
    glViewport(0,0,g_width,g_height);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glEnable(GL_CULL_FACE);
@@ -391,12 +393,14 @@ void Draw (void)
    glBindTexture(GL_TEXTURE_2D, fogTex);
    glActiveTexture(GL_TEXTURE0);
    
-   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+   safe_glUniform3f(handles.uWindVec, wind.x, wind.y, wind.z);
    
+   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
    glDisable( GL_DEPTH_TEST );
    skyBox.draw();
    glEnable( GL_DEPTH_TEST );
+   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y));
 
    world.draw(bjorn.mountainSide);
    bjorn.draw();
@@ -531,6 +535,8 @@ void Animate()
    
    timeStep = curTime - lastUpdated;
    
+   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(bjorn.getPos().y) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    prevMouseLoc = currentMouseLoc;
