@@ -70,12 +70,13 @@
 #define CAM_Y_MAX_OFFSET 3
 #define NUM_LIGHTS 5
 
-
 using namespace std;
 
 //GL basics
 int mainDrawProg, depthBuffProg;
 static float g_width, g_height;
+GLuint shadowFrameBuffer;
+GLuint shadowDepthTexture;
 
 GLuint fogTex;
 
@@ -124,8 +125,6 @@ glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
 float camYOffset = 0.0f;
 bool manualCamControl = false;
-
-glm::mat4 ortho = glm::ortho(0.0f, (float)g_width,(float)g_height,0.0f, 0.1f, 100.0f);
 
 //User interaction
 glm::vec2 prevMouseLoc;
@@ -191,12 +190,15 @@ void setWorld()
    std::vector<Platform> platforms;
    
    //Initialize models
-   //skyBoxMod = loadModel("Models/SkyBox.dae", handles);
+   
+   glActiveTexture(GL_TEXTURE0);
+   skyBoxMod = loadModel("Models/SkyBox.dae", handles);
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
 
+   glActiveTexture(GL_TEXTURE1);
    fogTex = LoadGLTextures("Models/FogTexture.png");
    glUniform1i(handles.uFogUnit, 1);
    simplePlatformMod = genSimpleModel(&platMod);
@@ -206,15 +208,13 @@ void setWorld()
       lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
    
-   //lightPos[0] = glm::vec3(50.188667, 2.512615, -0.142857);
-   
    //Send light data to shader
    glUniform3fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-   //safe_glUniform3f(handles.uLightPos, lightPos[0].x, lightPos[0].y, lightPos[0].z);
+
    safe_glUniform3f(handles.uLightColor, 1, 1, 1);
    
    skyBox = GameObject("skybox");
-   //skyBox.initialize(skyBoxMod, 0, 4, handles);
+   skyBox.initialize(skyBoxMod, 0, 4, handles);
    mount = Mountain(handles, &mountMod);
    platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
    cout << "Level loaded\n";
@@ -225,6 +225,7 @@ void setWorld()
    eye.y += 1.0;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
+   skyBox.setPos(eye);
    
    cout << "Platforms placed\n";
    bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
@@ -235,6 +236,7 @@ void setWorld()
    hammerResetState = hammer.getState();
    cout << "Hammer held\n";
    music.start();
+   
    cout << "Lets play!\n";
    glfwSetTime(0);
    lastUpdated = glfwGetTime();
@@ -254,8 +256,9 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    glShaderSource(VS, 1, &vShaderName, NULL);
    glShaderSource(FS, 1, &fShaderName, NULL);
    
+
    //compile shader and print log
-   glCompileShader(VS);
+   CheckedGLCall(glCompileShader(VS));
    /* check shader status requires helper functions */
    printOpenGLError();
    glGetShaderiv(VS, GL_COMPILE_STATUS, &vCompiled);
@@ -292,6 +295,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
    handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
+   handles.uFogStrength = safe_glGetUniformLocation(ShadeProg, "uFogStrength");
    handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
    handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
@@ -318,20 +322,64 @@ void Initialize ()
 	// Black Background
    //
  	glClearDepth (1.0f);	// Depth Buffer Setup
- 	glDepthFunc (GL_LEQUAL);	// The Type Of Depth Testing
+ 	glDepthFunc (GL_LESS);	// The Type Of Depth Testing
 	glEnable (GL_DEPTH_TEST);// Enable Depth Testing
    glEnable(GL_TEXTURE_2D);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   
+   //FRAME_BUFFER_STUFF  (The Second)
+	shadowFrameBuffer = 0;
+	glGenFramebuffers(1, &shadowFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+   
+	// Depth texture
+	glGenTextures(1, &shadowDepthTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+   
+	CheckedGLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0));
+   
+	CheckedGLCall(glDrawBuffer(GL_NONE));
+   
+	// Always check that our framebuffer is ok
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+   {
+      cout << "BADNESS\n";
+      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+      {
+         cout << "Incomplete\n";
+      }
+      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)
+      {
+         cout << "DIMENSIONS\n";
+      }
+      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
+      {
+         cout << "Missing attachment\n";
+      }
+      else
+         cout << "Unsupported\n";
+   }
 
 }
 
 /* Main display function */
 void Draw (void)
 {
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glViewport(0,0,g_width,g_height);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
 	//Start our shader
  	glUseProgram(mainDrawProg);
    
@@ -341,11 +389,15 @@ void Draw (void)
    glEnable(GL_TEXTURE_2D);
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, fogTex);
+   glActiveTexture(GL_TEXTURE0);
+   
+   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
+   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    
    glDisable( GL_DEPTH_TEST );
-   //skyBox.draw();
+   skyBox.draw();
    glEnable( GL_DEPTH_TEST );
-   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+
    world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
@@ -543,13 +595,13 @@ int main( int argc, char *argv[] )
    if (!glfwInit())
       exit(EXIT_FAILURE);
    
-   //These may be mac only, not sure
-   /*
+   glfwWindowHint(GLFW_SAMPLES, 4);
+/*
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    */
+*/
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -557,32 +609,25 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    }
    
-   glfwMakeContextCurrent(window);
-   glewExperimental = GL_TRUE;
-   GLenum err = glewInit();
-   if (GLEW_OK != err)
-   {
-        /* Problem: glewInit failed, something is seriously wrong. */
-        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-   }
+   CheckedGLCall(glfwMakeContextCurrent(window));
+   glewExperimental = true; // Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return -1;
+	}
 
-   glfwSetKeyCallback(window, key_callback);
+   CheckedGLCall(glfwSetKeyCallback(window, key_callback));
    glfwSetMouseButtonCallback(window, mouseClick);
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
    glfwSetWindowPos(window, 100, 100);
    
-   unsigned int Error = glewInit();
-   if (Error != GLEW_OK)
-   {
-	   std::cerr << "Error initializing glew! " << glewGetErrorString(Error) << std::endl;
-	   system("PAUSE");
-	   exit(33);
-   }
-
+   int major;
    //test the openGL version
-   getGLversion();
+   CheckedGLCall(getGLversion());
+   glGetIntegerv(GL_MAJOR_VERSION, &major);
+   cout << "Version: " << major << "\n";
    //install the shader
    
    mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));

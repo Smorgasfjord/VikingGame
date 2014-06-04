@@ -115,7 +115,6 @@ void World::draw(int mountainSide)
    mount.draw();
    
    objectsInScene = cull(mountainSide);
-   cout << "Drawing platforms " << objectsInScene.size() << "\n";
    SetMaterial(0);
    for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
       it->draw();
@@ -126,7 +125,7 @@ void World::draw(int mountainSide)
    safe_glDisableVertexAttribArray(handles->aNormal);
 }
 
-float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point)
+float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point, float radius)
 {
    float value = 0;
    float A = row1[0] + row2[0];
@@ -138,7 +137,7 @@ float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point)
       value += ((row1[i] + row2[i]) * point[i]) / normalize;
    }
 
-   return value;
+   return value + radius;
 }
 
 //Returns a vector of GameObjects which need to be drawn
@@ -147,6 +146,7 @@ std::vector<GameObject> World::cull(int mountainSide)
    vector<GameObject> objects;
    //Get mvp matrix
    glm::mat4 model, view, projection, mvp;
+   float radius;
    glm::vec4 point;
    glm::vec4 platformCenter = glm::vec4(0, 0, 0, 1);
    //View and projection matrices are shared by all objects
@@ -159,24 +159,25 @@ std::vector<GameObject> World::cull(int mountainSide)
          //Not on the back side, check against each plane of view frustum
          //Get the model transform for this Object
          model = it->model.state.transform;
+         radius = max(it->getScale().x, it->getScale().z);
          mvp = projection * view * model;
          //Negative Z
-         if(testPlane(glm::row(mvp, 2), glm::row(mvp, 3), platformCenter) > 0)
+         if(testPlane(glm::row(mvp, 2), glm::row(mvp, 3), platformCenter, radius) > 0)
          {
             //Positive Z
-            if(testPlane(-glm::row(mvp, 2), glm::row(mvp, 3), platformCenter) > 0)
+            if(testPlane(-glm::row(mvp, 2), glm::row(mvp, 3), platformCenter, radius) > 0)
             {
                //Negative Y
-               if(testPlane(glm::row(mvp, 1), glm::row(mvp, 3), platformCenter) > 0)
+               if(testPlane(glm::row(mvp, 1), glm::row(mvp, 3), platformCenter, radius) > 0)
                {
                   //Positive Y
-                  if(testPlane(-glm::row(mvp, 1), glm::row(mvp, 3), platformCenter) > 0)
+                  if(testPlane(-glm::row(mvp, 1), glm::row(mvp, 3), platformCenter, radius) > 0)
                   {
                      //Negative X
-                     if(testPlane(glm::row(mvp, 0), glm::row(mvp, 3), platformCenter) > 0)
+                     if(testPlane(glm::row(mvp, 0), glm::row(mvp, 3), platformCenter, radius) > 0)
                      {
                         //Positive X
-                        if(testPlane(-glm::row(mvp, 0), glm::row(mvp, 3), platformCenter) > 0)
+                        if(testPlane(-glm::row(mvp, 0), glm::row(mvp, 3), platformCenter, radius) > 0)
                         {
                            objects.push_back(*it);
                         }

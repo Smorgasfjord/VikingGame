@@ -31,6 +31,7 @@ class GLHandles
       GLuint aUV;
       GLuint uTexUnit;
       GLuint uFogUnit;
+      GLuint uFogStrength;
       GLint uModelMatrix;
       GLint uViewMatrix;
       GLint uProjMatrix;
@@ -42,9 +43,9 @@ class GLHandles
       GLint uMatDif;
       GLint uMatSpec;
       GLint uMatShine;
-	  GLuint framBuff;
-	  GLuint depthBuff;
-	  GLint depthMatrixID;
+      GLuint framBuff;
+	   GLuint depthBuff;
+	   GLint depthMatrixID;
 };
 
 #endif /* defined(___76_Lab1__GLHandles__) */

@@ -31,8 +31,24 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "302"
             endingLineNumber = "302"
-            landmarkName = "ChunkWorld::checkNodeCollision(ObjectNode &amp; newNod, ObjectNode &amp; oldNod, const vector&lt;BufferContents&gt; &amp; geom, glm::mat4 newCumulative, glm::mat4 oldCumulative, ObjData &amp; dat)"
+            landmarkName = "ChunkWorld::checkMeshCollision(const BufferContents &amp; geom, glm::mat4 newTrans, glm::mat4 oldTrans, ObjData &amp; dat)"
             landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "423609254.088747"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "setWorld()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -25,6 +25,18 @@ int printOglError (const char *file, int line) {
 	return retCode;
 }
 
+void PrintOpenGLErrors(char const * const Function, char const * const File, int const Line)
+{
+   bool Succeeded = true;
+   
+   GLenum Error = glGetError();
+   if (Error != GL_NO_ERROR)
+   {
+      char const * ErrorString = (char const *) gluErrorString(Error);
+      std::cerr << "OpenGL Error in " << File << " at line " << Line << " calling function " << Function << ": " << (ErrorString ? ErrorString : "") << std::endl;
+   }
+}
+
 void printShaderInfoLog (GLuint shader)
 {
 	GLint     infologLength = 0;
