@@ -188,6 +188,7 @@ void setWorld()
    std::vector<Platform> platforms;
    
    //Initialize models
+   
    skyBoxMod = loadModel("Models/SkyBox.dae", handles);
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
@@ -290,6 +291,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
    handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
+   handles.uFogStrength = safe_glGetUniformLocation(ShadeProg, "uFogStrength");
    handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
    handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
@@ -347,6 +349,7 @@ void Draw (void)
    glDisable( GL_DEPTH_TEST );
    //skyBox.draw();
    glEnable( GL_DEPTH_TEST );
+   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    world.draw(bjorn.mountainSide);
    bjorn.draw();
