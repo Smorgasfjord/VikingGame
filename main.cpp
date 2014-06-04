@@ -189,12 +189,14 @@ void setWorld()
    
    //Initialize models
    
+   glActiveTexture(GL_TEXTURE0);
    skyBoxMod = loadModel("Models/SkyBox.dae", handles);
    mountMod = loadModel("Models/mountain.dae", handles);
    platMod = loadModel("Models/platform_2.dae", handles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
    bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
 
+   glActiveTexture(GL_TEXTURE1);
    fogTex = LoadGLTextures("Models/FogTexture.png");
    glUniform1i(handles.uFogUnit, 1);
    simplePlatformMod = genSimpleModel(&platMod);
@@ -345,11 +347,12 @@ void Draw (void)
    glEnable(GL_TEXTURE_2D);
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, fogTex);
+   glActiveTexture(GL_TEXTURE0);
    
    glDisable( GL_DEPTH_TEST );
    //skyBox.draw();
    glEnable( GL_DEPTH_TEST );
-   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
+   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y));
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    world.draw(bjorn.mountainSide);
    bjorn.draw();
@@ -580,7 +583,7 @@ int main( int argc, char *argv[] )
    CheckedGLCall(getGLversion());
    //install the shader
    
-   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/lab1_vert.glsl"), textFileRead((char *)"Shaders/lab1_frag.glsl"));
+   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
    if (mainDrawProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;

@@ -1,7 +1,7 @@
 //#version 120
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
-#define HEIGHT_TO_VIEW_DIST 300.0
+#define HEIGHT_TO_VIEW_DIST 60.0
 #define VIEW_DIST 5.0//15.0 -  5.0
 #define FOG_LINEAR 0.6 / VIEW_DIST
 #define FOG_QUAD 0.4 / (VIEW_DIST * VIEW_DIST)
@@ -38,7 +38,6 @@ void main() {
    vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
    float attenuation, eyeDist, distance, intensity, maxCol = 1.0;
    //Fog stuff
-   vec2 fogIdx = vec2((normEye.x + 2.0 + vTexCoord.x + normEye.z) * 0.2, (-normEye.y + 2.0 + vTexCoord.y + normEye.z) * 0.2);
    float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
    float fogLinear = 0.6 / viewDist;
    float fogQuad = 0.4 / (viewDist * viewDist);
