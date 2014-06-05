@@ -140,6 +140,11 @@ void GameObject::setState(Transform_t state)
    model.state = state;
 }
 
+void GameObject::setDepthMVP(glm::mat4 mvp)
+{
+   model.state.depthMVP = mvp;
+}
+
 //-----------------------------Updaters------------------------------
 
 //Move the object by the amount specified

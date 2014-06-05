@@ -79,6 +79,7 @@ GLuint shadowFrameBuffer;
 GLuint shadowDepthTexture;
 
 GLuint fogTex;
+glm::vec3 wind = glm::vec3(0.0f);
 
 //Handles to the shader data
 GLHandles handles;
@@ -296,6 +297,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
    handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
    handles.uFogStrength = safe_glGetUniformLocation(ShadeProg, "uFogStrength");
+   handles.uWindVec = safe_glGetUniformLocation(ShadeProg, "uWindVec");
    handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
    handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
    handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
@@ -345,9 +347,7 @@ void Initialize ()
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE));
-   
-	CheckedGLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0));
-   
+
 	CheckedGLCall(glDrawBuffer(GL_NONE));
    glReadBuffer(GL_NONE); //Thanks Katie Davis
    
@@ -392,18 +392,62 @@ void Draw (void)
    glBindTexture(GL_TEXTURE_2D, fogTex);
    glActiveTexture(GL_TEXTURE0);
    
-   safe_glUniform1f(handles.uFogStrength, bjorn.getPos().y);
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
+   safe_glUniform3f(handles.uWindVec, wind.x, wind.y, wind.z);
    
+   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
    glDisable( GL_DEPTH_TEST );
    skyBox.draw();
    glEnable( GL_DEPTH_TEST );
+   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y));
 
    world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
 	//Disable the shader
 	glUseProgram(0);
+}
+
+void shadow(GameObject *obj)
+{
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+   glm::mat4 dViewMatrix = glm::lookAt(lightPos[0], glm::vec3(0,0,0), glm::vec3(0,1,0));
+   glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
+   
+   // Send our transformation to the currently bound shader,
+   // in the "MVP" uniform
+   glUniformMatrix4fv(handles.depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+   //All meshes
+   for (int i = 0; i < obj->model.meshes.size(); i++) {
+      // 1rst attribute buffer : vertices
+      glEnableVertexAttribArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, obj->model.meshes[i].buffDat.vbo);
+      glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      
+      // Index buffer
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.meshes[i].buffDat.ibo);
+      // Draw the shadow onto the frame
+      glDrawElements(GL_TRIANGLES,obj->model.meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+   }
+   
+   //All children, this is a little silly since it's so similar oh well
+   for (int j = 0; j < obj->model.children.size(); j++) {
+      for (int i = 0; i < obj->model.children[j].meshes.size(); i++) {
+         // 1rst attribute buffer : position
+         glEnableVertexAttribArray(0);
+         glBindBuffer(GL_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.vbo);
+         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+         
+         // Index buffer
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
+         // Draw the shadow onto the frame
+         glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+      }
+   }
+   
+   glDisableVertexAttribArray(0);
+   //Store the depthMVP in this obj
+   obj->setDepthMVP(depthMVP);
 }
 
 /* Reshape - note no scaling as perspective viewing*/
@@ -532,6 +576,8 @@ void Animate()
    
    timeStep = curTime - lastUpdated;
    
+   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(bjorn.getPos().y) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
    prevMouseLoc = currentMouseLoc;
@@ -597,12 +643,7 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    
    glfwWindowHint(GLFW_SAMPLES, 4);
-/*
-   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-*/
+
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -637,13 +678,12 @@ int main( int argc, char *argv[] )
 	   return 0;
    }
    
-   /* For loading a 2nd shader if/when we need it
+   // Load depth program
    depthBuffProg = InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"));
    if (depthBuffProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-    */
    
    Initialize();
    setWorld();

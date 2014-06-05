@@ -1,7 +1,7 @@
 //#version 120
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
-#define HEIGHT_TO_VIEW_DIST 60.0
+#define HEIGHT_TO_VIEW_DIST 50.0
 #define VIEW_DIST 5.0//15.0 -  5.0
 #define FOG_LINEAR 0.6 / VIEW_DIST
 #define FOG_QUAD 0.4 / (VIEW_DIST * VIEW_DIST)
@@ -27,6 +27,7 @@ uniform vec3 uEyePos;
 uniform Material uMat;
 uniform sampler2D uTexUnit;
 uniform sampler2D uFogUnit;
+uniform vec3 uWindVec;
 uniform float uFogStrength;
 
 void main() {
@@ -36,6 +37,9 @@ void main() {
    vec3 view = normalize(uEyePos - vPos);
    vec3 normEye = normalize(uEyePos), normPos = normalize(vPos);
    vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
+   fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
+   //while (fogIdx.x > 1.0) fogIdx.x -= 1.0;
+   //while (fogIdx.y > 1.0) fogIdx.y -= 1.0;
    float attenuation, eyeDist, distance, intensity, maxCol = 1.0;
    //Fog stuff
    float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
@@ -69,7 +73,11 @@ void main() {
    if (phong.y > maxCol) maxCol = phong.y;
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
-   eyeDist = length(uEyePos-vPos);
+   if (uMat.aColor.x == 1.0 && uMat.aColor.y == 1.0 && uMat.aColor.z == 1.0) {
+      eyeDist = max(abs(uEyePos.x-vPos.x),max(abs(uEyePos.y-vPos.y),abs(uEyePos.z-vPos.z)));
+   } else {
+      eyeDist = length(uEyePos-vPos);
+   }
    attenuation = clamp(eyeDist * eyeDist * fogQuad + eyeDist * fogLinear + (uFogStrength / 100.0), 0.0, 1.0);
    fogCol = texture2D(uFogUnit,fogIdx);
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
