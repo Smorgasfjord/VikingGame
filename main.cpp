@@ -563,7 +563,7 @@ void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
    //CollisionData dat;
-   glm::vec3 norm;
+   glm::vec3 norm, mWidth;
 
    frames++;
    if ((int)curTime > (int)lastUpdated) {
@@ -624,8 +624,8 @@ void Animate()
       hammerResetState = hammer.getState();
    }
    eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
-   
-   skyBox.setPos(eye);
+   mWidth = glm::vec3((float)MOUNT_WIDTH);
+   skyBox.setPos(eye + (mWidth-lookAt*2.0f)/mWidth*0.5f);
    lastUpdated = curTime;
 }
 

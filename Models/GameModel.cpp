@@ -193,6 +193,7 @@ int LoadGLTextures()
       int texIndex = 0;
       aiString path; // filename
 
+      printf("found texture\n");
       aiReturn texFound = scene->mMaterials[m]->GetTexture(aiTextureType_DIFFUSE, texIndex, &path);
       while (texFound == AI_SUCCESS) {
          //fill map with textures, OpenGL image ids set to 0
