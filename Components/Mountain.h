@@ -19,6 +19,9 @@
 #define MOUNT_RIGHT 1
 #define MOUNT_BACK 2
 #define MOUNT_LEFT 3
+#define MOUNT_WIDTH 60
+#define MOUNT_DEPTH 60
+#define MOUNT_HEIGHT 44.5
 
 class Mountain : public GameObject
 {

@@ -31,10 +31,20 @@
     </image>
   </library_images>
   <library_effects>
-    <effect id="Material-effect">
+    <effect id="SkyTopMat-effect">
       <profile_COMMON>
+        <newparam sid="skybox_top_jpg-surface">
+          <surface type="2D">
+            <init_from>skybox_top_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="skybox_top_jpg-sampler">
+          <sampler2D>
+            <source>skybox_top_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
@@ -42,7 +52,7 @@
               <color sid="ambient">1 1 1 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <texture texture="skybox_top_jpg-sampler" texcoord="SkyTopSurface-mesh-UV"/>
             </diffuse>
             <shininess>
               <float sid="shininess">50</float>
@@ -50,14 +60,24 @@
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
             </index_of_refraction>
-          </lambert>
+          </phong>
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Material_009-effect">
+    <effect id="SkyBottomMat-effect">
       <profile_COMMON>
+        <newparam sid="skybox_bottom_jpg-surface">
+          <surface type="2D">
+            <init_from>skybox_bottom_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="skybox_bottom_jpg-sampler">
+          <sampler2D>
+            <source>skybox_bottom_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
@@ -65,7 +85,7 @@
               <color sid="ambient">1 1 1 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <texture texture="skybox_bottom_jpg-sampler" texcoord="SkyBottomSurface-mesh-UV"/>
             </diffuse>
             <shininess>
               <float sid="shininess">50</float>
@@ -73,14 +93,24 @@
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
             </index_of_refraction>
-          </lambert>
+          </phong>
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Material_004-effect">
+    <effect id="SkyLeftMat-effect">
       <profile_COMMON>
+        <newparam sid="skybox_left_jpg-surface">
+          <surface type="2D">
+            <init_from>skybox_left_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="skybox_left_jpg-sampler">
+          <sampler2D>
+            <source>skybox_left_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
@@ -88,7 +118,7 @@
               <color sid="ambient">1 1 1 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <texture texture="skybox_left_jpg-sampler" texcoord="SkyLeftSurface-mesh-UV"/>
             </diffuse>
             <shininess>
               <float sid="shininess">50</float>
@@ -96,14 +126,24 @@
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
             </index_of_refraction>
-          </lambert>
+          </phong>
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Material_005-effect">
+    <effect id="SkyFrontMat-effect">
       <profile_COMMON>
+        <newparam sid="skybox_front_jpg-surface">
+          <surface type="2D">
+            <init_from>skybox_front_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="skybox_front_jpg-sampler">
+          <sampler2D>
+            <source>skybox_front_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
@@ -111,7 +151,7 @@
               <color sid="ambient">1 1 1 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <texture texture="skybox_front_jpg-sampler" texcoord="SkyFrontSurface-mesh-UV"/>
             </diffuse>
             <shininess>
               <float sid="shininess">50</float>
@@ -119,14 +159,24 @@
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
             </index_of_refraction>
-          </lambert>
+          </phong>
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Material_007-effect">
+    <effect id="SkyBackMat-effect">
       <profile_COMMON>
+        <newparam sid="skybox_back_jpg-surface">
+          <surface type="2D">
+            <init_from>skybox_back_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="skybox_back_jpg-sampler">
+          <sampler2D>
+            <source>skybox_back_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
@@ -134,7 +184,7 @@
               <color sid="ambient">1 1 1 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <texture texture="skybox_back_jpg-sampler" texcoord="SkyBackSurface-mesh-UV"/>
             </diffuse>
             <shininess>
               <float sid="shininess">50</float>
@@ -142,14 +192,24 @@
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
             </index_of_refraction>
-          </lambert>
+          </phong>
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Material_008-effect">
+    <effect id="SkyRightMat-effect">
       <profile_COMMON>
+        <newparam sid="skybox_right_jpg-surface">
+          <surface type="2D">
+            <init_from>skybox_right_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="skybox_right_jpg-sampler">
+          <sampler2D>
+            <source>skybox_right_jpg-surface</source>
+          </sampler2D>
+        </newparam>
         <technique sid="common">
-          <lambert>
+          <phong>
             <emission>
               <color sid="emission">0 0 0 1</color>
             </emission>
@@ -157,7 +217,7 @@
               <color sid="ambient">1 1 1 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0 0 0 1</color>
+              <texture texture="skybox_right_jpg-sampler" texcoord="SkyRightSurface-mesh-UV"/>
             </diffuse>
             <shininess>
               <float sid="shininess">50</float>
@@ -165,285 +225,285 @@
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>
             </index_of_refraction>
-          </lambert>
+          </phong>
         </technique>
       </profile_COMMON>
     </effect>
   </library_effects>
   <library_materials>
-    <material id="Material-material" name="Material">
-      <instance_effect url="#Material-effect"/>
+    <material id="SkyTopMat-material" name="SkyTopMat">
+      <instance_effect url="#SkyTopMat-effect"/>
     </material>
-    <material id="Material_009-material" name="Material_009">
-      <instance_effect url="#Material_009-effect"/>
+    <material id="SkyBottomMat-material" name="SkyBottomMat">
+      <instance_effect url="#SkyBottomMat-effect"/>
     </material>
-    <material id="Material_004-material" name="Material_004">
-      <instance_effect url="#Material_004-effect"/>
+    <material id="SkyLeftMat-material" name="SkyLeftMat">
+      <instance_effect url="#SkyLeftMat-effect"/>
     </material>
-    <material id="Material_005-material" name="Material_005">
-      <instance_effect url="#Material_005-effect"/>
+    <material id="SkyFrontMat-material" name="SkyFrontMat">
+      <instance_effect url="#SkyFrontMat-effect"/>
     </material>
-    <material id="Material_007-material" name="Material_007">
-      <instance_effect url="#Material_007-effect"/>
+    <material id="SkyBackMat-material" name="SkyBackMat">
+      <instance_effect url="#SkyBackMat-effect"/>
     </material>
-    <material id="Material_008-material" name="Material_008">
-      <instance_effect url="#Material_008-effect"/>
+    <material id="SkyRightMat-material" name="SkyRightMat">
+      <instance_effect url="#SkyRightMat-effect"/>
     </material>
   </library_materials>
   <library_geometries>
-    <geometry id="Plane-mesh" name="Plane">
+    <geometry id="SkyTopSurface-mesh" name="SkyTopSurface">
       <mesh>
-        <source id="Plane-mesh-positions">
-          <float_array id="Plane-mesh-positions-array" count="12">-1 1 -1 -1 1 1 1 1 -1 1 1 1</float_array>
+        <source id="SkyTopSurface-mesh-positions">
+          <float_array id="SkyTopSurface-mesh-positions-array" count="12">-1 1 -1 -1 1 1 1 1 -1 1 1 1</float_array>
           <technique_common>
-            <accessor source="#Plane-mesh-positions-array" count="4" stride="3">
+            <accessor source="#SkyTopSurface-mesh-positions-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="Plane-mesh-normals">
-          <float_array id="Plane-mesh-normals-array" count="12">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
+        <source id="SkyTopSurface-mesh-normals">
+          <float_array id="SkyTopSurface-mesh-normals-array" count="12">0 -1 0 0 -1 0 0 -1 0 0 -1 0</float_array>
           <technique_common>
-            <accessor source="#Plane-mesh-normals-array" count="4" stride="3">
+            <accessor source="#SkyTopSurface-mesh-normals-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="Plane-mesh-UV">
-          <float_array id="Plane-mesh-UV-array" count="8">0 0 0 1 1 0 1 1</float_array>
+        <source id="SkyTopSurface-mesh-UV">
+          <float_array id="SkyTopSurface-mesh-UV-array" count="8">0 0 0 1 1 0 1 1</float_array>
           <technique_common>
-            <accessor source="#Plane-mesh-UV-array" count="4" stride="2">
+            <accessor source="#SkyTopSurface-mesh-UV-array" count="4" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <vertices id="Plane-mesh-vertices">
-          <input semantic="POSITION" source="#Plane-mesh-positions"/>
+        <vertices id="SkyTopSurface-mesh-vertices">
+          <input semantic="POSITION" source="#SkyTopSurface-mesh-positions"/>
         </vertices>
-        <polylist material="Material-material" count="2">
-          <input semantic="VERTEX" source="#Plane-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Plane-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Plane-mesh-UV" offset="2"/>
+        <polylist material="SkyTopMat-material" count="2">
+          <input semantic="VERTEX" source="#SkyTopSurface-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SkyTopSurface-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SkyTopSurface-mesh-UV" offset="2"/>
+          <vcount>3 3 </vcount>
+          <p>0 0 0 3 3 3 1 1 1 2 2 2 3 3 3 0 0 0</p>
+        </polylist>
+      </mesh>
+    </geometry>
+    <geometry id="SkyBottomSurface-mesh" name="SkyBottomSurface">
+      <mesh>
+        <source id="SkyBottomSurface-mesh-positions">
+          <float_array id="SkyBottomSurface-mesh-positions-array" count="12">-1 -1 -1 -1 -1 1 1 -1 -1 1 -1 1</float_array>
+          <technique_common>
+            <accessor source="#SkyBottomSurface-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SkyBottomSurface-mesh-normals">
+          <float_array id="SkyBottomSurface-mesh-normals-array" count="12">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
+          <technique_common>
+            <accessor source="#SkyBottomSurface-mesh-normals-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SkyBottomSurface-mesh-UV">
+          <float_array id="SkyBottomSurface-mesh-UV-array" count="8">1 0 1 1 0 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#SkyBottomSurface-mesh-UV-array" count="4" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="SkyBottomSurface-mesh-vertices">
+          <input semantic="POSITION" source="#SkyBottomSurface-mesh-positions"/>
+        </vertices>
+        <polylist material="SkyBottomMat-material" count="2">
+          <input semantic="VERTEX" source="#SkyBottomSurface-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SkyBottomSurface-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SkyBottomSurface-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
       </mesh>
     </geometry>
-    <geometry id="Plane_001-mesh" name="Plane.001">
+    <geometry id="SkyLeftSurface-mesh" name="SkyLeftSurface">
       <mesh>
-        <source id="Plane_001-mesh-positions">
-          <float_array id="Plane_001-mesh-positions-array" count="12">-1 -1 -1 -1 -1 1 1 -1 -1 1 -1 1</float_array>
+        <source id="SkyLeftSurface-mesh-positions">
+          <float_array id="SkyLeftSurface-mesh-positions-array" count="12">-1 -1 1 -1 1 1 -1 -1 -1 -1 1 -1</float_array>
           <technique_common>
-            <accessor source="#Plane_001-mesh-positions-array" count="4" stride="3">
+            <accessor source="#SkyLeftSurface-mesh-positions-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="Plane_001-mesh-normals">
-          <float_array id="Plane_001-mesh-normals-array" count="12">0 1 0 0 1 0 0 1 0 0 1 0</float_array>
+        <source id="SkyLeftSurface-mesh-normals">
+          <float_array id="SkyLeftSurface-mesh-normals-array" count="12">1 0 0 1 0 0 1 0 0 1 0 0</float_array>
           <technique_common>
-            <accessor source="#Plane_001-mesh-normals-array" count="4" stride="3">
+            <accessor source="#SkyLeftSurface-mesh-normals-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="Plane_001-mesh-UV">
-          <float_array id="Plane_001-mesh-UV-array" count="8">1 0 1 1 0 0 0 1</float_array>
+        <source id="SkyLeftSurface-mesh-UV">
+          <float_array id="SkyLeftSurface-mesh-UV-array" count="8">0 0 0 1 1 0 1 1</float_array>
           <technique_common>
-            <accessor source="#Plane_001-mesh-UV-array" count="4" stride="2">
+            <accessor source="#SkyLeftSurface-mesh-UV-array" count="4" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <vertices id="Plane_001-mesh-vertices">
-          <input semantic="POSITION" source="#Plane_001-mesh-positions"/>
+        <vertices id="SkyLeftSurface-mesh-vertices">
+          <input semantic="POSITION" source="#SkyLeftSurface-mesh-positions"/>
         </vertices>
-        <polylist material="Material_009-material" count="2">
-          <input semantic="VERTEX" source="#Plane_001-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Plane_001-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Plane_001-mesh-UV" offset="2"/>
+        <polylist material="SkyLeftMat-material" count="2">
+          <input semantic="VERTEX" source="#SkyLeftSurface-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SkyLeftSurface-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SkyLeftSurface-mesh-UV" offset="2"/>
+          <vcount>3 3 </vcount>
+          <p>0 0 0 3 3 3 1 1 1 2 2 2 3 3 3 0 0 0</p>
+        </polylist>
+      </mesh>
+    </geometry>
+    <geometry id="SkyFrontSurface-mesh" name="SkyFrontSurface">
+      <mesh>
+        <source id="SkyFrontSurface-mesh-positions">
+          <float_array id="SkyFrontSurface-mesh-positions-array" count="12">-1 1 -1 1 1 -1 -1 -1 -1 1 -1 -1</float_array>
+          <technique_common>
+            <accessor source="#SkyFrontSurface-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SkyFrontSurface-mesh-normals">
+          <float_array id="SkyFrontSurface-mesh-normals-array" count="12">0 0 1 0 0 1 0 0 1 0 0 1</float_array>
+          <technique_common>
+            <accessor source="#SkyFrontSurface-mesh-normals-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SkyFrontSurface-mesh-UV">
+          <float_array id="SkyFrontSurface-mesh-UV-array" count="8">0 1 1 1 0 0 1 0</float_array>
+          <technique_common>
+            <accessor source="#SkyFrontSurface-mesh-UV-array" count="4" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="SkyFrontSurface-mesh-vertices">
+          <input semantic="POSITION" source="#SkyFrontSurface-mesh-positions"/>
+        </vertices>
+        <polylist material="SkyFrontMat-material" count="2">
+          <input semantic="VERTEX" source="#SkyFrontSurface-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SkyFrontSurface-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SkyFrontSurface-mesh-UV" offset="2"/>
+          <vcount>3 3 </vcount>
+          <p>0 0 0 3 3 3 1 1 1 2 2 2 3 3 3 0 0 0</p>
+        </polylist>
+      </mesh>
+    </geometry>
+    <geometry id="SkyBackSurface-mesh" name="SkyBackSurface">
+      <mesh>
+        <source id="SkyBackSurface-mesh-positions">
+          <float_array id="SkyBackSurface-mesh-positions-array" count="12">-1 1 1 1 1 1 -1 -1 1 1 -1 1</float_array>
+          <technique_common>
+            <accessor source="#SkyBackSurface-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SkyBackSurface-mesh-normals">
+          <float_array id="SkyBackSurface-mesh-normals-array" count="12">0 0 -1 0 0 -1 0 0 -1 0 0 -1</float_array>
+          <technique_common>
+            <accessor source="#SkyBackSurface-mesh-normals-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="SkyBackSurface-mesh-UV">
+          <float_array id="SkyBackSurface-mesh-UV-array" count="8">1 1 0 1 1 0 0 0</float_array>
+          <technique_common>
+            <accessor source="#SkyBackSurface-mesh-UV-array" count="4" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="SkyBackSurface-mesh-vertices">
+          <input semantic="POSITION" source="#SkyBackSurface-mesh-positions"/>
+        </vertices>
+        <polylist material="SkyBackMat-material" count="2">
+          <input semantic="VERTEX" source="#SkyBackSurface-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SkyBackSurface-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SkyBackSurface-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
       </mesh>
     </geometry>
-    <geometry id="Plane_003-mesh" name="Plane.003">
+    <geometry id="SkyRightSurface-mesh" name="SkyRightSurface">
       <mesh>
-        <source id="Plane_003-mesh-positions">
-          <float_array id="Plane_003-mesh-positions-array" count="12">-1 -1 1 -1 1 1 -1 -1 -1 -1 1 -1</float_array>
+        <source id="SkyRightSurface-mesh-positions">
+          <float_array id="SkyRightSurface-mesh-positions-array" count="12">1 -1 1 1 1 1 1 -1 -1 1 1 -1</float_array>
           <technique_common>
-            <accessor source="#Plane_003-mesh-positions-array" count="4" stride="3">
+            <accessor source="#SkyRightSurface-mesh-positions-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="Plane_003-mesh-normals">
-          <float_array id="Plane_003-mesh-normals-array" count="12">1 0 0 1 0 0 1 0 0 1 0 0</float_array>
+        <source id="SkyRightSurface-mesh-normals">
+          <float_array id="SkyRightSurface-mesh-normals-array" count="12">-1 0 0 -1 0 0 -1 0 0 -1 0 0</float_array>
           <technique_common>
-            <accessor source="#Plane_003-mesh-normals-array" count="4" stride="3">
+            <accessor source="#SkyRightSurface-mesh-normals-array" count="4" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <source id="Plane_003-mesh-UV">
-          <float_array id="Plane_003-mesh-UV-array" count="8">0 0 0 1 1 0 1 1</float_array>
+        <source id="SkyRightSurface-mesh-UV">
+          <float_array id="SkyRightSurface-mesh-UV-array" count="8">1 0 1 1 0 0 0 1</float_array>
           <technique_common>
-            <accessor source="#Plane_003-mesh-UV-array" count="4" stride="2">
+            <accessor source="#SkyRightSurface-mesh-UV-array" count="4" stride="2">
               <param name="S" type="float"/>
               <param name="T" type="float"/>
             </accessor>
           </technique_common>
         </source>
-        <vertices id="Plane_003-mesh-vertices">
-          <input semantic="POSITION" source="#Plane_003-mesh-positions"/>
+        <vertices id="SkyRightSurface-mesh-vertices">
+          <input semantic="POSITION" source="#SkyRightSurface-mesh-positions"/>
         </vertices>
-        <polylist material="Material_004-material" count="2">
-          <input semantic="VERTEX" source="#Plane_003-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Plane_003-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Plane_003-mesh-UV" offset="2"/>
-          <vcount>3 3 </vcount>
-          <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
-        </polylist>
-      </mesh>
-    </geometry>
-    <geometry id="Plane_004-mesh" name="Plane.004">
-      <mesh>
-        <source id="Plane_004-mesh-positions">
-          <float_array id="Plane_004-mesh-positions-array" count="12">-1 1 -1 1 1 -1 -1 -1 -1 1 -1 -1</float_array>
-          <technique_common>
-            <accessor source="#Plane_004-mesh-positions-array" count="4" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Plane_004-mesh-normals">
-          <float_array id="Plane_004-mesh-normals-array" count="12">0 0 1 0 0 1 0 0 1 0 0 1</float_array>
-          <technique_common>
-            <accessor source="#Plane_004-mesh-normals-array" count="4" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Plane_004-mesh-UV">
-          <float_array id="Plane_004-mesh-UV-array" count="8">0 0 0 1 1 0 1 1</float_array>
-          <technique_common>
-            <accessor source="#Plane_004-mesh-UV-array" count="4" stride="2">
-              <param name="S" type="float"/>
-              <param name="T" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <vertices id="Plane_004-mesh-vertices">
-          <input semantic="POSITION" source="#Plane_004-mesh-positions"/>
-        </vertices>
-        <polylist material="Material_005-material" count="2">
-          <input semantic="VERTEX" source="#Plane_004-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Plane_004-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Plane_004-mesh-UV" offset="2"/>
-          <vcount>3 3 </vcount>
-          <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
-        </polylist>
-      </mesh>
-    </geometry>
-    <geometry id="Plane_006-mesh" name="Plane.006">
-      <mesh>
-        <source id="Plane_006-mesh-positions">
-          <float_array id="Plane_006-mesh-positions-array" count="12">-1 1 1 1 1 1 -1 -1 1 1 -1 1</float_array>
-          <technique_common>
-            <accessor source="#Plane_006-mesh-positions-array" count="4" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Plane_006-mesh-normals">
-          <float_array id="Plane_006-mesh-normals-array" count="12">0 0 -1 0 0 -1 0 0 -1 0 0 -1</float_array>
-          <technique_common>
-            <accessor source="#Plane_006-mesh-normals-array" count="4" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Plane_006-mesh-UV">
-          <float_array id="Plane_006-mesh-UV-array" count="8">1 0 1 1 0 0 0 1</float_array>
-          <technique_common>
-            <accessor source="#Plane_006-mesh-UV-array" count="4" stride="2">
-              <param name="S" type="float"/>
-              <param name="T" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <vertices id="Plane_006-mesh-vertices">
-          <input semantic="POSITION" source="#Plane_006-mesh-positions"/>
-        </vertices>
-        <polylist material="Material_007-material" count="2">
-          <input semantic="VERTEX" source="#Plane_006-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Plane_006-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Plane_006-mesh-UV" offset="2"/>
-          <vcount>3 3 </vcount>
-          <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
-        </polylist>
-      </mesh>
-    </geometry>
-    <geometry id="Plane_007-mesh" name="Plane.007">
-      <mesh>
-        <source id="Plane_007-mesh-positions">
-          <float_array id="Plane_007-mesh-positions-array" count="12">1 -1 1 1 1 1 1 -1 -1 1 1 -1</float_array>
-          <technique_common>
-            <accessor source="#Plane_007-mesh-positions-array" count="4" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Plane_007-mesh-normals">
-          <float_array id="Plane_007-mesh-normals-array" count="12">-1 0 0 -1 0 0 -1 0 0 -1 0 0</float_array>
-          <technique_common>
-            <accessor source="#Plane_007-mesh-normals-array" count="4" stride="3">
-              <param name="X" type="float"/>
-              <param name="Y" type="float"/>
-              <param name="Z" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <source id="Plane_007-mesh-UV">
-          <float_array id="Plane_007-mesh-UV-array" count="8">1 0 1 1 0 0 0 1</float_array>
-          <technique_common>
-            <accessor source="#Plane_007-mesh-UV-array" count="4" stride="2">
-              <param name="S" type="float"/>
-              <param name="T" type="float"/>
-            </accessor>
-          </technique_common>
-        </source>
-        <vertices id="Plane_007-mesh-vertices">
-          <input semantic="POSITION" source="#Plane_007-mesh-positions"/>
-        </vertices>
-        <polylist material="Material_008-material" count="2">
-          <input semantic="VERTEX" source="#Plane_007-mesh-vertices" offset="0"/>
-          <input semantic="NORMAL" source="#Plane_007-mesh-normals" offset="1"/>
-          <input semantic="TEXCOORD" source="#Plane_007-mesh-UV" offset="2"/>
+        <polylist material="SkyRightMat-material" count="2">
+          <input semantic="VERTEX" source="#SkyRightSurface-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#SkyRightSurface-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#SkyRightSurface-mesh-UV" offset="2"/>
           <vcount>3 3 </vcount>
           <p>0 0 0 1 1 1 3 3 3 2 2 2 0 0 0 3 3 3</p>
         </polylist>
@@ -455,60 +515,60 @@
     <visual_scene id="Scene" name="Scene">
       <node id="SkyTop" name="SkyTop" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <instance_geometry url="#Plane-mesh">
+        <instance_geometry url="#SkyTopSurface-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material-material" target="#Material-material"/>
+              <instance_material symbol="SkyTopMat-material" target="#SkyTopMat-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
       </node>
       <node id="SkyBottom" name="SkyBottom" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <instance_geometry url="#Plane_001-mesh">
+        <instance_geometry url="#SkyBottomSurface-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material_009-material" target="#Material_009-material"/>
+              <instance_material symbol="SkyBottomMat-material" target="#SkyBottomMat-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
       </node>
       <node id="SkyLeft" name="SkyLeft" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <instance_geometry url="#Plane_003-mesh">
+        <instance_geometry url="#SkyLeftSurface-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material_004-material" target="#Material_004-material"/>
+              <instance_material symbol="SkyLeftMat-material" target="#SkyLeftMat-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
       </node>
       <node id="SkyFront" name="SkyFront" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <instance_geometry url="#Plane_004-mesh">
+        <instance_geometry url="#SkyFrontSurface-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material_005-material" target="#Material_005-material"/>
+              <instance_material symbol="SkyFrontMat-material" target="#SkyFrontMat-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
       </node>
       <node id="SkyBack" name="SkyBack" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <instance_geometry url="#Plane_006-mesh">
+        <instance_geometry url="#SkyBackSurface-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material_007-material" target="#Material_007-material"/>
+              <instance_material symbol="SkyBackMat-material" target="#SkyBackMat-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
       </node>
       <node id="SkyRight" name="SkyRight" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <instance_geometry url="#Plane_007-mesh">
+        <instance_geometry url="#SkyRightSurface-mesh">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Material_008-material" target="#Material_008-material"/>
+              <instance_material symbol="SkyRightMat-material" target="#SkyRightMat-material"/>
             </technique_common>
           </bind_material>
         </instance_geometry>
