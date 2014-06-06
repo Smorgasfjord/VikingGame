@@ -3,10 +3,10 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "setWorld():main.cpp">
+         contextName = "Draw():main.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "mount">
+               value = "bjorn">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -18,6 +18,25 @@
             </PersistentString>
             <PersistentString
                value = "mountain">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "setWorld():main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "mount">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "shadow(GameObject*):main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "depthHandles">
+            </PersistentString>
+            <PersistentString
+               value = "j">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

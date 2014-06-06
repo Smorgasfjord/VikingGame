@@ -44,6 +44,7 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    this->world = world;
    bjorn = character;
    hammerSide = true;
+   manualLocked = false;
    hammerCollision = pickCollision = false;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = bjorn->mountainSide;
@@ -183,7 +184,7 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          setVelocity(-activeForce);
          // give bjorn force
-         activeForce = dat.collisionStrength * (float)(GRAVITY * 1.5f);
+         activeForce = dat.collisionStrength * (float)(GRAVITY * 3.5f);
          bjorn->addVelocity(-activeForce);///(float)timeStep);
          // lock rotation temporarily
          lockTime = 0.2;
@@ -277,8 +278,8 @@ void Hammer::update(double timeStep) {
          lockTime = 2.0;
          locked = true;
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
-         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);;
-         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
+         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);
+         //bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          bjorn->suspend();
       }
       else if (dat.thisObj.mesh != WTF_NODE && dat.thisObj.mesh != WOOD_NODE && dat.thisObj.mesh != GRIP_NODE && !pickCollision) {

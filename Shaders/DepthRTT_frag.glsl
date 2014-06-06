@@ -1,11 +1,6 @@
-#version 330 core
-
-// Ouput data
-layout(location = 0) out float fragmentdepth;
-
-
 void main(){
    //this is output to the texture (not rendered to screen)
    // so it makes sense that the output is just the depth
-	fragmentdepth = gl_FragCoord.z;
+   gl_FragColor = vec4(gl_FragCoord.z, 0, 0, 1.0);
+   gl_FragDepth = gl_FragCoord.z;
 }

@@ -20,6 +20,7 @@ struct Material {
 varying vec3 vPos;
 varying vec3 vNorm;
 varying vec2 vTexCoord;
+varying vec4 vShadowCoord;
 
 uniform vec3 uLightPos[NUM_LIGHTS];
 uniform vec3 uLColor;
@@ -27,6 +28,7 @@ uniform vec3 uEyePos;
 uniform Material uMat;
 uniform sampler2D uTexUnit;
 uniform sampler2D uFogUnit;
+uniform sampler2DShadow uShadowMap;
 uniform vec3 uWindVec;
 uniform float uFogStrength;
 
@@ -36,15 +38,17 @@ void main() {
    vec3 lightSum = vec3(0.0);
    vec3 view = normalize(uEyePos - vPos);
    vec3 normEye = normalize(uEyePos), normPos = normalize(vPos);
-   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
-   fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
-   //while (fogIdx.x > 1.0) fogIdx.x -= 1.0;
-   //while (fogIdx.y > 1.0) fogIdx.y -= 1.0;
    float attenuation, eyeDist, distance, intensity, maxCol = 1.0;
    //Fog stuff
    float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
    float fogLinear = 0.6 / viewDist;
    float fogQuad = 0.4 / (viewDist * viewDist);
+   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
+   fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
+   //Shadow stuff
+   float visibility, bias = 0.005;
+   int index;
+   
    if (length(texColor.xyz) < 0.01) {
       texColor = vec4(1.0);
    }
@@ -63,16 +67,29 @@ void main() {
       halfVec = normalize(light + view);
       intensity = pow(clamp(dot(normalize(vNorm), halfVec), 0.0, 1.0), uMat.shine);
       specular = intensity * uMat.sColor;
-      lightSum += (diffuse + specular) * attenuation;
+      
+      lightSum += (diffuse + specular);// * attenuation;
    }
+   
    lightSum /= NUM_LIGHTS_F;
    ambient = vec3(1.0) * (length(uMat.aColor) > 0.01 ? uMat.aColor : vec3(0.1));
-   vec3 phong = (lightSum + ambient);
+   visibility = 1.0;
+   
+   //This should be in a loop with the poisson disk but glsl isn't happy with it
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.94201624, -0.39906216 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.94558609, -0.76890725 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.094184101, -0.92938870 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.34495938, 0.29387760 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
+
+   //Calculate phong and move into 0-1 range
+   vec3 phong = ((lightSum * visibility) + ambient);
    phong += ambient;
    if (phong.x > maxCol) maxCol = phong.x;
    if (phong.y > maxCol) maxCol = phong.y;
    if (phong.z > maxCol) maxCol = phong.z;
    phong = phong / maxCol;
+   
+   //Fog
    if (uMat.aColor.x == 1.0 && uMat.aColor.y == 1.0 && uMat.aColor.z == 1.0) {
       eyeDist = max(abs(uEyePos.x-vPos.x),max(abs(uEyePos.y-vPos.y),abs(uEyePos.z-vPos.z)));
    } else {
@@ -80,5 +97,7 @@ void main() {
    }
    attenuation = clamp(eyeDist * eyeDist * fogQuad + eyeDist * fogLinear + (uFogStrength / 100.0), 0.0, 1.0);
    fogCol = texture2D(uFogUnit,fogIdx);
+   
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
+   //gl_FragColor = vec4(phong * texColor.xyz, 1.0);
 }

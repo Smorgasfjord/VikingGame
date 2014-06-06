@@ -41,7 +41,7 @@ class World
       void draw(int mountainSide);
       World();
       ~World();
-      World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles, int shadeProg);
+      World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles);
       int detectCollision(glm::vec3 pos);
       CollisionData checkCollision(GameObject *obj, int objIndex);
       float getY(glm::vec3 pos);
@@ -49,9 +49,9 @@ class World
       void updateObject(GameObject *obj, int objIndex);
       void removeObject(int objIndex);
       GameObject& getObjectByIndex(int idx);
+      std::vector<GameObject> getDrawn(int mountainSide);
       glm::vec3 getStart();
    private:
-      int ShadeProg;
       void SetMaterial(int i);
       std::vector<GameObject> cull(int mountainSide);
       std::vector<Platform> platforms;

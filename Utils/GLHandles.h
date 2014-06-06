@@ -26,27 +26,34 @@ class GLHandles
 {
    public:
       int ShadeProg;
+      //The standards
       GLint aPosition;
       GLint aNormal;
-      GLuint aUV;
-      GLuint uTexUnit;
-      GLuint uFogUnit;
-      GLuint uFogStrength;
-      GLuint uWindVec;
+      GLint uEyePos;
+      //Matrix Transforms
       GLint uModelMatrix;
       GLint uViewMatrix;
       GLint uProjMatrix;
       GLint uNormMatrix;
+      //Texture
+      GLuint aUV;
+      GLuint uTexUnit;
+      //Light
       GLint uLightPos;
       GLint uLightColor;
-      GLint uEyePos;
+      //Material
       GLint uMatAmb;
       GLint uMatDif;
       GLint uMatSpec;
       GLint uMatShine;
-      GLuint framBuff;
-	   GLuint depthBuff;
-	   GLint depthMatrixID;
+      //Fog
+      GLuint uFogUnit;
+      GLuint uFogStrength;
+      GLuint uWindVec;
+      //Shadows
+      GLuint shadowMapID;
+      GLuint depthMatrixID;
+      GLuint depthBiasID;
 };
 
 #endif /* defined(___76_Lab1__GLHandles__) */
