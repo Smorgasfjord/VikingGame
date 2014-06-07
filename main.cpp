@@ -396,11 +396,11 @@ void Draw (void)
    safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
    safe_glUniform3f(handles.uWindVec, wind.x, wind.y, wind.z);
    
-   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
+   safe_glUniform1f(handles.uFogStrength, sqrt(fabsf(bjorn.getPos().y)) * 12.0f);
    glDisable( GL_DEPTH_TEST );
    skyBox.draw();
    glEnable( GL_DEPTH_TEST );
-   safe_glUniform1f(handles.uFogStrength, sqrt(bjorn.getPos().y));
+   safe_glUniform1f(handles.uFogStrength, sqrt(fabsf(bjorn.getPos().y)));
 
    world.draw(bjorn.mountainSide);
    bjorn.draw();
@@ -535,7 +535,7 @@ void Animate()
    
    timeStep = curTime - lastUpdated;
    
-   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(bjorn.getPos().y) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
 
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);

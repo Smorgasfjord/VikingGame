@@ -39,7 +39,7 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    scaleBy(glm::vec3(.25f));
    pickNormal = glm::vec3(1.0f,0.0,0.0);
    desiredRotation = previousAngle = glm::vec3(0.0f,180.0,270.0);
-   rotateBy(desiredRotation);
+   setRotation(desiredRotation);
    pickNormal = (getRotMat() * glm::vec4(pickNormal,0.0f)).xyz();
    this->world = world;
    bjorn = character;
@@ -77,18 +77,31 @@ void Hammer::updateAngle(float x, float y)
       //Rotation is flipped if the hammer is flipped
       if(bjorn->mountainSide == MOUNT_FRONT || bjorn->mountainSide == MOUNT_BACK)
       {
-         
          if(((int)getRot().y % 360) == 180)
             desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, -angle * (180.0 / pi));
          else
             desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, angle * (180.0 / pi));
       }
-      else
+      else if(bjorn->mountainSide == MOUNT_FR || bjorn->mountainSide == MOUNT_BL)
+      {
+         if(((int)getRot().y % 360) == 180)
+            desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, angle * (90.0 / pi));
+         else
+            desiredRotation = glm::vec3(angle * (90.0 / pi), desiredRotation.y, -angle * (90.0 / pi));
+      }
+      else if(bjorn->mountainSide == MOUNT_LEFT || bjorn->mountainSide == MOUNT_RIGHT)
       {
          if(((int)getRot().y % 360) == 180)
             desiredRotation = glm::vec3(-angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
          else
             desiredRotation = glm::vec3(angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
+      }
+      else
+      {
+         if(((int)getRot().y % 360) == 180)
+            desiredRotation = glm::vec3(-angle * (180.0 / pi), desiredRotation.y, angle * (180.0 / pi));
+         else
+            desiredRotation = glm::vec3(angle * (180.0 / pi), desiredRotation.y, -angle * (180.0 / pi));
       }
 
    }
@@ -149,10 +162,10 @@ void Hammer::step(double timeStep)
    //Update hammer rotation if we're on a different side of the mountain
    if(mountainSide != bjorn->mountainSide)
    {
-      if(mountainSide < bjorn->mountainSide)
-         desiredRotation.y += 90.0f;
+      if(mountainSide <= (bjorn->mountainSide+8)%9)
+         desiredRotation.y += 315.0f;
       else
-         desiredRotation.y += 270.0f;
+         desiredRotation.y += 45.0f;
       mountainSide = bjorn->mountainSide;
    }
    return;
@@ -186,7 +199,7 @@ void Hammer::update(double timeStep) {
          activeForce = dat.collisionStrength * (float)(GRAVITY * 1.5f);
          bjorn->addVelocity(-activeForce);///(float)timeStep);
          // lock rotation temporarily
-         lockTime = 0.2;
+         lockTime = 0.1;
          locked = true;
          // SMASH
          Sound::hammerSmash();
@@ -217,7 +230,7 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          // lock rotation
          locked = true;
-         lockTime = 1.0;
+         lockTime = 0.5;
          // move bjorn
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
@@ -233,7 +246,7 @@ void Hammer::update(double timeStep) {
             glm::length(pickNormal * glm::normalize(dat.collisionAngle)) > 0.8f) {
          printf("pick hit object\n");
          // lock rotation
-         lockTime = 2.0;
+         lockTime = 0.5;
          locked = true;
          pickCollision = true;
          // set bjorn velocity
@@ -249,7 +262,7 @@ void Hammer::update(double timeStep) {
       else if (dat.thisObj.mesh == PICK_NODE && !hammerCollision && pickCollision) {
          printf("pick partially in object\n");
          // lock rotation
-         lockTime = 2.0;
+         lockTime = 0.5;
          locked = true;
          pickCollision = true;
          setRotation(previousAngle);
@@ -274,7 +287,7 @@ void Hammer::update(double timeStep) {
          moveBy(projection*(float)timeStep*0.25f);
          setRotation(previousAngle);
          // lock rotation
-         lockTime = 2.0;
+         lockTime = 1.0;
          locked = true;
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);;

@@ -16,12 +16,23 @@
 #include "../glm/glm.hpp"
 
 #define MOUNT_FRONT 0
-#define MOUNT_RIGHT 1
-#define MOUNT_BACK 2
-#define MOUNT_LEFT 3
-#define MOUNT_WIDTH 60
-#define MOUNT_DEPTH 60
-#define MOUNT_HEIGHT 44.5
+#define MOUNT_FR    1
+#define MOUNT_RIGHT 2
+#define MOUNT_RB   3
+#define MOUNT_BACK 4
+#define MOUNT_BL   5
+#define MOUNT_LEFT 6
+#define MOUNT_LF   7
+#define MOUNT_WIDTH 60.0
+#define MOUNT_DEPTH 60.0
+#define MOUNT_HEIGHT 50.0
+
+typedef struct plane_t {
+   float a;
+   float b;
+   float c;
+   float d;
+} Plane_t;
 
 class Mountain : public GameObject
 {
@@ -33,6 +44,7 @@ class Mountain : public GameObject
       static int getSide(glm::vec3 pos);
       static glm::vec3 lockOn(glm::vec3 pos, glm::vec3 & norms);
    private:
+      static void genPlanes();
       static float testLeftDiagonal(glm::vec3 pos);
       static float testRightDiagonal(glm::vec3 pos);
       static void loadHeightMaps();

@@ -36,7 +36,7 @@ void main() {
    vec3 lightSum = vec3(0.0);
    vec3 view = normalize(uEyePos - vPos);
    vec3 normEye = normalize(uEyePos), normPos = normalize(vPos);
-   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
+   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z - normPos.y + normPos.z + 4.0) * 0.125);
    fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
    //while (fogIdx.x > 1.0) fogIdx.x -= 1.0;
    //while (fogIdx.y > 1.0) fogIdx.y -= 1.0;

@@ -213,7 +213,6 @@ void GameObject::updateTransformMatrix()
 
 void GameObject::draw() {
    //glUseProgram(handles.ShadeProg);
-   printf("%s:\n", name.c_str());
    model.render(handles, mat4(1.0f));
 }
 
@@ -254,7 +253,6 @@ void ObjectMesh::render(GLHandles handle) {
    // bind texture
    glActiveTexture(GL_TEXTURE0); //I dont know if this is necessary
    glBindTexture(GL_TEXTURE_2D, buffDat.texIndex);
-   printf("texIndex: %i\n",buffDat.texIndex);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffDat.ibo);
    // draw!
