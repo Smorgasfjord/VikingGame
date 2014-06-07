@@ -39,7 +39,7 @@ GameObject("Bjorn")
 {
    GameModel simple = genSimpleModel(model);
    initialize(*model, 0, 0, hand);
-   setPos(pos + glm::vec3(0.0, 0.95f, 0.5f));
+   setPos(pos + glm::vec3(0.0, 1.95f, 0.5f));
    setScale(glm::vec3(0.1f));
    setRotation(glm::vec3(0.0, 270.0, 0.0));
    setVelocity(glm::vec3(0));

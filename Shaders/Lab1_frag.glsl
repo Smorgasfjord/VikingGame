@@ -1,11 +1,8 @@
 //#version 120
-#define FOG_TEX_SIZE 512
+#define FOG_TEX_SIZE 512.0
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
 #define HEIGHT_TO_VIEW_DIST 50.0
-#define VIEW_DIST 5.0//15.0 -  5.0
-#define FOG_LINEAR 0.6 / VIEW_DIST
-#define FOG_QUAD 0.4 / (VIEW_DIST * VIEW_DIST)
 #define LIGHT_RADIUS 8.0
 #define ATTENUATION_CONST 1.0
 #define ATTENUATION_LINEAR .8 / LIGHT_RADIUS
@@ -39,10 +36,7 @@ void main() {
    vec3 lightSum = vec3(0.0);
    vec3 view = normalize(uEyePos - vPos);
    vec3 normEye = normalize(uEyePos), normPos = normalize(vPos);
-   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z - normPos.y + normPos.z + 4.0) * 0.125);
-   fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
-   //while (fogIdx.x > 1.0) fogIdx.x -= 1.0;
-   //while (fogIdx.y > 1.0) fogIdx.y -= 1.0;
+
    float attenuation, eyeDist, distance, intensity, maxCol = 1.0;
    //Fog stuff
    float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
