@@ -22,7 +22,7 @@
 #include "../Utils/GLSL_helper.h"
 
 #define HEIGHT 0
-#define MAX_SPEED 1.5
+#define MAX_SPEED 2.5
 
 Bjorn::~Bjorn()
 {
@@ -47,6 +47,7 @@ GameObject("Bjorn")
    grounded = true;
    suspended = false;
    facingRight = true;
+   screamed = false;
    gravity = -3;
    mass = 20;
    this->world = worl;

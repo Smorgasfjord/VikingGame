@@ -10,7 +10,7 @@
 #define __MyGame__Bjorn__
 
 #include <iostream>
-#define DEBUG_GAME 1
+#define DEBUG_GAME 0
 
 #ifdef _WIN32
 #include <time.h>
@@ -47,6 +47,7 @@ class Bjorn : public GameObject
       void update(double timeStep);
       int mountainSide;
       bool facingRight;
+      bool screamed;
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size);
       bool jumping;
