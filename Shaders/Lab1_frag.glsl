@@ -1,4 +1,5 @@
 //#version 120
+#define FOG_TEX_SIZE 512
 #define NUM_LIGHTS 5
 #define NUM_LIGHTS_F 5.0
 #define HEIGHT_TO_VIEW_DIST 50.0
@@ -47,7 +48,7 @@ void main() {
    float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
    float fogLinear = 0.6 / viewDist;
    float fogQuad = 0.4 / (viewDist * viewDist);
-   vec2 fogIdx = vec2((normEye.x + normEye.z + normPos.x + normPos.z + 4.0) * 0.125, (-normEye.y + normEye.z + 4.0 + -normPos.y + normPos.z) * 0.125);
+   vec2 fogIdx = vec2((-uEyePos.x - uEyePos.z + 2.0 * gl_FragCoord.x/FOG_TEX_SIZE) * 0.2, (-uEyePos.y + 4.0 - 2.0 * gl_FragCoord.y/FOG_TEX_SIZE) * 0.2);
    fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
    //Shadow stuff
    float visibility, bias = 0.005;

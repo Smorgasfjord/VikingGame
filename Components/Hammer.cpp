@@ -69,42 +69,43 @@ void Hammer::updateAngle(float x, float y)
 {
    //Vector along which the hammer should end up
    glm::vec3 currentAngle = getRot();
+   float direction;
    //Angle between desired vector and neutral hammer position (straight up)
    float angle = atan2(x, y);
    if(!isnan(angle) && !(locked || manualLocked))
    {
       //Save the last angle
       previousAngle = currentAngle;
+      direction = hammerSide ? -1.0 : 1.0;
       //Rotation is flipped if the hammer is flipped
-      if(bjorn->mountainSide == MOUNT_FRONT || bjorn->mountainSide == MOUNT_BACK)
-      {
-         if(((int)getRot().y % 360) == 180)
-            desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, -angle * (180.0 / pi));
-         else
-            desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, angle * (180.0 / pi));
+      switch(bjorn->mountainSide) {
+      case MOUNT_FRONT:
+         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
+         break;
+      case MOUNT_BACK:
+         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * -angle * (180.0 / pi));
+         break;
+      case MOUNT_RIGHT:
+         desiredRotation = glm::vec3(-desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
+         break;
+      case MOUNT_LEFT:
+         desiredRotation = glm::vec3(-desiredRotation.x, desiredRotation.y, direction * -angle * (180.0 / pi));
+         break;
+      case MOUNT_FR:
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
+         break;
+      case MOUNT_RB:
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
+         break;
+      case MOUNT_BL:
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
+         break;
+      case MOUNT_LF:
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
+         break;
+      default:
+         break;
       }
-      else if(bjorn->mountainSide == MOUNT_FR || bjorn->mountainSide == MOUNT_BL)
-      {
-         if(((int)getRot().y % 360) == 180)
-            desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, angle * (90.0 / pi));
-         else
-            desiredRotation = glm::vec3(angle * (90.0 / pi), desiredRotation.y, -angle * (90.0 / pi));
-      }
-      else if(bjorn->mountainSide == MOUNT_LEFT || bjorn->mountainSide == MOUNT_RIGHT)
-      {
-         if(((int)getRot().y % 360) == 180)
-            desiredRotation = glm::vec3(-angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
-         else
-            desiredRotation = glm::vec3(angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
-      }
-      else
-      {
-         if(((int)getRot().y % 360) == 180)
-            desiredRotation = glm::vec3(-angle * (180.0 / pi), desiredRotation.y, angle * (180.0 / pi));
-         else
-            desiredRotation = glm::vec3(angle * (180.0 / pi), desiredRotation.y, -angle * (180.0 / pi));
-      }
-
    }
    if (desiredRotation.x > 180.0) desiredRotation.x -= 360.0;
    else if (desiredRotation.x < -180.0) desiredRotation.x += 360.0;
@@ -129,6 +130,16 @@ void Hammer::flip()
 void Hammer::step(double timeStep)
 {
    glm::vec3 rotIncrement, rotFix;
+   //Update hammer rotation if we're on a different side of the mountain
+   if(mountainSide != bjorn->mountainSide)
+   {
+      if((mountainSide < bjorn->mountainSide || mountainSide == 7 && bjorn->mountainSide == 0) && 
+            !mountainSide == 0 && bjorn->mountainSide == 7)
+         desiredRotation.y += 315.0f;
+      else
+         desiredRotation.y += 45.0f;
+      mountainSide = bjorn->mountainSide;
+   }
    rotFix = getRot();
    if (rotFix.x > 180.0) rotFix.x -= 360.0;
    else if (rotFix.x < -180.0) rotFix.x += 360.0;
@@ -160,15 +171,6 @@ void Hammer::step(double timeStep)
    }
    moveBy(getVel()*(float)timeStep);
    
-   //Update hammer rotation if we're on a different side of the mountain
-   if(mountainSide != bjorn->mountainSide)
-   {
-      if(mountainSide <= (bjorn->mountainSide+8)%9)
-         desiredRotation.y += 315.0f;
-      else
-         desiredRotation.y += 45.0f;
-      mountainSide = bjorn->mountainSide;
-   }
    return;
 }
 
