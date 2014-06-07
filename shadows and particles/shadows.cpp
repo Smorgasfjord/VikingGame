@@ -1,0 +1,1152 @@
+// Include standard headers
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <string>
+#include <iostream>
+#include "math.h"
+#include <time.h>
+
+// Include GLEW
+#include </home/nclarke/Desktop/deps/glew/include/GL/glew.h>
+
+// Include GLFW
+#include </home/nclarke/Desktop/deps/glfw/include/GLFW/glfw3.h>
+GLFWwindow* window;
+
+#define CLOUDS 8
+#define NUMBER_OF_PARTICLES 20
+#define NUMBER_OF_SPRINGS 9
+#define MAX_LIFESPAN 20
+
+// Include GLM
+#include </home/nclarke/Desktop/deps/glm/include/glm/glm.hpp>
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/matrix_transform.hpp>
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/type_ptr.hpp> //value_ptr
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/matrix_transform.hpp>
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtx/transform.hpp>
+using namespace glm;
+
+#include </home/nclarke/Desktop/Graphics/common/shader.hpp>
+#include </home/nclarke/Desktop/Graphics/common/texture.hpp>
+#include </home/nclarke/Desktop/Graphics/common/controls.hpp>
+#include </home/nclarke/Desktop/Graphics/common/objloader.hpp>
+#include </home/nclarke/Desktop/Graphics/common/vboindexer.hpp>
+
+
+//Components
+/*
+#include "Components/GameObject.h"
+#include "Components/Platform.h"
+#include "Components/Mountain.h"
+#include "Components/Hammer.h"
+#include "Components/Bjorn.h"
+#include "Utils/World.h"
+*/
+
+typedef struct Image {
+  unsigned long sizeX;
+  unsigned long sizeY;
+  char *data;
+} Image;
+
+Image *TextureImage;
+
+typedef struct RGB {
+  GLubyte r;
+  GLubyte g; 
+  GLubyte b;
+} RGB;
+
+typedef struct {
+   double mass;   /* Mass                          */
+   double age, lifespan;   /* age & lifespan                  */
+   vec3 p;      /* Position                      */
+   vec3 v;      /* Velocity                      */
+   vec3 force;      /* Force                         */
+   int fixed;  /* Fixed point or free to move   */
+   vec3 color; /*the particles color based on position */
+} PARTICLE;
+
+typedef struct {
+   vec3 dpdt;
+   vec3 dvdt;
+} PARTICLEDERIVATIVES;
+
+typedef struct {
+   double gravitational;
+   double viscousdrag;
+} PARTICLEPHYS;
+
+typedef struct {
+   int from;
+   int to;
+   double springconstant;
+   double dampingconstant;
+   double restlength;
+} PARTICLESPRING;
+
+void CalculateForces(PARTICLE *,int,PARTICLEPHYS,PARTICLESPRING *,int, int);
+void UpdateParticles(PARTICLE *,int,PARTICLEPHYS,PARTICLESPRING *,int,double,int, int);
+void CalculateDerivatives(PARTICLE *,int,PARTICLEDERIVATIVES *);
+double Solver1D(double,double,int,double (*)(double));
+
+
+RGB myimage[64][64];
+RGB* g_pixel;
+int ImageLoad(char *filename, Image *image);
+GLvoid LoadTexture(char* image_file, int tex_id);
+
+/* BMP file loader loads a 24-bit bmp file only */
+
+/*
+* getint and getshort are help functions to load the bitmap byte by byte
+*/
+static unsigned int getint(FILE *fp) {
+  int c, c1, c2, c3;
+  
+  /*  get 4 bytes */ 
+  c = getc(fp);  
+  c1 = getc(fp);  
+  c2 = getc(fp);  
+  c3 = getc(fp);
+  
+  return ((unsigned int) c) +   
+    (((unsigned int) c1) << 8) + 
+    (((unsigned int) c2) << 16) +
+    (((unsigned int) c3) << 24);
+}
+
+static unsigned int getshort(FILE *fp){
+  int c, c1;
+  
+  /* get 2 bytes*/
+  c = getc(fp);  
+  c1 = getc(fp);
+  
+  return ((unsigned int) c) + (((unsigned int) c1) << 8);
+}
+
+
+void CalculateForces(
+   PARTICLE *p,int np,
+   PARTICLEPHYS phys,
+   PARTICLESPRING *s,int ns, int gravity)
+{
+   int i,p1,p2;
+   vec3 down = vec3(0.0,-1.0, 0.0);
+   vec3 zero = vec3(0.0,0.0,0.0);
+   vec3 f;
+   double len,dx,dy,dz;
+
+   for (i=0;i<np;i++) {
+      p[i].force = zero;
+      if (p[i].fixed)
+         continue;
+
+      /* Gravitation */
+      if (gravity)
+      {
+         p[i].force.x += phys.gravitational * p[i].mass * down.x;
+         p[i].force.y += phys.gravitational * p[i].mass * down.y;
+         p[i].force.z += phys.gravitational * p[i].mass * down.z;
+      }
+      else
+      {
+         p[i].force.x -= phys.gravitational * p[i].mass * -1;
+         p[i].force.y -= phys.gravitational * p[i].mass * down.y;
+         p[i].force.z += phys.gravitational * p[i].mass * down.z;
+      }
+
+
+      /* Viscous drag */
+      p[i].force.x -= phys.viscousdrag * p[i].v.x;
+      p[i].force.y -= phys.viscousdrag * p[i].v.y;
+      p[i].force.z -= phys.viscousdrag * p[i].v.z;
+
+   }
+}
+
+/*
+   Perform one step of the solver
+*/
+void UpdateParticles(
+   PARTICLE *p,int np,
+   PARTICLEPHYS phys,
+   PARTICLESPRING *s,int ns,
+   double dt,int method, int gravity)
+{
+   printf("dt is (%lf)\n", dt);
+   int i;
+   PARTICLE *ptmp;
+   PARTICLEDERIVATIVES *deriv;
+
+   deriv = (PARTICLEDERIVATIVES *)malloc(np * sizeof(PARTICLEDERIVATIVES));
+
+                                   /* Midpoint */
+      CalculateForces(p,np,phys,s,ns, gravity);
+      CalculateDerivatives(p,np,deriv);
+      ptmp = (PARTICLE *)malloc(np * sizeof(PARTICLE));
+      for (i=0;i<np;i++) {
+         ptmp[i] = p[i];
+         ptmp[i].p.x += deriv[i].dpdt.x * dt / 2;
+         ptmp[i].p.y += deriv[i].dpdt.y * dt / 2;
+         ptmp[i].p.z += deriv[i].dpdt.z * dt / 2;
+         ptmp[i].p.x += deriv[i].dvdt.x * dt / 2;
+         ptmp[i].p.y += deriv[i].dvdt.y * dt / 2;
+         ptmp[i].p.z += deriv[i].dvdt.z * dt / 2;
+      }
+      CalculateForces(ptmp,np,phys,s,ns, gravity);
+      CalculateDerivatives(ptmp,np,deriv);
+      for (i=0;i<np;i++) {
+//   printf("dt is (%lf)\n", dt);
+
+//         printf("before p[%d].p.x = (%lf)\n", i, p[i].p.x);
+         p[i].p.x += deriv[i].dpdt.x * dt;
+//         printf("after p[%d].p.x = (%lf)\n", i, p[i].p.x);
+         p[i].p.y += deriv[i].dpdt.y * dt;
+         p[i].p.z += deriv[i].dpdt.z * dt;
+         p[i].v.x += deriv[i].dvdt.x * dt;
+         p[i].v.y += deriv[i].dvdt.y * dt;
+         p[i].v.z += deriv[i].dvdt.z * dt;
+
+//   printf("dt is (%lf)\n", dt);
+
+//         printf("deriv[i].dvdt %d is at (%d, %d, %d) [%lf] \n", i, deriv[i].dvdt.x, deriv[i].dvdt.y, deriv[i].dvdt.z, dt);
+
+         if(p[i].p.y < 0.0)
+         {
+            p[i].v.y = -p[i].v.y;
+         }
+         p[i].age += 1;
+
+         printf("particle %d is at (%lf, %lf, %lf)\n", i, p[i].p.x, p[i].p.y, p[i].p.z);
+      }
+      free(ptmp);
+
+   free(deriv);
+}
+
+/*
+   Calculate the derivatives
+   dp/dt = v
+   dv/dt = f / m
+*/
+void CalculateDerivatives(
+   PARTICLE *p,int np,
+   PARTICLEDERIVATIVES *deriv)
+{
+   int i;
+
+   for (i=0;i<np;i++) {
+      deriv[i].dpdt.x = p[i].v.x;
+      deriv[i].dpdt.y = p[i].v.y;
+      deriv[i].dpdt.z = p[i].v.z;
+      deriv[i].dvdt.x = p[i].force.x / p[i].mass;
+      deriv[i].dvdt.y = p[i].force.y / p[i].mass;
+      deriv[i].dvdt.z = p[i].force.z / p[i].mass;
+   }
+}
+
+/*
+   A 1st order 1D DE solver.
+   Assumes the function is not time dependent.
+   Parameters
+      h      - step size
+      y0     - last value
+      method - algorithm to use [0,5]
+      fcn    - evaluate the derivative of the field
+*/
+double Solver1D(double h,double y0,int method,double (*fcn)(double))
+{
+   double ynew;
+   double k1,k2,k3,k4,k5,k6;
+
+   switch (method) {
+   case 0:                          /* Euler method */
+      k1 = h * (*fcn)(y0);
+      ynew = y0 + k1;
+      break;
+   case 1:                          /* Modified Euler */
+      k1 = h * (*fcn)(y0);
+      k2 = h * (*fcn)(y0 + k1);
+      ynew = y0 + (k1 + k2) / 2;
+      break;
+   case 2:                          /* Heuns method */
+      k1 = h * (*fcn)(y0);
+      k2 = h * (*fcn)(y0 + 2 * k1 / 3);
+      ynew = y0 + k1 / 4 + 3 * k2 / 4;
+      break;
+   case 3:                          /* Midpoint */
+      k1 = h * (*fcn)(y0);
+      k2 = h * (*fcn)(y0 + k1 / 2);
+      ynew = y0 + k2;
+      break;
+   case 4:                          /* 4'th order Runge-kutta */
+      k1 = h * (*fcn)(y0);
+      k2 = h * (*fcn)(y0 + k1/2);
+      k3 = h * (*fcn)(y0 + k2/2);
+      k4 = h * (*fcn)(y0 + k3);
+      ynew = y0 + k1 / 6 + k2 / 3 + k3 / 3 + k4 / 6;
+      break;
+   case 5:                          /* England 4'th order, six stage */
+      k1 = h * (*fcn)(y0);
+      k2 = h * (*fcn)(y0 + k1 / 2);
+      k3 = h * (*fcn)(y0 + (k1 + k2) / 4);
+      k4 = h * (*fcn)(y0 - k2 + 2 * k3);
+      k5 = h * (*fcn)(y0 + (7 * k1 + 10 * k2 + k4) / 27);
+      k6 = h * (*fcn)(y0 + (28*k1 - 125*k2 + 546*k3 + 54*k4 - 378*k5) / 625);
+      ynew = y0 + k1 / 6 + 4 * k3 / 6 + k4 / 6;
+      break;
+   }
+
+   return(ynew);
+}
+
+glm::vec3 eye = glm::vec3(0, 0, 15);
+glm::vec3 lightInvDir = glm::vec3(0.5f,2,2);
+
+//GLuint MatrixID, ViewMatrixID, ModelMatrixID, DepthBiasID, ShadowMapID;
+
+GLuint vertexbuffer;
+GLuint uvbuffer;
+GLuint elementbuffer;
+GLuint normalbuffer;
+GLuint depthTexture;
+GLuint FramebufferName;
+
+std::vector<glm::vec3> vertices;
+std::vector<glm::vec2> uvs;
+std::vector<glm::vec3> normals;
+
+std::vector<unsigned short> indices;
+std::vector<glm::vec3> indexed_vertices;
+std::vector<glm::vec2> indexed_uvs;
+std::vector<glm::vec3> indexed_normals;
+
+//GLuint vertexbuffer2;
+GLuint uvbuffer2;
+//GLuint elementbuffer2;
+GLuint normalbuffer2;
+GLuint FramebufferName2;
+
+std::vector<glm::vec3> vertices2;
+std::vector<glm::vec2> uvs2;
+std::vector<glm::vec3> normals2;
+
+std::vector<unsigned short> indices2;
+std::vector<glm::vec3> indexed_vertices2;
+std::vector<glm::vec2> indexed_uvs2;
+std::vector<glm::vec3> indexed_normals2;
+bool twin_lights = false, simple_test = true;
+
+glm::mat4 biasMatrix(
+	0.5, 0.0, 0.0, 0.0, 
+	0.0, 0.5, 0.0, 0.0,
+	0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0
+);
+
+
+glm::vec3 aorBox = glm::vec3(1.0);
+glm::mat4 rotateBox;
+glm::mat4 scaleBox;
+glm::mat4 transBox;
+glm::mat4 MVP;
+float boxAngle = 0;
+float bscale = 1;
+/*
+GLint h_aPosition;
+GLint h_uColor;
+GLint h_uModelMatrix;
+GLint h_uViewMatrix;
+GLint h_uProjMatrix;
+*/
+
+GLuint CubeBuffObj, CIndxBuffObj, TexBuffObj;
+int g_CiboLen;
+bool shadow_lights = false;
+void initParticles();
+void initParticles(float, float);
+
+void keyCalling()
+{
+
+        if (glfwGetKey( window, GLFW_KEY_Z ) == GLFW_PRESS)
+            lightInvDir = glm::vec3(lightInvDir.x, lightInvDir.y, lightInvDir.z+.1);
+
+        if (glfwGetKey( window, GLFW_KEY_X ) == GLFW_PRESS)
+            lightInvDir = glm::vec3(lightInvDir.x, lightInvDir.y, lightInvDir.z-.1);
+
+        if (glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS)
+            lightInvDir = glm::vec3(lightInvDir.x, lightInvDir.y+.1, lightInvDir.z);
+
+        if (glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS)
+            lightInvDir = glm::vec3(lightInvDir.x, lightInvDir.y-.1, lightInvDir.z);
+
+        if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS)
+            lightInvDir = glm::vec3(lightInvDir.x+.1, lightInvDir.y, lightInvDir.z);
+
+        if (glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS)
+            lightInvDir = glm::vec3(lightInvDir.x-.1, lightInvDir.y, lightInvDir.z);
+
+        if (glfwGetKey( window, GLFW_KEY_L ) == GLFW_PRESS)
+            twin_lights = !twin_lights;
+
+        if (glfwGetKey( window, GLFW_KEY_U ) == GLFW_PRESS)
+            shadow_lights = !shadow_lights;
+
+        if (glfwGetKey( window, GLFW_KEY_P ) == GLFW_PRESS)
+         {            
+            simple_test = !simple_test;
+            printf("simple is on? (%s)\n", simple_test ? "yes" : "no");
+         }
+
+        if (glfwGetKey( window, GLFW_KEY_R ) == GLFW_PRESS)
+         {
+            glfwSetTime(0);
+            printf("timer is reset\n");
+            initParticles();
+         }
+
+        if (glfwGetMouseButton( window, GLFW_MOUSE_BUTTON_LEFT ) == GLFW_PRESS)
+         {
+            double xPos, yPos;
+            glfwGetCursorPos( window, &xPos, &yPos);
+
+            glfwSetTime(0);
+            printf("left button pressed at (%lf, %lf).\n timer is reset\n", xPos, yPos);
+            initParticles();
+//            initParticles(xPos, yPos);
+         }
+
+}
+
+
+
+static void initCube() {
+
+
+   printf("starting initing cube ... ");
+
+  float CubePos[] = {
+    -1.5, -1.5, -1.5, //back face 5 verts :0 
+    -1.5, 1.5, -1.5,
+    1.5, 1.5, -1.5,
+    1.5, -1.5, -1.5,
+    1.5, -1.5, 1.5, //right face 5 verts :4
+    1.5, 1.5, 1.5,
+    1.5, 1.5, -1.5,
+    1.5, -1.5, -1.5,
+    -1.5, -1.5, 1.5, //front face 4 verts :8
+    -1.5, 1.5, 1.5,
+    1.5, 1.5, 1.5,
+    1.5, -1.5, 1.5,
+    -1.5, -1.5, -1.5, //left face 4 verts :12
+    -1.5, 1.5, -1.5,
+    -1.5, 1.5, 1.5,
+    -1.5, -1.5, 1.5
+  };
+
+   static GLfloat CubeTex[] = {
+      .25, 0, // back 
+      .25, 1,
+      0, 1,
+      0, 0,
+
+      .75, 0, // left 
+      .75, 1,
+      1, 1,
+      1, 0,
+
+
+      .5, 0, //front 
+      .5, 1,
+      .75, 1,
+      .75, 0,
+
+      .25, 0, //right 
+      .25, 1,
+      .5, 1,
+      .5, 0
+    }; 
+   
+    unsigned short idx[] = {0, 1, 2,  2, 3, 0,  4, 5, 6, 
+     6, 7, 4,  8, 9, 10, 10, 11, 8,  12, 13, 14, 14, 15, 12, 
+     9, 10, 1};
+
+    g_CiboLen = 27;
+    glGenBuffers(1, &CubeBuffObj); //vertices
+    glBindBuffer(GL_ARRAY_BUFFER, CubeBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CubePos), CubePos, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &CIndxBuffObj); //indices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CIndxBuffObj);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &TexBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, TexBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(CubeTex), CubeTex, GL_STATIC_DRAW);
+
+   printf("finished initing cube\n");
+
+}
+
+GLuint cubeShaderID, h_aPosition, h_uTexUnit, h_uProjMatrix, h_uViewMatrix, h_uModelMatrix;
+GLuint TextureID, MatrixID, ViewMatrixID, ModelMatrixID;
+GLuint DepthBiasID, ShadowMapID, h_simple, h_aTexCoord,  h_Fire;
+GLuint Texture, depthProgramID, depthMatrixID;
+bool res;
+GLuint VertexArrayID;
+
+
+
+
+GLuint lightInvDirID;
+
+
+glm::mat4 renderToFrame(GLuint vertBuff, GLuint indexBuff, unsigned int indicesSize, glm::mat4 dModelMatrix)
+{
+
+   glm::mat4 dProjectionMatrix;
+   glm::mat4 dViewMatrix;
+
+
+		// Compute the MVP matrix from the light's point of view
+		dProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+		dViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0,0,0), glm::vec3(0,1,0));
+
+		glm::mat4 depthMVPtemp = dProjectionMatrix * dViewMatrix * dModelMatrix;
+
+		// Send our transformation to the currently bound shader, 
+		// in the "MVP" uniform
+		glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVPtemp[0][0]);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertBuff);
+		glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuff);
+
+		// Draw the shadow onto the frame 
+		glDrawElements(GL_TRIANGLES,indicesSize,GL_UNSIGNED_SHORT,(void*)0);
+
+		glDisableVertexAttribArray(0);
+
+      return depthMVPtemp;
+
+}
+
+
+void renderRoomToScreen(glm::mat4 depthMVPtemp)
+{
+
+
+		// Compute the MVP matrix from keyboard and mouse input
+		computeMatricesFromInputs();
+		glm::mat4 ProjectionMatrix2 = getProjectionMatrix();
+		glm::mat4 ViewMatrix2 = getViewMatrix();
+		//ViewMatrix = glm::lookAt(glm::vec3(14,6,4), glm::vec3(0,1,0), glm::vec3(0,1,0));
+//		glm::mat4 ModelMatrix2 = glm::mat4(1.0);
+		glm::mat4 ModelMatrix2 = glm::translate( glm::mat4(1.0f), glm::vec3(2.0f, 2.0, 6.0));
+		MVP = ProjectionMatrix2 * ViewMatrix2 * ModelMatrix2;
+
+
+		glm::mat4 depthBiasMVP2 = biasMatrix*depthMVPtemp;
+
+		// Send our transformation to the currently bound shader, 
+		// in the "MVP" uniform
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix2[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix2[0][0]);
+		glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP2[0][0]);
+
+		glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
+
+		// Bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Texture);
+		// Set our "myTextureSampler" sampler to user Texture Unit 0
+		glUniform1i(TextureID, 0);
+
+//      if(counter != 1)
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		glUniform1i(ShadowMapID, 1);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      //attibute, size, type, normalized, stride, array buffer offset
+
+		// 2nd attribute buffer : UVs
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+		glVertexAttribPointer(1,2,GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+		// 3rd attribute buffer : normals
+		glEnableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer2);
+		glVertexAttribPointer(2,3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+		// Draw the object (can't have shadows without an object)
+		glDrawElements(GL_TRIANGLES,indices2.size(),GL_UNSIGNED_SHORT,(void*)0);
+
+
+
+}
+
+
+
+
+//glm::mat4 ProjectionMatrix3, ViewMatrix3, ModelMatrix3, depthBiasMVP3;
+
+void renderCubeToScreen(glm::mat4 depthMVPtemp)
+{
+
+		// Compute the MVP matrix from keyboard and mouse input
+		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		glm::mat4 ViewMatrix = getViewMatrix();
+		glm::mat4 ModelMatrix = translate( mat4(1.0f), vec3(1.0, 1.0, 10.0)) * scale( mat4(1.0f), vec3(2));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+		glm::mat4 depthBiasMVP = biasMatrix*depthMVPtemp;
+
+		// Send our transformation to the currently bound shader, 
+		// in the "MVP" uniform
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+		glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
+
+		glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
+
+		// Bind our texture in Texture Unit 0
+      glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, CLOUDS);
+		// Set our "myTextureSampler" sampler to user Texture Unit 0
+		glUniform1i(TextureID, 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		glUniform1i(ShadowMapID, 1);
+
+      //The Texture mapping
+       glEnableVertexAttribArray(h_aTexCoord);
+       glBindBuffer(GL_ARRAY_BUFFER, TexBuffObj);
+       glVertexAttribPointer(h_aTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0); 
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, CubeBuffObj);
+		glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      //attibute, size, type, normalized, stride, array buffer offset
+
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CIndxBuffObj);
+
+		// Draw the object (can't have shadows without an object)
+		glDrawElements(GL_TRIANGLES,g_CiboLen,GL_UNSIGNED_SHORT,(void*)0);
+
+}
+
+static const float g_groundY = -.10;
+static const float g_groundSize = 100.0;
+
+GLuint GrndBuffObj, GIndxBuffObj;
+int g_GiboLen = 0;
+
+GLuint fireBuffObj, fireBuffObjTwo, fireIndxBuffObj, GNBuffObj;
+
+int fireParticles = 0, smokeParticles = 0;
+PARTICLE *fire, *smoke;
+int nsprings = 0;
+PARTICLESPRING *springs;
+PARTICLEPHYS physical;
+float firePos[NUMBER_OF_PARTICLES * sizeof(float)];
+float firePosTwo[NUMBER_OF_PARTICLES * sizeof(float)];
+float smokePos[NUMBER_OF_PARTICLES * sizeof(float)];
+
+static void initGround() {
+
+    float GrndPos[] = { 
+    -g_groundSize, g_groundY, -g_groundSize, 
+    -g_groundSize, g_groundY,  g_groundSize, 
+     g_groundSize, g_groundY,  g_groundSize, 
+     g_groundSize, g_groundY, -g_groundSize
+    };
+    unsigned short idx[] = {0, 1, 2, 0, 2, 3};
+
+    float GrndNorm[] = { 
+     0, 1, 0, 
+     0, 1, 0, 
+     0, 1, 0, 
+     0, 1, 0, 
+     0, 1, 0, 
+     0, 1, 0
+    };
+
+   static GLfloat GrndTex[] = {
+      1, 0, // back 
+      1, 1,
+      0, 1,
+      0, 0,
+    }; 
+
+  
+    g_GiboLen = 6;
+    glGenBuffers(1, &GrndBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, GrndBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndPos), GrndPos, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &GIndxBuffObj);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GIndxBuffObj);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx), idx, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &GNBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, GNBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndNorm), GrndNorm, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &TexBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, TexBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GrndTex), GrndTex, GL_STATIC_DRAW);
+
+}
+
+void createParticle(int index, float xPos, float yPos, float zPos)
+{
+
+   fire[index].p.x = xPos; 
+   fire[index].p.z = zPos; 
+   fire[index].p.y = yPos;
+
+
+/*
+   fire[index].p.x = 1.0 * (rand() % 1000 - 500) /1000.0;
+   fire[index].p.z = 1.0 * (rand() % 1000 - 500) /1000.0;
+
+   fire[index].p.y = -.3 + sqrt(radius - (fire[index].p.z 
+      * fire[index].p.z) -(fire[index].p.x * fire[index].p.x));
+*/
+
+   fire[index].age = 0;
+   fire[index].lifespan = 10*(rand()%MAX_LIFESPAN);
+   fire[index].mass = .5;
+   glEnableVertexAttribArray(h_aTexCoord);
+   glBindBuffer(GL_ARRAY_BUFFER, TexBuffObj);
+   glVertexAttribPointer(h_aTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0); 
+   fire[index].fixed = false;
+   fire[index].v.x = (rand() % 1000 - 500) /1000.0;
+   fire[index].v.y = (rand() % 1000 - 500) /1000.0;
+   fire[index].v.z = (rand() % 1000 - 500) /1000.0;
+
+   firePos[index*3] = fire[index].p.x;
+   firePos[index*3+1] = fire[index].p.y;
+   firePos[index*3+2] = fire[index].p.z;
+}
+
+void createParticle(int index)
+{
+   int radius = 1;
+   float xPos, yPos, zPos;
+
+   xPos = 1.0 * (rand() % 1000 - 500) /1000.0;
+   zPos = 1.0 * (rand() % 1000 - 500) /1000.0;
+   yPos = -.3 + sqrt(radius - zPos* zPos) -(xPos * xPos);
+
+
+   createParticle(index, xPos, yPos, zPos);
+}
+
+
+/* code to create a cube, represented by a list of vertices and a list of indices */
+/* note this a weird cube, because it dreams of being a house someday...(see nxt lab)*/
+void initParticles() {
+
+   initParticles(rand()%10, rand()%10);
+
+
+}
+
+void initParticles(float xPos, float yPos) {
+   unsigned short fireIdx[NUMBER_OF_PARTICLES];
+   int index;
+
+   fireParticles = NUMBER_OF_PARTICLES;
+
+   if (fire != NULL)
+      free(fire);
+   fire = (PARTICLE *)malloc(NUMBER_OF_PARTICLES * sizeof(PARTICLE));
+
+   for (index=0;index<NUMBER_OF_PARTICLES;index++)
+      createParticle(index, xPos, yPos, rand()%10);
+
+   for(unsigned int i = 0; i< NUMBER_OF_PARTICLES; i++)
+      fireIdx[i] = (short)i;
+
+    glGenBuffers(1, &fireBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, fireBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(firePos), firePos, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &fireIndxBuffObj);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fireIndxBuffObj);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(fireIdx), 
+     fireIdx, GL_STATIC_DRAW);
+}
+
+
+
+void renderParticlesToScreen(glm::mat4 depthMVPtemp)
+{
+
+
+		// Compute the MVP matrix from keyboard and mouse input
+		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+		glm::mat4 ViewMatrix = getViewMatrix();
+		glm::mat4 ModelMatrix = scale(mat4(1.0f), vec3(5.0));
+		MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+
+		glm::mat4 depthBiasMVP = biasMatrix*depthMVPtemp;
+
+		// Send our transformation to the currently bound shader, 
+		// in the "MVP" uniform
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+		glUniformMatrix4fv(DepthBiasID, 1, GL_FALSE, &depthBiasMVP[0][0]);
+
+		glUniform3f(lightInvDirID, lightInvDir.x, lightInvDir.y, lightInvDir.z);
+
+		// Bind our texture in Texture Unit 0
+      glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, CLOUDS);
+		// Set our "myTextureSampler" sampler to user Texture Unit 0
+		glUniform1i(TextureID, 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, depthTexture);
+		glUniform1i(ShadowMapID, 1);
+
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, fireBuffObj);
+		glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      //attibute, size, type, normalized, stride, array buffer offset
+
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fireIndxBuffObj);
+
+   float sizeScale = 10.0;
+    glPointSize(sizeScale);
+		// Draw the object (can't have shadows without an object)
+		glDrawElements(GL_POINTS,NUMBER_OF_PARTICLES,GL_UNSIGNED_SHORT,(void*)0);
+    glPointSize(1/sizeScale);
+
+}
+
+void moveParticles()
+{
+
+   double dt = .01;
+//   printf("this is called at %lf\n", glfwGetTime());
+
+
+   UpdateParticles(fire,fireParticles,physical,springs,nsprings,dt,1, 1);
+
+
+
+   int firePosNum = 0;
+   int index = 0;
+
+   for(index = 0; index < fireParticles; index++)
+   {
+
+      if(fire[index].age > fire[index].lifespan)
+      {
+         if(glfwGetTime() < 4)
+         {
+            createParticle(index);
+            printf("created a new particle at %lf\n", glfwGetTime());
+         }
+         else
+            fireParticles--;
+      }
+      else
+      {
+         firePos[index*3] = fire[index].p.x;
+         firePos[index*3+1] = fire[index].p.y;
+         firePos[index*3+2] = fire[index].p.z;
+      }
+
+
+   }
+
+    glGenBuffers(1, &fireBuffObj);
+    glBindBuffer(GL_ARRAY_BUFFER, fireBuffObj);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(firePos), firePos, GL_STATIC_DRAW);
+//    if(fireParticles = 0)
+//       glBufferData(GL_ARRAY_BUFFER, 0, firePos, GL_STATIC_DRAW);
+
+
+}
+
+
+int main( void )
+{
+
+//   int counter = 0;
+	
+	if( !glfwInit() )
+	{
+		fprintf( stderr, "Failed to initialize GLFW\n" );
+		return -1;
+	}
+   glfwSetTime(0);
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	// Open a window and create its OpenGL context
+	window = glfwCreateWindow( 1024, 768, "Nick trying to impress The Teacher with shadows", NULL, NULL);
+	if( window == NULL ){
+		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.\n" );
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
+
+	// Initialize GLEW
+	glewExperimental = true; // Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return -1;
+	}
+
+	// Ensure we can capture the escape key being pressed below
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GL_TRUE);
+	glfwSetCursorPos(window, 1024/2, 768/2);
+
+   initCube();
+   srand(time(NULL));
+
+  initGround();
+  initParticles();
+
+
+	//Background color
+	glClearColor(0.9f, 0.7f, 0.9f, 0.0f);
+	// Enable depth test
+	glEnable(GL_DEPTH_TEST);
+	// Accept fragment if it closer to the camera than the former one
+	glDepthFunc(GL_LESS); 
+	// Cull triangles which normal is not towards the camera
+	glEnable(GL_CULL_FACE);
+   //^^Typical preparation stuff
+
+
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
+
+	// the depth shaders
+	depthProgramID = LoadShaders( "DepthRTT.vertexshader", "DepthRTT.fragmentshader" );
+	// Get a handle for our "MVP" uniform
+	depthMatrixID = glGetUniformLocation(depthProgramID, "depthMVP");
+	// Load the texture for the ball&stick
+	Texture = loadDDS("uvmap.DDS");
+
+	// Read our .obj file (The second twin)
+	res = loadOBJ("room_thickwalls.obj", vertices2, uvs2, normals2);
+
+	indexVBO(vertices2, uvs2, normals2, indices2, indexed_vertices2, indexed_uvs2, indexed_normals2);
+
+	// Load it into a VBO
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, indexed_vertices2.size() * sizeof(glm::vec3), &indexed_vertices2[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &uvbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, indexed_uvs2.size() * sizeof(glm::vec2), &indexed_uvs2[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &normalbuffer2);
+	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer2);
+	glBufferData(GL_ARRAY_BUFFER, indexed_normals2.size() * sizeof(glm::vec3), &indexed_normals2[0], GL_STATIC_DRAW);
+
+	// Generate a buffer for the indices as well
+
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices2.size() * sizeof(unsigned short), &indices2[0], GL_STATIC_DRAW);
+
+   //FRAME_BUFFER_STUFF  (The Second)
+	FramebufferName2 = 0;
+	glGenFramebuffers(1, &FramebufferName2);
+	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName2);
+
+	// Depth texture
+	glGenTextures(1, &depthTexture);
+	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+		 
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+
+	glDrawBuffer(GL_NONE);
+
+	// Always check that our framebuffer is ok
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+   {
+      printf("BAD\n\n");
+		return false;
+   }
+   //The cube shader. for cubes.
+	cubeShaderID = LoadShaders( "tex_vert.glsl", "tex_frag.glsl" );
+   h_aPosition = glGetAttribLocation(cubeShaderID, "aPosition");
+   h_uTexUnit = glGetUniformLocation(cubeShaderID, "uTexUnit");
+   h_uProjMatrix = glGetUniformLocation(cubeShaderID, "uProjMatrix");
+   h_uViewMatrix = glGetUniformLocation(cubeShaderID, "uViewMatrix");
+   h_uModelMatrix = glGetUniformLocation(cubeShaderID, "uModelMatrix");
+
+	// the actuial drawing shaders
+	GLuint programID = LoadShaders( "ShadowMapping.vertexshader", "ShadowMapping.fragmentshader" );
+
+	// Get some handles
+	TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+	MatrixID = glGetUniformLocation(programID, "MVP");
+	ViewMatrixID = glGetUniformLocation(programID, "V");
+	ModelMatrixID = glGetUniformLocation(programID, "M");
+	DepthBiasID = glGetUniformLocation(programID, "DepthBiasMVP");
+	ShadowMapID = glGetUniformLocation(programID, "shadowMap");
+   h_simple = glGetUniformLocation(programID, "simple");
+   h_aTexCoord = glGetUniformLocation(programID, "aTexCoord");
+   h_Fire = glGetUniformLocation(programID, "vertFire");
+
+//	GLuint boxShaderID = LoadShaders( "boxvert.glsl", "boxfrag.glsl" );
+	
+	// Get a handle for our "LightPosition" uniform
+	lightInvDirID = glGetUniformLocation(programID, "LightInvDirection_worldspace");
+
+// --------------------------------------------------------------
+
+   glm::mat4 depthRoomMVP, depthCubeMVP, ModelMatrix; //not a global since its passed to the methods	
+
+	do{
+
+
+      //see if any keys have been triggered to change where the light is
+      keyCalling();
+
+//------------------------------------- First render for the shadows
+//vv This is the important part
+
+      //Basic setting up of Frame variables
+		// Render to our framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName2);
+   if(shadow_lights)
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0,0,1024,1024); // Render on the whole framebuffer
+
+		// We don't use bias in the shader, but instead we draw back faces, 
+		// which are already separated from the front faces by a small distance 
+		// (if your geometry is made this way)
+		glDisable(GL_CULL_FACE);
+		// glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
+
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Use our shader
+		glUseProgram(depthProgramID);
+
+
+		ModelMatrix = mat4(1.0f);
+      depthRoomMVP = renderToFrame(vertexbuffer, elementbuffer, indices2.size(), ModelMatrix);
+
+		ModelMatrix = translate( mat4(1.0f), vec3(1.0, 1.0, 10.0)) * scale( mat4(1.0f), vec3(2));
+      depthCubeMVP = renderToFrame(CubeBuffObj, CIndxBuffObj, g_CiboLen, ModelMatrix);
+
+
+
+
+
+// ------------------------------------ Now draw the actual things
+
+   if(!shadow_lights)
+   {
+      //Basic setting up of window variables
+		// Render to the screen
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0,0,1024,768); // Render on the whole framebuffer
+		glDisable(GL_CULL_FACE);
+//		glCullFace(GL_BACK); // Cull back-facing triangles -> draw only front-facing triangles
+
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Use our shader
+		glUseProgram(programID);
+
+      renderRoomToScreen(depthRoomMVP);
+
+      //The simple test is if to use the simple shader
+      //only to be used for the simple geometry fo the cube
+      if(simple_test)
+   		glUniform1i(h_simple, 1);
+
+      renderCubeToScreen(depthCubeMVP);
+
+      if(simple_test)
+   		glUniform1i(h_simple, 0);
+
+   }
+   glUniform1f(h_Fire, 1.0);
+
+      //HERES THE FIRE STUFF
+   if(glfwGetTime() < 4.2)
+      renderParticlesToScreen(depthCubeMVP);
+
+   if( glfwGetTime() > .1)
+   {
+      moveParticles();
+//      glfwSetTime(0);
+   }
+
+
+   glUniform1f(h_Fire, 0.0);
+
+		// Swap buffers (cleaner this way)
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
+	} // Check if the ESC key was pressed or the window was closed
+	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
+		   glfwWindowShouldClose(window) == 0 );
+
+//---------------------------------------------
+
+	// Close OpenGL window and terminate GLFW
+	glfwTerminate();
+
+	return 0;
+}
+
+
+

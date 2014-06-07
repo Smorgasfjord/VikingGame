@@ -334,28 +334,27 @@ void Initialize ()
    
    //FRAME_BUFFER_STUFF  (The Second)
 	shadowFrameBuffer = 0;
-	//glGenFramebuffers(1, &shadowFrameBuffer);
-	//glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+	glGenFramebuffers(1, &shadowFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
    
 	// Depth texture
-	/*glGenTextures(1, &shadowDepthTexture);
-	glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);*/
-   
-	//CheckedGLCall(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0));
-   
-	//CheckedGLCall(glDrawBuffer(GL_NONE));
+	CheckedGLCall(glGenTextures(1, &shadowDepthTexture));
+	CheckedGLCall(glBindTexture(GL_TEXTURE_2D, shadowDepthTexture));
+	CheckedGLCall(glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE));
+
+	CheckedGLCall(glDrawBuffer(GL_NONE));
+   glReadBuffer(GL_NONE); //Thanks Katie Davis
    
 	// Always check that our framebuffer is ok
-	/*if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
    {
-      cout << "BADNESS\n";
+      cout << "Framebuffer incomplete\n";
       if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
       {
          cout << "Incomplete\n";
@@ -370,14 +369,14 @@ void Initialize ()
       }
       else
          cout << "Unsupported\n";
-   }*/
+   }
 
 }
 
 /* Main display function */
 void Draw (void)
 {
-   //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
    glViewport(0,0,g_width,g_height);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glEnable(GL_CULL_FACE);
@@ -407,6 +406,48 @@ void Draw (void)
    hammer.draw();
 	//Disable the shader
 	glUseProgram(0);
+}
+
+void shadow(GameObject *obj)
+{
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
+   glm::mat4 dViewMatrix = glm::lookAt(lightPos[0], glm::vec3(0,0,0), glm::vec3(0,1,0));
+   glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
+   
+   // Send our transformation to the currently bound shader,
+   // in the "MVP" uniform
+   glUniformMatrix4fv(handles.depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+   //All meshes
+   for (int i = 0; i < obj->model.meshes.size(); i++) {
+      // 1rst attribute buffer : vertices
+      glEnableVertexAttribArray(0);
+      glBindBuffer(GL_ARRAY_BUFFER, obj->model.meshes[i].buffDat.vbo);
+      glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      
+      // Index buffer
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.meshes[i].buffDat.ibo);
+      // Draw the shadow onto the frame
+      glDrawElements(GL_TRIANGLES,obj->model.meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+   }
+   
+   //All children, this is a little silly since it's so similar oh well
+   for (int j = 0; j < obj->model.children.size(); j++) {
+      for (int i = 0; i < obj->model.children[j].meshes.size(); i++) {
+         // 1rst attribute buffer : position
+         glEnableVertexAttribArray(0);
+         glBindBuffer(GL_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.vbo);
+         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+         
+         // Index buffer
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
+         // Draw the shadow onto the frame
+         glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+      }
+   }
+   
+   glDisableVertexAttribArray(0);
+   //Store the depthMVP in this obj
+   obj->setDepthMVP(depthMVP);
 }
 
 /* Reshape - note no scaling as perspective viewing*/
@@ -602,12 +643,7 @@ int main( int argc, char *argv[] )
       exit(EXIT_FAILURE);
    
    glfwWindowHint(GLFW_SAMPLES, 4);
-/*
-   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-*/
+
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
    {
@@ -642,13 +678,12 @@ int main( int argc, char *argv[] )
 	   return 0;
    }
    
-   /* For loading a 2nd shader if/when we need it
+   // Load depth program
    depthBuffProg = InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"));
    if (depthBuffProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-    */
    
    Initialize();
    setWorld();

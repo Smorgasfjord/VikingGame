@@ -19,28 +19,28 @@ void initGameObjState(Transform_t *state) {
       = mat4(1.0);
 }
 
-void ObjectNode::initialize(ModelNode & modNod) {
+void ObjectNode::initialize(ModelNode *modNod) {
    ObjectMesh mesh;
    ObjectNode nod;
-   for (int i = 0; i < modNod.meshes.size(); i++) {
-      mesh = ObjectMesh(modNod.meshes[i].mIdx, modNod.meshes[i].buffDat);
+   for (int i = 0; i < modNod->meshes.size(); i++) {
+      mesh = ObjectMesh(modNod->meshes[i].mIdx, modNod->meshes[i].buffDat);
       meshes.push_back(mesh);
    }
-   for (int j = 0; j < modNod.children.size(); j++) {
-      nod = ObjectNode(modNod.children[j].name.c_str());
-      nod.initialize(modNod.children[j]);
+   for (int j = 0; j < modNod->children.size(); j++) {
+      nod = ObjectNode(modNod->children[j].name.c_str());
+      nod.initialize(&(modNod->children[j]));
       children.push_back(nod);
    }
-   state.transform = modNod.transform;
+   state.transform = modNod->transform;
 }
 
-void GameObject::initialize(GameModel & model, int modIdx, int collGroup, GLHandles handles) {
+void GameObject::initialize(GameModel *model, int modIdx, int collGroup, GLHandles handles) {
    ObjectNode nod;
    this->handles = handles;
    this->collisionGroup = collGroup;
    this->modelIdx = modIdx;
-   nod = ObjectNode(model.rootNode.name.c_str());
-   nod.initialize(model.rootNode);
+   nod = ObjectNode(model->rootNode.name.c_str());
+   nod.initialize(&(model->rootNode));
    this->model = nod;
 }
 
@@ -106,10 +106,6 @@ vec3 GameObject::getScale() {
    return model.state.scale;
 }
 
-Transform_t GameObject::getState() {
-   return model.state;
-}
-
 //------------------------------Set-ers------------------------------
 
 void GameObject::setPos(glm::vec3 pos)
@@ -133,16 +129,6 @@ void GameObject::setRotation(glm::vec3 rot)
    model.state.rotation *= rotate(mat4(1.0f), rot.y, vec3(0.0f, 1.0f, 0.0f));
    model.state.rotation *= rotate(mat4(1.0f), rot.z, vec3(0.0f, 0.0f, 1.0f));
    updateTransformMatrix();
-}
-
-void GameObject::setState(Transform_t state)
-{
-   model.state = state;
-}
-
-void GameObject::setDepthMVP(glm::mat4 mvp)
-{
-   model.state.depthMVP = mvp;
 }
 
 //-----------------------------Updaters------------------------------
@@ -251,17 +237,19 @@ void ObjectMesh::render(GLHandles handle) {
 
    glUniform1i(handle.uTexUnit,0);
    safe_glUniform3f(handle.uMatAmb, buffDat.mat.ambient[0], buffDat.mat.ambient[1], buffDat.mat.ambient[2]);
+   //printf("%f,%f,%f\n", buffDat.mat.ambient[0], buffDat.mat.ambient[1], buffDat.mat.ambient[2]);
    safe_glUniform3f(handle.uMatDif, buffDat.mat.diffuse[0], buffDat.mat.diffuse[1], buffDat.mat.diffuse[2]);
    safe_glUniform3f(handle.uMatSpec, buffDat.mat.specular[0], buffDat.mat.specular[1], buffDat.mat.specular[2]);
    safe_glUniform1f(handle.uMatShine, buffDat.mat.shininess);
-
+   //SetMaterial(0, handle.ShadeProg, handle);
+   //glBindBufferRange(GL_UNIFORM_BUFFER, (GLuint)2, buffDat.uniformBlockIndex, 0, sizeof(struct MyMaterial));
    // bind texture
-   glActiveTexture(GL_TEXTURE0); //I dont know if this is necessary
    glBindTexture(GL_TEXTURE_2D, buffDat.texIndex);
 
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffDat.ibo);
    // draw!
    glDrawElements(GL_TRIANGLES, buffDat.numFaces, GL_UNSIGNED_INT, 0);
+   //glDrawArrays(GL_TRIANGLES, 0, buffDat.numFaces);
    //clean up
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

@@ -10,10 +10,11 @@
 #endif
 
 #ifdef __unix__
-#include "../glm/glm.hpp"
-#include "../glm/gtc/matrix_transform.hpp" //perspective, trans etc
-#include "../glm/gtc/type_ptr.hpp" //value_ptr
-#include "../glm/gtx/vector_query.hpp" //
+#include </home/nclarke/Desktop/deps/glm/include/glm/glm.hpp>
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/matrix_transform.hpp>
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/type_ptr.hpp> //value_ptr
+#include </home/nclarke/Desktop/deps/glm/include/glm/gtx/vector_query.hpp> //value_ptr
+
 #endif
 
 #include "../Models/GameModel.h"
@@ -36,7 +37,6 @@ struct trans_data {
    glm::mat4 scaling;
    glm::mat4 rotation;
    glm::mat4 transform;
-   glm::mat4 depthMVP;
 };
 
 void initGameObjState(Transform_t *state);
@@ -89,7 +89,7 @@ class ObjectNode {
       void copyTo(ObjectNode & obj);
       ObjectNode & copy();
 
-      void initialize(ModelNode & modNod);
+      void initialize(ModelNode *modNod);
       void render(GLHandles handle, glm::mat4 cumulative);
 };
 
@@ -127,7 +127,7 @@ class GameObject {
       void copyTo(GameObject & obj);
       GameObject & copy();
      
-      void initialize(GameModel & gMod, int modIdx, int collGroup, GLHandles handle);
+      void initialize(GameModel *gMod, int modIdx, int collGroup, GLHandles handle);
       //Physics
       void setPhysProps(float mass, int gravAffect);
    
@@ -142,7 +142,6 @@ class GameObject {
       glm::vec3 getRot();
       glm::mat4 getRotMat();
       glm::vec3 getScale();
-      Transform_t getState();
       //Update object
       void moveBy(glm::vec3 amount);
       void scaleBy(glm::vec3 amount);
@@ -151,8 +150,6 @@ class GameObject {
       void setPos(glm::vec3 pos);
       void setScale(glm::vec3 scale);
       void setRotation(glm::vec3 rot);
-      void setState(Transform_t state);
-      void setDepthMVP(glm::mat4 mvp);
       //Drawing
       void draw();
       virtual void update(double timeStep);
