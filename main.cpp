@@ -666,7 +666,7 @@ void Animate()
    
    timeStep = curTime - lastUpdated;
    
-   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(bjorn.getPos().y) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
 
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
    hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
