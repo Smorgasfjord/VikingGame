@@ -51,7 +51,8 @@ Platform::Platform(glm::vec3 pos, glm::vec3 size, float rotation, int mountSide,
    glm::vec3 rot;
    mountainSide = mountSide;
    initialize(*model, 0, 1, hand);
-   setPos(pos);
+   //setPos(pos);
+   setPos(Mountain::lockOn(pos,rot));
    setScale(size);
    setRotation(glm::vec3(0, 0, rotation));
    if(mountSide == MOUNT_LEFT || mountSide == MOUNT_RIGHT)

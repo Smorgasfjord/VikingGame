@@ -65,6 +65,7 @@
 #define REFRESH_RATE 60.0
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
+#define FRAMEBUFFER_RES 1560
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
@@ -73,7 +74,6 @@
 using namespace std;
 
 //GL basics
-int mainDrawProg, depthBuffProg;
 static float g_width, g_height;
 GLuint shadowFrameBuffer;
 GLuint shadowDepthTexture;
@@ -82,7 +82,8 @@ GLuint fogTex;
 glm::vec3 wind = glm::vec3(0.0f);
 
 //Handles to the shader data
-GLHandles handles;
+GLHandles mainHandles;
+GLHandles depthHandles;
 
 static const float g_groundSize = 60.0;
 
@@ -127,9 +128,17 @@ int currentSide;
 float camYOffset = 0.0f;
 bool manualCamControl = false;
 
+//For shadow debugging
+bool shadowMapDrawn = false;
+
 //User interaction
 glm::vec2 prevMouseLoc;
 glm::vec2 currentMouseLoc;
+
+//Functions
+void setUpShadows();
+void setUpMainDraw();
+void shadow(GameObject *obj);
 
 /* projection matrix */
 void SetProjectionMatrix(bool drawText) {
@@ -138,14 +147,14 @@ void SetProjectionMatrix(bool drawText) {
       Projection = glm::perspective(90.0f, (float)g_width/g_height, 0.1f, 45.0f);
    else
       Projection = glm::ortho(0.0f, (float)g_width / 2,(float)g_height / 2,0.0f, 0.1f, 100.0f);
-   safe_glUniformMatrix4fv(handles.uProjMatrix, glm::value_ptr(Projection));
+   safe_glUniformMatrix4fv(mainHandles.uProjMatrix, glm::value_ptr(Projection));
 }
 
 /* camera controls */
 void SetView() {
    glm::mat4 view;
    view = glm::lookAt(eye, lookAt, upV);
-   safe_glUniformMatrix4fv(handles.uViewMatrix, glm::value_ptr(view));
+   safe_glUniformMatrix4fv(mainHandles.uViewMatrix, glm::value_ptr(view));
 }
 
 //Generates a random float within the range min-max
@@ -193,47 +202,50 @@ void setWorld()
    //Initialize models
    
    glActiveTexture(GL_TEXTURE0);
-   skyBoxMod = loadModel("Models/SkyBox.dae", handles);
-   mountMod = loadModel("Models/mountain.dae", handles);
-   platMod = loadModel("Models/platform_2.dae", handles);
-   hammerMod = loadModel("Models/bjorn_hammer.dae", handles);
-   bjornMod = loadModel("Models/bjorn_v1.2.dae", handles);
+   skyBoxMod = loadModel("Models/SkyBox.dae", mainHandles);
+   mountMod = loadModel("Models/mountain.dae", mainHandles);
+   platMod = loadModel("Models/platform_2.dae", mainHandles);
+   hammerMod = loadModel("Models/bjorn_hammer.dae", mainHandles);
+   bjornMod = loadModel("Models/bjorn_v1.3.dae", mainHandles);
 
    glActiveTexture(GL_TEXTURE1);
    fogTex = LoadGLTextures("Models/FogTexture.png");
-   glUniform1i(handles.uFogUnit, 1);
+   glUniform1i(mainHandles.uFogUnit, 1);
    simplePlatformMod = genSimpleModel(&platMod);
    
    for(int i = 0; i < NUM_LIGHTS; i++)
    {
       lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
-   
+   //THIS LIGHT IS BEING USED FOR SHADOWING
+   //lightPos[4] = glm::vec3(40, 10, -10);
+   lightPos[4] = glm::vec3(42, 4, -7);
    //Send light data to shader
-   glUniform3fv(handles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+   glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
 
-   safe_glUniform3f(handles.uLightColor, 1, 1, 1);
+   safe_glUniform3f(mainHandles.uLightColor, 1, 1, 1);
    
    skyBox = GameObject("skybox");
-   skyBox.initialize(skyBoxMod, 0, 4, handles);
-   mount = Mountain(handles, &mountMod);
-   platforms = Platform::importLevel("mountain.lvl", handles, &platMod);
+   skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
+   mount = Mountain(mainHandles, &mountMod);
+
+   platforms = Platform::importLevel("mountain.lvl", mainHandles, &platMod);
    cout << "Level loaded\n";
-   world = World(platforms, &simplePlatformMod, mount, &handles, mainDrawProg);
+   world = World(platforms, &simplePlatformMod, mount, &mainHandles);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = world.getStart();//glm::vec3(58, 15, 45);//world.getStart();
+   eye = lookAt = world.getStart();
    eye.y += 1.0;
    eye.z -= camDistance;
    currentSide = MOUNT_FRONT;
    skyBox.setPos(eye);
    
    cout << "Platforms placed\n";
-   bjorn = Bjorn(lookAt, handles, &bjornMod, &world);
+   bjorn = Bjorn(lookAt, mainHandles, &bjornMod, &world);
    bjornResetState = bjorn.getState();
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
-   hammer.setInWorld(&world, &bjorn, &hammerMod, handles);
+   hammer.setInWorld(&world, &bjorn, &hammerMod, mainHandles);
    hammerResetState = hammer.getState();
    cout << "Hammer held\n";
    music.start();
@@ -244,7 +256,7 @@ void setWorld()
 }
 
 /*function to help load the shaders (both vertex and fragment */
-int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
+void InstallShader(const GLchar *vShaderName, const GLchar *fShaderName, GLHandles *handles) {
    GLuint VS; //handles to shader object
    GLuint FS; //handles to frag shader object
    GLint vCompiled, fCompiled, linked; //status of shader
@@ -274,7 +286,7 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    
    if (!vCompiled || !fCompiled) {
       printf("Error compiling either shader %s or %s", vShaderName, fShaderName);
-      return 0;
+      return ;
    }
    
    //create a program object and attach the compiled shader
@@ -289,31 +301,38 @@ int InstallShader(const GLchar *vShaderName, const GLchar *fShaderName) {
    printProgramInfoLog(ShadeProg);
    
    glUseProgram(ShadeProg);
-   handles.ShadeProg = ShadeProg;
-   /* get handles to attribute and uniform data in shader */
-   handles.aPosition = safe_glGetAttribLocation(ShadeProg, "aPosition");
-   handles.aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
-   handles.aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
-   handles.uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
-   handles.uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
-   handles.uFogStrength = safe_glGetUniformLocation(ShadeProg, "uFogStrength");
-   handles.uWindVec = safe_glGetUniformLocation(ShadeProg, "uWindVec");
-   handles.depthBuff = safe_glGetUniformLocation(ShadeProg, "uDepthBuff");
-   handles.depthMatrixID = safe_glGetUniformLocation(ShadeProg, "depthMVP");
-   handles.uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
-   handles.uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
-   handles.uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
-   handles.uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
-   handles.uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
-   handles.uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
-   handles.uEyePos = safe_glGetUniformLocation(ShadeProg, "uEyePos");
-   handles.uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
-   handles.uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
-   handles.uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");
-   handles.uMatShine = safe_glGetUniformLocation(ShadeProg, "uMat.shine");
+   handles->ShadeProg = ShadeProg;
+
+   //Standard
+   handles->aPosition = safe_glGetAttribLocation(ShadeProg, "aPosition");
+   handles->aNormal = safe_glGetAttribLocation(ShadeProg,	"aNormal");
+   handles->uEyePos = safe_glGetUniformLocation(ShadeProg, "uEyePos");
+   //Matrix Transforms
+   handles->uProjMatrix = safe_glGetUniformLocation(ShadeProg, "uProjMatrix");
+   handles->uViewMatrix = safe_glGetUniformLocation(ShadeProg, "uViewMatrix");
+   handles->uModelMatrix = safe_glGetUniformLocation(ShadeProg, "uModelMatrix");
+   handles->uNormMatrix = safe_glGetUniformLocation(ShadeProg, "uNormMatrix");
+   //Texture
+   handles->aUV = safe_glGetAttribLocation(ShadeProg, "aUV");
+   handles->uTexUnit = safe_glGetUniformLocation(ShadeProg, "uTexUnit");
+   //Light
+   handles->uLightPos = safe_glGetUniformLocation(ShadeProg, "uLightPos");
+   handles->uLightColor = safe_glGetUniformLocation(ShadeProg, "uLColor");
+   //Material
+   handles->uMatAmb = safe_glGetUniformLocation(ShadeProg, "uMat.aColor");
+   handles->uMatDif = safe_glGetUniformLocation(ShadeProg, "uMat.dColor");
+   handles->uMatSpec = safe_glGetUniformLocation(ShadeProg, "uMat.sColor");
+   handles->uMatShine = safe_glGetUniformLocation(ShadeProg, "uMat.shine");
+   //Fog
+   handles->uFogUnit = safe_glGetUniformLocation(ShadeProg, "uFogUnit");
+   handles->uFogStrength = safe_glGetUniformLocation(ShadeProg, "uFogStrength");
+   handles->uWindVec = safe_glGetUniformLocation(ShadeProg, "uWindVec");
+   //Shadows
+   handles->depthMatrixID = safe_glGetUniformLocation(ShadeProg, "uDepthMVP");
+   handles->shadowMapID = safe_glGetUniformLocation(ShadeProg, "uShadowMap");
+   handles->depthBiasID = safe_glGetUniformLocation(ShadeProg, "uDepthBiasMVP");
    
    printf("sucessfully installed shader %d\n", ShadeProg);
-   return ShadeProg;
 }
 
 /* Some OpenGL initialization */
@@ -332,7 +351,7 @@ void Initialize ()
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
    
-   //FRAME_BUFFER_STUFF  (The Second)
+   //Shadow buffer
 	shadowFrameBuffer = 0;
 	glGenFramebuffers(1, &shadowFrameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
@@ -340,14 +359,16 @@ void Initialize ()
 	// Depth texture
 	CheckedGLCall(glGenTextures(1, &shadowDepthTexture));
 	CheckedGLCall(glBindTexture(GL_TEXTURE_2D, shadowDepthTexture));
-	CheckedGLCall(glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0));
+	CheckedGLCall(glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, FRAMEBUFFER_RES, FRAMEBUFFER_RES, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE));
-
+   
+   glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0);
+   
 	CheckedGLCall(glDrawBuffer(GL_NONE));
    glReadBuffer(GL_NONE); //Thanks Katie Davis
    
@@ -355,97 +376,147 @@ void Initialize ()
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
    {
       cout << "Framebuffer incomplete\n";
-      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
+      if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
       {
          cout << "Incomplete\n";
       }
-      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)
+      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT)
       {
          cout << "DIMENSIONS\n";
       }
-      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
+      else if(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
       {
          cout << "Missing attachment\n";
       }
       else
          cout << "Unsupported\n";
    }
-
 }
 
 /* Main display function */
 void Draw (void)
 {
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   glViewport(0,0,g_width,g_height);
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   glEnable(GL_CULL_FACE);
-   glCullFace(GL_BACK);
-	//Start our shader
- 	glUseProgram(mainDrawProg);
-   
-   /* set up the projection and camera - do not change */
+   //This has to happen for the world to cull properly
    SetProjectionMatrix(false);
    SetView();
-   glEnable(GL_TEXTURE_2D);
-   glActiveTexture(GL_TEXTURE1);
-   glBindTexture(GL_TEXTURE_2D, fogTex);
-   glActiveTexture(GL_TEXTURE0);
-   
-   safe_glUniform3f(handles.uEyePos, eye.x, eye.y, eye.z);
-   safe_glUniform3f(handles.uWindVec, wind.x, wind.y, wind.z);
-   
-   safe_glUniform1f(handles.uFogStrength, sqrt(fabsf(bjorn.getPos().y)) * 12.0f);
-   glDisable( GL_DEPTH_TEST );
-   skyBox.draw();
-   glEnable( GL_DEPTH_TEST );
-   safe_glUniform1f(handles.uFogStrength, sqrt(fabsf(bjorn.getPos().y)));
+   std::vector<GameObject> drawnWorld = world.getDrawn(0);
+   //Shadows
+   setUpShadows();
+   shadow(&bjorn);
+   shadow(&hammer);
+   for(int i = 0; i < drawnWorld.size(); i++)
+   {
+      shadow(&drawnWorld.at(i));
+   }
+   if(!shadowMapDrawn)
+   {
+      setUpMainDraw();
+      safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
+      safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
+      
+      //safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
+      /*
+      glDisable( GL_DEPTH_TEST );
+      skyBox.draw();
+      glEnable( GL_DEPTH_TEST );
+       */
+      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
 
-   world.draw(bjorn.mountainSide);
-   bjorn.draw();
-   hammer.draw();
+      world.draw(bjorn.mountainSide);
+      bjorn.draw();
+      hammer.draw();
+   }
 	//Disable the shader
 	glUseProgram(0);
 }
 
+//Sets up some OpenGL State for depth buffer, and starts the shader
+void setUpShadows()
+{
+   if(!shadowMapDrawn)
+   {
+      glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+      glViewport(0,0,FRAMEBUFFER_RES,FRAMEBUFFER_RES); // Render on the whole framebuffer
+   }
+   else
+   {
+      //Use standard viewport and framebuffer
+      glViewport(0,0,g_width,g_height);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   }
+   
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
+   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glUseProgram(depthHandles.ShadeProg);
+}
+
+void setUpMainDraw()
+{
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glViewport(0,0,g_width,g_height); // Render on the whole framebuffer
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_BACK);
+   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glUseProgram(mainHandles.ShadeProg);
+   glEnable(GL_TEXTURE_2D);
+   
+   //Pass depth texture
+   glActiveTexture(GL_TEXTURE2); //PROBLEM AREA
+   glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
+   glUniform1i(mainHandles.shadowMapID, 2);
+   
+   //Pass Fog
+   glActiveTexture(GL_TEXTURE1);
+   glBindTexture(GL_TEXTURE_2D, fogTex);
+   glActiveTexture(GL_TEXTURE0);
+   
+   //set up the projection and camera - do not change
+   SetProjectionMatrix(false);
+   SetView();
+   //glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
+   //safe_glUniformMatrix4fv(mainHandles.uViewMatrix, glm::value_ptr(dViewMatrix));
+}
+
 void shadow(GameObject *obj)
 {
-   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10,10,-10,10,-10,20);
-   glm::mat4 dViewMatrix = glm::lookAt(lightPos[0], glm::vec3(0,0,0), glm::vec3(0,1,0));
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -1, 20);
+   glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
    
    // Send our transformation to the currently bound shader,
    // in the "MVP" uniform
-   glUniformMatrix4fv(handles.depthMatrixID, 1, GL_FALSE, &depthMVP[0][0]);
+   glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
    //All meshes
    for (int i = 0; i < obj->model.meshes.size(); i++) {
       // 1rst attribute buffer : vertices
-      glEnableVertexAttribArray(0);
+      glEnableVertexAttribArray(depthHandles.aPosition);
       glBindBuffer(GL_ARRAY_BUFFER, obj->model.meshes[i].buffDat.vbo);
-      glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+      glVertexAttribPointer(depthHandles.aPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
       
       // Index buffer
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.meshes[i].buffDat.ibo);
       // Draw the shadow onto the frame
-      glDrawElements(GL_TRIANGLES,obj->model.meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+      glDrawElements(GL_TRIANGLES,obj->model.meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
    }
    
    //All children, this is a little silly since it's so similar oh well
    for (int j = 0; j < obj->model.children.size(); j++) {
       for (int i = 0; i < obj->model.children[j].meshes.size(); i++) {
          // 1rst attribute buffer : position
-         glEnableVertexAttribArray(0);
+         glEnableVertexAttribArray(depthHandles.aPosition);
          glBindBuffer(GL_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.vbo);
-         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,(void*)0);
+         glVertexAttribPointer(depthHandles.aPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
          
          // Index buffer
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
          // Draw the shadow onto the frame
-         glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces,GL_UNSIGNED_SHORT,(void*)0);
+         
+         glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
       }
    }
    
-   glDisableVertexAttribArray(0);
+   glDisableVertexAttribArray(depthHandles.aPosition);
    //Store the depthMVP in this obj
    obj->setDepthMVP(depthMVP);
 }
@@ -540,6 +611,25 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_MINUS:
             music.volumeDown();
             break;
+         case GLFW_KEY_P:
+            shadowMapDrawn = !shadowMapDrawn;
+            break;
+         case GLFW_KEY_LEFT:
+            lightPos[4].x  += 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
+         case GLFW_KEY_RIGHT:
+            lightPos[4].x -= 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
+         case GLFW_KEY_UP:
+            lightPos[4].z += 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
+         case GLFW_KEY_DOWN:
+            lightPos[4].z -= 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
       }
    }
    if (action == GLFW_RELEASE) {
@@ -625,7 +715,7 @@ void Animate()
    }
    eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    mWidth = glm::vec3((float)MOUNT_WIDTH);
-   skyBox.setPos(eye + (mWidth-lookAt*2.0f)/mWidth*0.5f);
+   skyBox.setPos(eye + (mWidth - lookAt * 2.0f) / mWidth * 0.5f);
    lastUpdated = curTime;
 }
 
@@ -669,22 +759,21 @@ int main( int argc, char *argv[] )
    //test the openGL version
    CheckedGLCall(getGLversion());
    glGetIntegerv(GL_MAJOR_VERSION, &major);
-   cout << "Version: " << major << "\n";
    //install the shader
    
-   mainDrawProg = InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"));
-   if (mainDrawProg == 0) {
+   InstallShader(textFileRead((char *)"Shaders/Lab1_vert.glsl"), textFileRead((char *)"Shaders/Lab1_frag.glsl"), &mainHandles);
+   if (mainHandles.ShadeProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-   
+
    // Load depth program
-   depthBuffProg = InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"));
-   if (depthBuffProg == 0) {
+   InstallShader(textFileRead((char *)"Shaders/DepthRTT_vert.glsl"), textFileRead((char *)"Shaders/DepthRTT_frag.glsl"), &depthHandles);
+   if (depthHandles.ShadeProg == 0) {
 	   printf("Error installing shader!\n");
 	   return 0;
    }
-   
+
    Initialize();
    setWorld();
    

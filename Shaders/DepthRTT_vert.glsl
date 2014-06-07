@@ -1,12 +1,10 @@
-#version 330 core
-
 //the apPosition of the vertex
-layout(location = 0) in vec3 vertexPosition_modelspace;
+attribute vec3 aPosition;
 
 //the depth transforms
-uniform mat4 depthMVP;
+uniform mat4 uDepthMVP;
 
 void main(){
-	gl_Position =  depthMVP * vec4(vertexPosition_modelspace,1);
+	gl_Position = uDepthMVP * vec4(aPosition,1);
 }
 

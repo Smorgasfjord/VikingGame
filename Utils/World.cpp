@@ -17,23 +17,21 @@ World::World()
    
 }
 
-World::World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles, int shadeProg)
+World::World(std::vector<Platform> plats, GameModel* simplePlatformMod, Mountain mnt, GLHandles* handles)
 {
    platforms = plats;
    mount = mnt;
    this->handles = handles;
-   ShadeProg = shadeProg;
    space = ChunkWorld(50,50,50);
    for (int i = 0; i < plats.size(); i++) {
       placeObject(&(plats[i]), simplePlatformMod);
-      cout << "Platform " << i << " placed\n";
    }
 }
 
 
 /* helper function to set up material for shading */
 void World::SetMaterial(int i) {
-   glUseProgram(ShadeProg);
+   glUseProgram(handles->ShadeProg);
    switch (i) {
       case 0:
          safe_glUniform3f(handles->uMatAmb, 0.2, 0.2, 0.2);
@@ -50,62 +48,20 @@ void World::SetMaterial(int i) {
    }
 }
 
+//This should be smarter
+std::vector<GameObject> World::getDrawn(int mountainSide)
+{
+   std::vector<GameObject>objectsInScene;
+   for (int i = 0; i < platforms.size(); i++) {
+      objectsInScene.push_back(platforms.at(i));
+   }
+   objectsInScene.push_back(mount);
+   return objectsInScene;
+}
+
 void World::draw(int mountainSide)
 {
    std::vector<GameObject>objectsInScene;
-#ifdef _WIN32
-	//------------------------------Depth Buffer -------------------------
-	/*
-    glGenFramebuffers(1, &(handles->framBuff));
-    glBindFramebuffer(GL_FRAMEBUFFER, (handles->framBuff));
-    
-    // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
-    glGenTextures(1, &(handles->depthBuff));
-    glBindTexture(GL_TEXTURE_2D, handles->depthBuff);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, handles->depthBuff, 0);
-    
-    glDrawBuffer(GL_NONE); // No color buffer is drawn to.
-    
-    // Always check that our framebuffer is ok
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    return;
-    
-    glm::vec3 lightInvDir = glm::vec3(0.5f, 2, 2);
-    
-    // Compute the MVP matrix from the light's point of view
-    glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
-    //^^changes this based on the eye position. vvvv this too. and light position (?)
-    glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    glm::mat4 depthModelMatrix = glm::mat4(1.0); //<-- not sure how this affects anything
-    glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-    
-    // Send our transformation to the currently bound shader,
-    // in the "MVP" uniform
-    safe_glUniformMatrix4fv(handles->depthMatrixID, glm::value_ptr(depthMVP));
-    
-    */
-	/*
-    
-    glm::vec3 lightInvDir = glm::vec3(0.5f, 2, 2);
-    
-    // Compute the MVP matrix from the light's point of view
-    glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
-    glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-    glm::mat4 depthModelMatrix = glm::mat4(1.0);
-    glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-    
-    // Send our transformation to the currently bound shader,
-    // in the "MVP" uniform
-    glUniformMatrix4fv(depthMatrixID, 1, GL_FALSE, &depthMVP[0][0])
-    */
-   
-#endif
    
 	safe_glEnableVertexAttribArray(handles->aPosition);
 	safe_glEnableVertexAttribArray(handles->aNormal);
@@ -150,8 +106,8 @@ std::vector<GameObject> World::cull(int mountainSide)
    glm::vec4 point;
    glm::vec4 platformCenter = glm::vec4(0, 0, 0, 1);
    //View and projection matrices are shared by all objects
-   glGetUniformfv(ShadeProg, handles->uViewMatrix, glm::value_ptr(view));
-   glGetUniformfv(ShadeProg, handles->uProjMatrix, glm::value_ptr(projection));
+   glGetUniformfv(handles->ShadeProg, handles->uViewMatrix, glm::value_ptr(view));
+   glGetUniformfv(handles->ShadeProg, handles->uProjMatrix, glm::value_ptr(projection));
    
    for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
       //This will cull any platforms on the opposite side of the mountain

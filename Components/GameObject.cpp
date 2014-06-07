@@ -11,6 +11,11 @@ using namespace glm;
 #include "glm\gtc\matrix_transform.hpp"
 #endif
 
+glm::mat4 biasMatrix(
+   0.5, 0.0, 0.0, 0.0,
+   0.0, 0.5, 0.0, 0.0,
+   0.0, 0.0, 0.5, 0.0,
+   0.5, 0.5, 0.5, 1.0);
 
 void initGameObjState(Transform_t *state) {
    state->pos = state->orient = vec3(0.0);
@@ -226,6 +231,10 @@ void ObjectNode::render(GLHandles handle, mat4 cumulative) {
    safe_glUniformMatrix4fv(handle.uModelMatrix, value_ptr(current));
    safe_glUniformMatrix4fv(handle.uNormMatrix, value_ptr(transpose(inverse(current))));
 
+   //Crazy uniforms for shadows
+   glm::mat4 depthBias = biasMatrix * state.depthMVP;
+   glUniformMatrix4fv(handle.depthBiasID, 1, GL_FALSE, value_ptr(depthBias));
+   
    for (int i = 0; i < meshes.size(); i++) {
       meshes[i].render(handle);
    }

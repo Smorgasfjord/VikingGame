@@ -3,10 +3,10 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "setWorld():main.cpp">
+         contextName = "Draw():main.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "mount">
+               value = "bjorn">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -18,6 +18,41 @@
             </PersistentString>
             <PersistentString
                value = "mountain">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "mach_msg_trap:(null)">
+         <PersistentStrings>
+            <PersistentString
+               value = "lightPos">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "glm::detail::tmat4x4&lt;float&gt;::col_type glm::detail::operator*&lt;float&gt;(glm::detail::tmat4x4&lt;float&gt; const&amp;, glm::detail::tmat4x4&lt;float&gt;::row_type const&amp;):type_mat4x4.inl">
+         <PersistentStrings>
+            <PersistentString
+               value = "bjorn">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "setWorld():main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "mount">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "shadow(GameObject*):main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "depthHandles">
+            </PersistentString>
+            <PersistentString
+               value = "j">
             </PersistentString>
          </PersistentStrings>
       </ContextState>

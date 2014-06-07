@@ -14,16 +14,12 @@ uniform mat4 uProjMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uModelMatrix;
 uniform mat4 uNormMatrix;
-uniform vec3 uLightPos;
-uniform vec3 uLColor;
-uniform vec3 uCamPos;
-uniform Material uMat;
-
-uniform mat4 uDepthBuff;
+uniform mat4 uDepthBiasMVP;
 
 varying vec3 vPos;
 varying vec3 vNorm;
 varying vec2 vTexCoord;
+varying vec4 vShadowCoord;
 void main() {
    vec4 vPosition, transNorm;
    
@@ -33,6 +29,8 @@ void main() {
    vPosition = uViewMatrix * vPosition;
    gl_Position = uProjMatrix * vPosition;
    transNorm = uNormMatrix * vec4(aNormal.x, aNormal.y, aNormal.z, 0.0);
+   
+   vShadowCoord = uDepthBiasMVP * vec4(aPosition,1);
    
    vNorm = normalize(vec3(transNorm.x, transNorm.y, transNorm.z));
    vTexCoord = aUV;
