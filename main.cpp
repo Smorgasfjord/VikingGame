@@ -415,12 +415,12 @@ void Draw (void)
       safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
       safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
       
-      //safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
-      /*
+      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
+      
       glDisable( GL_DEPTH_TEST );
       skyBox.draw();
       glEnable( GL_DEPTH_TEST );
-       */
+       
       safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
 
       world.draw(bjorn.mountainSide);
