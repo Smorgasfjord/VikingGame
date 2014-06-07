@@ -74,7 +74,7 @@ void main() {
    lightSum /= NUM_LIGHTS_F;
    ambient = vec3(1.0) * (length(uMat.aColor) > 0.01 ? uMat.aColor : vec3(0.1));
    visibility = 1.0;
-   
+
    //This should be in a loop with the poisson disk but glsl isn't happy with it
    visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.94201624, -0.39906216 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
    visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.94558609, -0.76890725 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
@@ -99,5 +99,6 @@ void main() {
    fogCol = texture2D(uFogUnit,fogIdx);
    
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
-   //gl_FragColor = vec4(phong * texColor.xyz, 1.0);
+   //gl_FragColor = vec4(vec3(visibility, 0, 0), 1.0);
+   //gl_FragColor = vec4(phong, 1.0);
 }

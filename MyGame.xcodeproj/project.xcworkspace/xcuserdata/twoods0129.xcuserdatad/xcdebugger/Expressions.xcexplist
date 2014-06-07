@@ -22,6 +22,22 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "mach_msg_trap:(null)">
+         <PersistentStrings>
+            <PersistentString
+               value = "lightPos">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "glm::detail::tmat4x4&lt;float&gt;::col_type glm::detail::operator*&lt;float&gt;(glm::detail::tmat4x4&lt;float&gt; const&amp;, glm::detail::tmat4x4&lt;float&gt;::row_type const&amp;):type_mat4x4.inl">
+         <PersistentStrings>
+            <PersistentString
+               value = "bjorn">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "setWorld():main.cpp">
          <PersistentStrings>
             <PersistentString

@@ -65,6 +65,7 @@
 #define REFRESH_RATE 60.0
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
+#define FRAMEBUFFER_RES 1560
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
@@ -217,7 +218,8 @@ void setWorld()
       lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
    //THIS LIGHT IS BEING USED FOR SHADOWING
-   lightPos[4] = glm::vec3(40, 10, 0);
+   //lightPos[4] = glm::vec3(40, 10, -10);
+   lightPos[4] = glm::vec3(42, 4, -7);
    //Send light data to shader
    glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
 
@@ -357,7 +359,7 @@ void Initialize ()
 	// Depth texture
 	CheckedGLCall(glGenTextures(1, &shadowDepthTexture));
 	CheckedGLCall(glBindTexture(GL_TEXTURE_2D, shadowDepthTexture));
-	CheckedGLCall(glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, 1024, 1024, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0));
+	CheckedGLCall(glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT16, FRAMEBUFFER_RES, FRAMEBUFFER_RES, 0,GL_DEPTH_COMPONENT, GL_FLOAT, 0));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -412,10 +414,12 @@ void Draw (void)
       safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
       safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
       
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
+      //safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 6.0f);
+      /*
       glDisable( GL_DEPTH_TEST );
       skyBox.draw();
       glEnable( GL_DEPTH_TEST );
+       */
       safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
 
       world.draw(bjorn.mountainSide);
@@ -432,7 +436,7 @@ void setUpShadows()
    if(!shadowMapDrawn)
    {
       glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
-      glViewport(0,0,1024,1024); // Render on the whole framebuffer
+      glViewport(0,0,FRAMEBUFFER_RES,FRAMEBUFFER_RES); // Render on the whole framebuffer
    }
    else
    {
@@ -470,11 +474,13 @@ void setUpMainDraw()
    //set up the projection and camera - do not change
    SetProjectionMatrix(false);
    SetView();
+   //glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
+   //safe_glUniformMatrix4fv(mainHandles.uViewMatrix, glm::value_ptr(dViewMatrix));
 }
 
 void shadow(GameObject *obj)
 {
-   glm::mat4 dProjectionMatrix = glm::ortho<float>(-30, 30, -20, 15, -1, 30);
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -1, 20);
    glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
    
@@ -607,6 +613,22 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
          case GLFW_KEY_P:
             shadowMapDrawn = !shadowMapDrawn;
+            break;
+         case GLFW_KEY_LEFT:
+            lightPos[4].x  += 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
+         case GLFW_KEY_RIGHT:
+            lightPos[4].x -= 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
+         case GLFW_KEY_UP:
+            lightPos[4].z += 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            break;
+         case GLFW_KEY_DOWN:
+            lightPos[4].z -= 1;
+            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
             break;
       }
    }
