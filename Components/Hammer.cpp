@@ -86,22 +86,22 @@ void Hammer::updateAngle(float x, float y)
          desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * -angle * (180.0 / pi));
          break;
       case MOUNT_RIGHT:
-         desiredRotation = glm::vec3(direction * angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
+         desiredRotation = glm::vec3(-desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
          break;
       case MOUNT_LEFT:
-         desiredRotation = glm::vec3(direction * -angle * (180.0 / pi), desiredRotation.y, desiredRotation.z);
+         desiredRotation = glm::vec3(-desiredRotation.x, desiredRotation.y, direction * -angle * (180.0 / pi));
          break;
       case MOUNT_FR:
-         desiredRotation = glm::vec3(direction * -angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
          break;
       case MOUNT_RB:
-         desiredRotation = glm::vec3(direction *angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
          break;
       case MOUNT_BL:
-         desiredRotation = glm::vec3(direction * angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
          break;
       case MOUNT_LF:
-         desiredRotation = glm::vec3(direction * angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
+         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
          break;
       default:
          break;

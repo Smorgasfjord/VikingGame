@@ -96,6 +96,7 @@ GameModel simplePlatformMod;
 GameModel bjornMod;
 Bjorn bjorn;
 Transform_t bjornResetState;
+bool savedDirection = true;
 static bool moveLeft = false, moveRight = false;
 
 //Hammer
@@ -173,7 +174,7 @@ int diffMs(timeval t1, timeval t2)
 static void reset()
 {
    //lookAt.y += 1.0f;
-   bjorn.facingRight = true; //THIS CAN BE WRONG
+   bjorn.facingRight = savedDirection; //THIS CAN BE WRONG
    hammer.setState(hammerResetState);
    hammer.setVelocity(glm::vec3(0));
    bjorn.setState(bjornResetState);
@@ -468,6 +469,7 @@ void setUpMainDraw()
    
    //Pass Fog
    glActiveTexture(GL_TEXTURE1);
+   glUniform1i(mainHandles.uFogUnit, 1);
    glBindTexture(GL_TEXTURE_2D, fogTex);
    glActiveTexture(GL_TEXTURE0);
    
@@ -710,6 +712,7 @@ void Animate()
    {
       currentSide = bjorn.mountainSide;
       //Update reset variables for checkpoint
+      savedDirection = bjorn.facingRight;
       bjornResetState = bjorn.getState();
       hammerResetState = hammer.getState();
    }
@@ -753,7 +756,7 @@ int main( int argc, char *argv[] )
    glfwSetCursorPosCallback(window, mouse);
    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetWindowSizeCallback(window, ReshapeGL);
-   glfwSetWindowPos(window, 100, 100);
+   glfwSetWindowPos(window, 300, 300);
    
    int major;
    //test the openGL version
