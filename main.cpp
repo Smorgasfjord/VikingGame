@@ -220,7 +220,7 @@ void setWorld()
    
    for(int i = 0; i < NUM_LIGHTS; i++)
    {
-      lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
+      lightPos[i] = glm::vec3((10 * i) + 15, 10, 0);
    }
 
    //Send light data to shader
@@ -420,7 +420,7 @@ void Draw (void)
       safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
       safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
       
-      //lightPos[4] = bjorn.getPos();
+      lightPos[4] = bjorn.getPos();
       lightPos[4].x += lightX;
       lightPos[4].y += lightY;
       //lightTest.setPos(lightPos[4]);
