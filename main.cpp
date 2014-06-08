@@ -69,6 +69,7 @@
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
+#define CAM_INIT_ANGLE 3* pi / 2
 #define NUM_LIGHTS 5
 
 using namespace std;
@@ -126,12 +127,17 @@ Jukebox music;
 
 //Camera
 float camDistance = 4.0f;
-glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1.0, g_groundSize / 2.0);
-glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1.0, g_groundSize / 2.0 + 1.0);
+glm::vec3 eye, lookAt;
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
 float camYOffset = 0.0f;
 bool manualCamControl = false;
+
+//Establishing Shot
+static glm::vec3 flagPos = glm::vec3(29.65, 43, 20);
+bool openingShot = true;
+bool started = false;
+float theta = CAM_INIT_ANGLE;
 
 //For shadow debugging
 bool shadowMapDrawn = false;
@@ -177,7 +183,6 @@ int diffMs(timeval t1, timeval t2)
 //Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   //lookAt.y += 1.0f;
    bjorn.facingRight = savedDirection; //THIS CAN BE WRONG
    hammer.setState(hammerResetState);
    hammer.setVelocity(glm::vec3(0));
@@ -239,14 +244,18 @@ void setWorld()
    world = World(platforms, &simplePlatformMod, mount, &mainHandles);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
+   eye = lookAt = flagPos;
+   lookAt.z += 10.0f;
+   /*
    eye = lookAt = world.getStart();
    eye.y += 1.0;
    eye.z -= camDistance;
+    */
    currentSide = MOUNT_FRONT;
    skyBox.setPos(eye);
    
    cout << "Platforms placed\n";
-   bjorn = Bjorn(lookAt, mainHandles, &bjornMod, &world);
+   bjorn = Bjorn(world.getStart(), mainHandles, &bjornMod, &world);
    bjornResetState = bjorn.getState();
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
@@ -433,8 +442,11 @@ void Draw (void)
       glEnable( GL_DEPTH_TEST );
        
       safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
-
-      world.draw(bjorn.mountainSide);
+      //If its the opening shot make sure we draw on the side the camera is on
+      if(openingShot)
+         world.draw(Mountain::getSide(eye));
+      else
+         world.draw(bjorn.mountainSide);
       bjorn.draw();
       hammer.draw();
       //lightTest.draw();
@@ -489,8 +501,6 @@ void setUpMainDraw()
    //set up the projection and camera - do not change
    SetProjectionMatrix(false);
    SetView();
-   //glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
-   //safe_glUniformMatrix4fv(mainHandles.uViewMatrix, glm::value_ptr(dViewMatrix));
 }
 
 void shadow(GameObject *obj)
@@ -579,18 +589,22 @@ void mouse(GLFWwindow* window, double x, double y)
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT)
-      hammer.flip();
-   else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
-      hammer.manualLocked = true;
-   else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_RIGHT)
-      hammer.manualLocked = false;
+   if(!openingShot)
+   {
+      if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT)
+         hammer.flip();
+      else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
+         hammer.manualLocked = true;
+      else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_RIGHT)
+         hammer.manualLocked = false;
+   }
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
    glm::vec3 delta;
-   if(action == GLFW_PRESS || action == GLFW_REPEAT)
+   //Dont allow movement during the opening shot
+   if((action == GLFW_PRESS || action == GLFW_REPEAT) && !openingShot)
    {
       switch( key ) {
          //Movement left/right
@@ -643,7 +657,16 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_DOWN:
             lightY -= .5;
             break;
+         
       }
+   }
+   if ((action == GLFW_PRESS || action == GLFW_REPEAT) && openingShot)
+   {
+       switch( key ) {
+         case GLFW_KEY_ENTER:
+            started = true;
+            break;
+       }
    }
    if (action == GLFW_RELEASE) {
       switch( key ) {
@@ -665,7 +688,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
-   //CollisionData dat;
    glm::vec3 norm, mWidth;
 
    frames++;
@@ -679,65 +701,97 @@ void Animate()
    
    timeStep = curTime - lastUpdated;
    
-   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
-
-   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
-   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
-   prevMouseLoc = currentMouseLoc;
-   if (moveLeft) {
-      bjorn.moveLeft();
-   }
-   else if (moveRight) {
-      bjorn.moveRight();
-   }
-
-   //THESE HAVE TO STAY IN THIS ORDER
-   bjorn.step(timeStep);
-   hammer.step(timeStep);
-   bjorn.update(timeStep);
-   hammer.update(timeStep);
-   //updates the spatial data structure
-   world.updateObject(&bjorn, bjorn.modelIdx);
-   world.updateObject(&hammer, hammer.modelIdx);
-  
-   //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < (-1.15 * GRAVITY))
-   {
-      Sound::scream();
-      bjorn.screamed = true;
-   }
-   if(bjorn.getVel().y < (-2.0 * GRAVITY) && !DEBUG_GAME)
-   {
-      Sound::stopScream();
-      reset();
-   }
+   if(openingShot)
+      wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(lookAt.y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
    
-   //If bjorn is grounded allow him to scream again
-   if(bjorn.getVel().y < .05 && bjorn.getVel().y > -.05)
+   if(openingShot && started)
    {
-      bjorn.screamed = false;
-      Sound::stopScream();
+      theta += timeStep;
+      if(lookAt.y > bjorn.getPos().y)
+         lookAt.y = eye.y = flagPos.y - ((theta - CAM_INIT_ANGLE) * 3);
+      
+      if(lookAt.y <= bjorn.getPos().y)
+      {
+         Mountain::lockOn(bjorn.getPos(),norm);
+         camYOffset += (CAMERA_SPRING / 2) * (bjorn.getPos().y - eye.y + 1.5f);
+         eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)(CAMERA_SPRING / 2), 0.0f, (float)(CAMERA_SPRING / 2));
+         lookAt.x = eye.x;
+         if(bjorn.getPos().x - eye.x < .4f && bjorn.getPos().x - eye.x > -.4f)
+         {
+            lookAt = bjorn.getPos();
+            openingShot = false;
+         }
+      }
+      else
+      {
+         float radius = ((flagPos.y - lookAt.y)* .9f) + 10.0f;
+         eye.x = flagPos.x + radius * cos(theta);
+         eye.z = (flagPos.z + 10.0f) + radius * sin(theta);
+      }
+      
    }
-   
-   //Update camera
-   lookAt = bjorn.getPos();
+   else if(!openingShot)
+   {
+      wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+      
+      hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
+      hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
+      prevMouseLoc = currentMouseLoc;
+      if (moveLeft) {
+         bjorn.moveLeft();
+      }
+      else if (moveRight) {
+         bjorn.moveRight();
+      }
 
-   //Get the normal to move the camera along
-   Mountain::lockOn(bjorn.getPos(),norm);
-   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
-   if(!manualCamControl)
-      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
-   
-   //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
-   if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
-   {
-      currentSide = bjorn.mountainSide;
-      //Update reset variables for checkpoint
-      savedDirection = bjorn.facingRight;
-      bjornResetState = bjorn.getState();
-      hammerResetState = hammer.getState();
+      //THESE HAVE TO STAY IN THIS ORDER
+      bjorn.step(timeStep);
+      hammer.step(timeStep);
+      bjorn.update(timeStep);
+      hammer.update(timeStep);
+      //updates the spatial data structure
+      world.updateObject(&bjorn, bjorn.modelIdx);
+      world.updateObject(&hammer, hammer.modelIdx);
+     
+      //kill bjorn if he's falling too fast
+      if(bjorn.getVel().y < (-1.15 * GRAVITY))
+      {
+         Sound::scream();
+         bjorn.screamed = true;
+      }
+      if(bjorn.getVel().y < (-2.0 * GRAVITY) && !DEBUG_GAME)
+      {
+         Sound::stopScream();
+         reset();
+      }
+      
+      //If bjorn is grounded allow him to scream again
+      if(bjorn.getVel().y < .05 && bjorn.getVel().y > -.05)
+      {
+         bjorn.screamed = false;
+         Sound::stopScream();
+      }
+      
+      //Update camera
+      lookAt = bjorn.getPos();
+
+      //Get the normal to move the camera along
+      Mountain::lockOn(bjorn.getPos(),norm);
+      eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
+      if(!manualCamControl)
+         camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
+      
+      //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
+      if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
+      {
+         currentSide = bjorn.mountainSide;
+         //Update reset variables for checkpoint
+         savedDirection = bjorn.facingRight;
+         bjornResetState = bjorn.getState();
+         hammerResetState = hammer.getState();
+      }
+      eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    }
-   eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    mWidth = glm::vec3((float)MOUNT_WIDTH);
    skyBox.setPos(eye + (mWidth - lookAt * 2.0f) / mWidth * 0.5f);
    lastUpdated = curTime;
