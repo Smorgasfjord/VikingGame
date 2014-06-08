@@ -49,13 +49,13 @@ void World::SetMaterial(int i) {
 }
 
 //This should be smarter
-std::vector<GameObject> World::getDrawn(int mountainSide)
+std::vector<GameObject*> World::getDrawn(int mountainSide)
 {
-   std::vector<GameObject>objectsInScene;
+   std::vector<GameObject*>objectsInScene;
    for (int i = 0; i < platforms.size(); i++) {
-      objectsInScene.push_back(platforms.at(i));
+      objectsInScene.push_back(&platforms.at(i));
    }
-   objectsInScene.push_back(mount);
+   objectsInScene.push_back(&mount);
    return objectsInScene;
 }
 
@@ -66,12 +66,11 @@ void World::draw(int mountainSide)
 	safe_glEnableVertexAttribArray(handles->aPosition);
 	safe_glEnableVertexAttribArray(handles->aNormal);
    
-   SetMaterial(2);
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    mount.draw();
    
    objectsInScene = cull(mountainSide);
-   SetMaterial(0);
+
    for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
       it->draw();
    }

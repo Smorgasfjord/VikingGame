@@ -21,7 +21,6 @@
 #include "../glm/gtc/type_ptr.hpp" //value_ptr
 #include "../Utils/GLSL_helper.h"
 
-#define HEIGHT 0
 #define MAX_SPEED 2.5
 
 Bjorn::~Bjorn()

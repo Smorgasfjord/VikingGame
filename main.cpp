@@ -65,7 +65,7 @@
 #define REFRESH_RATE 60.0
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
-#define FRAMEBUFFER_RES 1560
+#define FRAMEBUFFER_RES 2048
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
@@ -108,6 +108,10 @@ Hammer hammer;
 GameObject skyBox;
 GameModel skyBoxMod;
 
+GameObject lightTest;
+float lightX = 0;
+float lightY = 1.5;
+
 //Text
 int playerScore = 0;
 double lastUpdated = 0.0;
@@ -145,7 +149,7 @@ void shadow(GameObject *obj);
 void SetProjectionMatrix(bool drawText) {
    glm::mat4 Projection;
    if(!drawText)
-      Projection = glm::perspective(90.0f, (float)g_width/g_height, 0.1f, 45.0f);
+      Projection = glm::perspective(100.0f, (float)g_width/g_height, 0.1f, 30.0f);
    else
       Projection = glm::ortho(0.0f, (float)g_width / 2,(float)g_height / 2,0.0f, 0.1f, 100.0f);
    safe_glUniformMatrix4fv(mainHandles.uProjMatrix, glm::value_ptr(Projection));
@@ -218,13 +222,13 @@ void setWorld()
    {
       lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
-   //THIS LIGHT IS BEING USED FOR SHADOWING
-   //lightPos[4] = glm::vec3(40, 10, -10);
-   lightPos[4] = glm::vec3(42, 4, -7);
+
    //Send light data to shader
    glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-
-   safe_glUniform3f(mainHandles.uLightColor, 1, 1, 1);
+   //glUniform3f(mainHandles.uLightPos, lightPos[4].x, lightPos[4].y, lightPos[4].z);
+   lightTest = GameObject("light");
+   lightTest.initialize(skyBoxMod, 0, 4, mainHandles);
+   lightTest.setScale(glm::vec3(.25f));
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -400,14 +404,15 @@ void Draw (void)
    //This has to happen for the world to cull properly
    SetProjectionMatrix(false);
    SetView();
-   std::vector<GameObject> drawnWorld = world.getDrawn(0);
+   std::vector<GameObject*> drawnWorld = world.getDrawn(bjorn.mountainSide);
+   
    //Shadows
    setUpShadows();
    shadow(&bjorn);
    shadow(&hammer);
    for(int i = 0; i < drawnWorld.size(); i++)
    {
-      shadow(&drawnWorld.at(i));
+      shadow(drawnWorld.at(i));
    }
    if(!shadowMapDrawn)
    {
@@ -415,8 +420,14 @@ void Draw (void)
       safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
       safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
       
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
+      //lightPos[4] = bjorn.getPos();
+      lightPos[4].x += lightX;
+      lightPos[4].y += lightY;
+      //lightTest.setPos(lightPos[4]);
+      //lightPos[4].z -= 4.0f;
+      glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
       
+      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
       glDisable( GL_DEPTH_TEST );
       skyBox.draw();
       glEnable( GL_DEPTH_TEST );
@@ -426,6 +437,7 @@ void Draw (void)
       world.draw(bjorn.mountainSide);
       bjorn.draw();
       hammer.draw();
+      //lightTest.draw();
    }
 	//Disable the shader
 	glUseProgram(0);
@@ -448,7 +460,8 @@ void setUpShadows()
    
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glEnable(GL_DEPTH_TEST);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glUseProgram(depthHandles.ShadeProg);
 }
 
@@ -464,8 +477,8 @@ void setUpMainDraw()
    
    //Pass depth texture
    glActiveTexture(GL_TEXTURE2); //PROBLEM AREA
-   glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
    glUniform1i(mainHandles.shadowMapID, 2);
+   glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
    
    //Pass Fog
    glActiveTexture(GL_TEXTURE1);
@@ -482,10 +495,12 @@ void setUpMainDraw()
 
 void shadow(GameObject *obj)
 {
-   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -1, 20);
+   glm::mat4 dProjectionMatrix = glm::perspective(75.0f, 1.0f, 0.1f, 20.0f);
+   //glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -5, 20);
    glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
-   
+   //Store the depthMVP in this obj
+   obj->setDepthMVP(depthMVP);
    // Send our transformation to the currently bound shader,
    // in the "MVP" uniform
    glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
@@ -513,14 +528,14 @@ void shadow(GameObject *obj)
          // Index buffer
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
          // Draw the shadow onto the frame
-         
+
          glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
       }
    }
    
    glDisableVertexAttribArray(depthHandles.aPosition);
-   //Store the depthMVP in this obj
-   obj->setDepthMVP(depthMVP);
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 /* Reshape - note no scaling as perspective viewing*/
@@ -617,20 +632,16 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             shadowMapDrawn = !shadowMapDrawn;
             break;
          case GLFW_KEY_LEFT:
-            lightPos[4].x  += 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightX += .5;
             break;
          case GLFW_KEY_RIGHT:
-            lightPos[4].x -= 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightX -= .5;
             break;
          case GLFW_KEY_UP:
-            lightPos[4].z += 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightY += .5;
             break;
          case GLFW_KEY_DOWN:
-            lightPos[4].z -= 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightY -= .5;
             break;
       }
    }
@@ -745,7 +756,7 @@ int main( int argc, char *argv[] )
    if (!glfwInit())
       exit(EXIT_FAILURE);
    
-   glfwWindowHint(GLFW_SAMPLES, 4);
+   //glfwWindowHint(GLFW_SAMPLES, 4);
 
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)

@@ -274,7 +274,7 @@ void ObjectMesh::render(GLHandles handle) {
    //clean up
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-   //clean up
+
    safe_glDisableVertexAttribArray(handle.aPosition);
    safe_glDisableVertexAttribArray(handle.aNormal);
    safe_glDisableVertexAttribArray(handle.aUV);
