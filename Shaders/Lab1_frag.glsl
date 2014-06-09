@@ -72,10 +72,10 @@ void main() {
    visibility = 1.0;
 
    //This should be in a loop with the poisson disk but glsl isn't happy with it
-   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.94201624, -0.39906216 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
-   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.94558609, -0.76890725 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
-   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.094184101, -0.92938870 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
-   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.34495938, 0.29387760 ) / 700.0,  (vShadowCoord.z - bias) / vShadowCoord.w)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.94201624, -0.39906216 ) / 700.0,  vShadowCoord.z - bias)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.94558609, -0.76890725 ) / 700.0,  vShadowCoord.z - bias)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( -0.094184101, -0.92938870 ) / 700.0,  vShadowCoord.z - bias)).z );
+   visibility -= 0.2 * (1.0 - shadow2D(uShadowMap, vec3(vShadowCoord.xy + vec2( 0.34495938, 0.29387760 ) / 700.0,  vShadowCoord.z - bias)).z );
 
    //Calculate phong and move into 0-1 range
    vec3 phong = ((lightSum * visibility) + ambient);
@@ -95,6 +95,5 @@ void main() {
    fogCol = texture2D(uFogUnit,fogIdx);
 
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
-   //gl_FragColor = vec4(vec3(visibility, 0, 0), 1.0);
    //gl_FragColor = vec4(phong, 1.0);
 }

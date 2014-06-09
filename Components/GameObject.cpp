@@ -148,6 +148,11 @@ void GameObject::setState(Transform_t state)
 void GameObject::setDepthMVP(glm::mat4 mvp)
 {
    model.state.depthMVP = mvp;
+   //Set depth MVP for all child meshes
+   for(int i = 0; i < model.children.size(); i++)
+   {
+      model.children[i].state.depthMVP = mvp;
+   }
 }
 
 //-----------------------------Updaters------------------------------
@@ -232,8 +237,10 @@ void ObjectNode::render(GLHandles handle, mat4 cumulative) {
    safe_glUniformMatrix4fv(handle.uNormMatrix, value_ptr(transpose(inverse(current))));
 
    //Crazy uniforms for shadows
-   glm::mat4 depthBias = biasMatrix * state.depthMVP;
-   glUniformMatrix4fv(handle.depthBiasID, 1, GL_FALSE, value_ptr(depthBias));
+   //glm::mat4 depthBias = biasMatrix * state.depthMVP;
+
+   glUniformMatrix4fv(handle.depthBiasID, 1, GL_FALSE, value_ptr(state.depthMVP));
+   glUniformMatrix4fv(handle.biasMatrix, 1, GL_FALSE, value_ptr(biasMatrix));
    
    for (int i = 0; i < meshes.size(); i++) {
       meshes[i].render(handle);

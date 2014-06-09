@@ -18,6 +18,7 @@ uniform mat4 uNormMatrix;
 uniform mat4 uDepthBiasMVP;
 uniform vec3 uEyePos;
 uniform vec3 uLightPos[NUM_LIGHTS];
+uniform mat4 biasMatrix;
 
 varying vec3 vPos;
 varying vec3 vNorm;
@@ -25,6 +26,7 @@ varying vec3 vView;
 varying vec2 vTexCoord;
 varying vec4 vShadowCoord;
 void main() {
+   vec4 shadow;
    //Send position in model space
    vPos = (uModelMatrix * vec4(aPosition, 1.0)).xyz;
    //gl_Position is always projection space
@@ -33,7 +35,9 @@ void main() {
    //View
    vView = (uEyePos - vPos);
    //Shadow coordinates come from depthBias
-   vShadowCoord = uDepthBiasMVP * vec4(aPosition, 1.0);
+   shadow = uDepthBiasMVP * vec4(aPosition,1);
+   shadow /= shadow.w;
+	vShadowCoord = biasMatrix * shadow;
    //Transform the normals
    vNorm = normalize((uNormMatrix * vec4(aNormal, 0.0)).xyz);
    vTexCoord = aUV;

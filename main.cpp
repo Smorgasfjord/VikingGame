@@ -86,8 +86,6 @@ glm::vec3 wind = glm::vec3(0.0f);
 GLHandles mainHandles;
 GLHandles depthHandles;
 
-static const float g_groundSize = 60.0;
-
 //World
 World world;
 std::vector<int> platIdxs;
@@ -108,10 +106,6 @@ Hammer hammer;
 
 GameObject skyBox;
 GameModel skyBoxMod;
-
-GameObject lightTest;
-float lightX = 0;
-float lightY = 1.5;
 
 //Text
 int playerScore = 0;
@@ -135,12 +129,9 @@ bool manualCamControl = false;
 
 //Establishing Shot
 static glm::vec3 flagPos = glm::vec3(29.65, 43, 20);
-bool openingShot = true;
+bool openingShot = false;
 bool started = false;
 float theta = CAM_INIT_ANGLE;
-
-//For shadow debugging
-bool shadowMapDrawn = false;
 
 //User interaction
 glm::vec2 prevMouseLoc;
@@ -183,14 +174,6 @@ int diffMs(timeval t1, timeval t2)
 //Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   /*bjorn.facingRight = savedDirection; //THIS CAN BE WRONG
-   hammer.setState(hammerResetState);
-   hammer.setVelocity(glm::vec3(0));
-   bjorn.setState(bjornResetState);
-   bjorn.setVelocity(glm::vec3(0));
-   bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
-   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
-   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);*/
    hammer.reset();
    bjorn.reset();
    world.updateObject(&bjorn, bjorn.modelIdx);
@@ -227,15 +210,11 @@ void setWorld()
    
    for(int i = 0; i < NUM_LIGHTS; i++)
    {
-      lightPos[i] = glm::vec3((10 * i) + 15, 10, 0);
+      lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
    }
 
    //Send light data to shader
    glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-   //glUniform3f(mainHandles.uLightPos, lightPos[4].x, lightPos[4].y, lightPos[4].z);
-   lightTest = GameObject("light");
-   lightTest.initialize(skyBoxMod, 0, 4, mainHandles);
-   lightTest.setScale(glm::vec3(.25f));
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -246,13 +225,16 @@ void setWorld()
    world = World(platforms, &simplePlatformMod, mount, &mainHandles);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
-   eye = lookAt = flagPos;
-   lookAt.z += 10.0f;
-   /*
-   eye = lookAt = world.getStart();
-   eye.y += 1.0;
-   eye.z -= camDistance;
-    */
+   if(openingShot)
+   {
+      eye = lookAt = flagPos;
+      lookAt.z += 10.0f;
+   }
+   else
+   {
+      eye = lookAt = world.getStart();
+      lookAt.z -= camDistance;
+   }
    currentSide = MOUNT_FRONT;
    skyBox.setPos(eye);
    
@@ -349,6 +331,7 @@ void InstallShader(const GLchar *vShaderName, const GLchar *fShaderName, GLHandl
    handles->depthMatrixID = safe_glGetUniformLocation(ShadeProg, "uDepthMVP");
    handles->shadowMapID = safe_glGetUniformLocation(ShadeProg, "uShadowMap");
    handles->depthBiasID = safe_glGetUniformLocation(ShadeProg, "uDepthBiasMVP");
+   handles->biasMatrix = safe_glGetUniformLocation(ShadeProg, "biasMatrix");
    
    printf("sucessfully installed shader %d\n", ShadeProg);
 }
@@ -383,7 +366,7 @@ void Initialize ()
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL));
-	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE));
+	CheckedGLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE));
    
    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowDepthTexture, 0);
    
@@ -427,36 +410,28 @@ void Draw (void)
    {
       shadow(drawnWorld.at(i));
    }
-   if(!shadowMapDrawn)
-   {
-      setUpMainDraw();
-      safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
-      safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
-      
-      lightPos[4] = bjorn.getPos();
-      lightPos[4].x += lightX;
-      lightPos[4].y += lightY;
-      //lightTest.setPos(lightPos[4]);
-      //lightPos[4].z -= 4.0f;
-      glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-      if(openingShot)
-         safe_glUniform1f(mainHandles.uFogStrength, sqrt(eye.y) * 12.0f);
-      else
-         safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
-      glDisable( GL_DEPTH_TEST );
-      skyBox.draw();
-      glEnable( GL_DEPTH_TEST );
-       
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
-      //If its the opening shot make sure we draw on the side the camera is on
-      if(openingShot)
-         world.draw(Mountain::getSide(eye));
-      else
-         world.draw(bjorn.mountainSide);
-      bjorn.draw();
-      hammer.draw();
-      //lightTest.draw();
-   }
+
+   setUpMainDraw();
+   safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
+   safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
+   
+   glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+   if(openingShot)
+      safe_glUniform1f(mainHandles.uFogStrength, sqrt(eye.y) * 12.0f);
+   else
+      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
+   glDisable( GL_DEPTH_TEST );
+   skyBox.draw();
+   glEnable( GL_DEPTH_TEST );
+    
+   safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
+   //If its the opening shot make sure we draw on the side the camera is on
+   if(openingShot)
+      world.draw(Mountain::getSide(eye));
+   else
+      world.draw(bjorn.mountainSide);
+   bjorn.draw();
+   hammer.draw();
 	//Disable the shader
 	glUseProgram(0);
 }
@@ -464,18 +439,9 @@ void Draw (void)
 //Sets up some OpenGL State for depth buffer, and starts the shader
 void setUpShadows()
 {
-   if(!shadowMapDrawn)
-   {
-      glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
-      glViewport(0,0,FRAMEBUFFER_RES,FRAMEBUFFER_RES); // Render on the whole framebuffer
-   }
-   else
-   {
-      //Use standard viewport and framebuffer
-      glViewport(0,0,g_width,g_height);
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   }
-   
+   glBindFramebuffer(GL_FRAMEBUFFER, shadowFrameBuffer);
+   glViewport(0,0,FRAMEBUFFER_RES,FRAMEBUFFER_RES); // Render on the whole framebuffer
+
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
    glEnable(GL_DEPTH_TEST);
@@ -511,15 +477,14 @@ void setUpMainDraw()
 
 void shadow(GameObject *obj)
 {
-   glm::mat4 dProjectionMatrix = glm::perspective(75.0f, 1.0f, 0.1f, 20.0f);
-   //glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -5, 20);
-   glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -5, 20);
+   glm::mat4 dViewMatrix = glm::lookAt(lightPos[2], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
+   // Send our transformation to the currently bound shader,
+   glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
    //Store the depthMVP in this obj
    obj->setDepthMVP(depthMVP);
-   // Send our transformation to the currently bound shader,
-   // in the "MVP" uniform
-   glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
+   
    //All meshes
    for (int i = 0; i < obj->model.meshes.size(); i++) {
       // 1rst attribute buffer : vertices
@@ -530,22 +495,22 @@ void shadow(GameObject *obj)
       // Index buffer
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.meshes[i].buffDat.ibo);
       // Draw the shadow onto the frame
-      glDrawElements(GL_TRIANGLES,obj->model.meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
+      glDrawElements(GL_TRIANGLES,3 * obj->model.meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
    }
    
    //All children, this is a little silly since it's so similar oh well
    for (int j = 0; j < obj->model.children.size(); j++) {
-      for (int i = 0; i < obj->model.children[j].meshes.size(); i++) {
+      for (int k = 0; k < obj->model.children[j].meshes.size(); k++) {
          // 1rst attribute buffer : position
          glEnableVertexAttribArray(depthHandles.aPosition);
-         glBindBuffer(GL_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.vbo);
+         glBindBuffer(GL_ARRAY_BUFFER, obj->model.children[j].meshes[k].buffDat.vbo);
          glVertexAttribPointer(depthHandles.aPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
          
          // Index buffer
-         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
+         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[k].buffDat.ibo);
          // Draw the shadow onto the frame
 
-         glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
+         glDrawElements(GL_TRIANGLES,3 * obj->model.children[j].meshes[k].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
       }
    }
    
@@ -648,22 +613,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_MINUS:
             music.volumeDown();
             break;
-         case GLFW_KEY_P:
-            shadowMapDrawn = !shadowMapDrawn;
-            break;
-         case GLFW_KEY_LEFT:
-            lightX += .5;
-            break;
-         case GLFW_KEY_RIGHT:
-            lightX -= .5;
-            break;
-         case GLFW_KEY_UP:
-            lightY += .5;
-            break;
-         case GLFW_KEY_DOWN:
-            lightY -= .5;
-            break;
-         
       }
    }
    if ((action == GLFW_PRESS || action == GLFW_REPEAT) && openingShot)
@@ -792,10 +741,6 @@ void Animate()
       if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2 && bjorn.grounded))
       {
          currentSide = bjorn.mountainSide;
-         //Update reset variables for checkpoint
-         /*savedDirection = bjorn.facingRight;
-         bjornResetState = bjorn.getState();
-         hammerResetState = hammer.getState();*/
          bjorn.save();
          hammer.save();
       }

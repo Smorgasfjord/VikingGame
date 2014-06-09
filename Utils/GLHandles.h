@@ -54,6 +54,7 @@ class GLHandles
       GLuint shadowMapID;
       GLuint depthMatrixID;
       GLuint depthBiasID;
+      GLuint biasMatrix;
 };
 
 #endif /* defined(___76_Lab1__GLHandles__) */
