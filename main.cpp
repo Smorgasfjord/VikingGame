@@ -439,8 +439,10 @@ void Draw (void)
       //lightTest.setPos(lightPos[4]);
       //lightPos[4].z -= 4.0f;
       glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-      
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
+      if(openingShot)
+         safe_glUniform1f(mainHandles.uFogStrength, sqrt(eye.y) * 12.0f);
+      else
+         safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
       glDisable( GL_DEPTH_TEST );
       skyBox.draw();
       glEnable( GL_DEPTH_TEST );
