@@ -54,6 +54,19 @@ GameObject("Bjorn")
    mountainSide = Mountain::getSide(pos);
 }
 
+void Bjorn::save() {
+   s_state = getState();
+   s_facingRight = facingRight;
+   s_mountainSide = mountainSide;
+}
+void Bjorn::reset() {
+   setState(s_state);
+   facingRight = s_facingRight;
+   mountainSide = s_mountainSide;
+   setVelocity(glm::vec3(0.0f));
+   grounded = true;
+}
+
 //What Bjorn does
 void Bjorn::step(double timeStep)
 {
@@ -108,7 +121,7 @@ void Bjorn::update(double timeStep) {
    CollisionData cData;
    GameObject collidedWith;
    static double jumpCount = 0.0;
-   glm::vec3 displacement, newPos;
+   glm::vec3 displacement, newPos, adjustment;
    cData = world->checkCollision(this, modelIdx);
    if (cData.hitObj.obj >= 0) {
       /*
@@ -124,7 +137,8 @@ void Bjorn::update(double timeStep) {
       collidedWith = world->getObjectByIndex(cData.hitObj.obj);
       //Nudge bjorn towards the correct position on the platform
       newPos = Mountain::lockOn(getPos(),displacement);
-      moveBy(((newPos + displacement * glm::vec3(-1.0f,0.0f,-1.0f)) - getPos()) / 30.0f);
+      adjustment = ((newPos + displacement * glm::vec3(-1.0f,0.0f,-1.0f)) - getPos());
+      moveBy(adjustment/(glm::length(adjustment)+1.0f));
       
       setVelocity((getVel() * 0.5f + glm::reflect(getVel(), cData.collisionNormal)) / 2.0f + cData.collisionNormal * (float)timeStep * 0.1f);
       if (cData.collisionNormal.y > 0.5) {
@@ -148,7 +162,7 @@ void Bjorn::update(double timeStep) {
    }
 }
 
-void Bjorn::moveRight()
+void Bjorn::moveRight(float timeStep)
 {
    glm::vec4 speed;
    if(!facingRight)
@@ -158,17 +172,20 @@ void Bjorn::moveRight()
    }
 
    if (grounded || DEBUG_GAME) {
-      speed = getRotMat() * glm::vec4(0.0f, 0.1f, 0.5f, 0.0f);
+      speed = getRotMat() * glm::vec4(0.0f, (float)GRAVITY*2.0f, 30.0f, 0.0f) * timeStep + glm::vec4(0.0f,-getVel().y,0.0f,0.0);
    }
    else {
-      speed = getRotMat() * glm::vec4(0.0f, 0.0f, 0.1f, 0.0f);
+      speed = getRotMat() * glm::vec4(0.0f, 0.0f, 6.0f, 0.0f) * timeStep;
    }
-   if (glm::length(getVel()) < MAX_SPEED) {
+   if (glm::length(getVel()*glm::vec3(1.0f,0.0,1.0f) + glm::vec3(speed)*glm::vec3(1.0f,0.0,1.0f)) < MAX_SPEED) {
       addVelocity(speed.xyz());
+   }
+   else {
+      addVelocity(glm::vec3(0.0,speed.y,0.0) + glm::vec3(speed.x,0.0,speed.z)*((float)MAX_SPEED-min(glm::length(getVel()*glm::vec3(1.0f,0.0,1.0f)),(float)MAX_SPEED)));
    }
 }
 
-void Bjorn::moveLeft()
+void Bjorn::moveLeft(float timeStep)
 {
    glm::vec4 speed;
    if(facingRight)
@@ -178,14 +195,17 @@ void Bjorn::moveLeft()
    }
 
    if (grounded || DEBUG_GAME) {
-      speed = getRotMat() * glm::vec4(0.0f, 0.1f, 0.5f, 0);
+      speed = getRotMat() * glm::vec4(0.0f, (float)GRAVITY*2.0f, 30.0f, 0.0f) * timeStep + glm::vec4(0.0f,-getVel().y,0.0f,0.0);
    }
    else {
-      speed = getRotMat() * glm::vec4(0.0f, 0.0f, 0.1f, 0);
+      speed = getRotMat() * glm::vec4(0.0f, 0.0f, 6.0f, 0) * timeStep;
    }
 
-   if (glm::length(getVel()) < MAX_SPEED) {
+   if (glm::length(getVel()*glm::vec3(1.0f,0.0,1.0f) + glm::vec3(speed)*glm::vec3(1.0f,0.0,1.0f)) < MAX_SPEED) {
       addVelocity(speed.xyz());
+   }
+   else {
+      addVelocity(glm::vec3(0.0,speed.y,0.0) + glm::vec3(speed.x,0.0,speed.z)*((float)MAX_SPEED-min(glm::length(getVel()*glm::vec3(1.0f,0.0,1.0f)),(float)MAX_SPEED)));
    }
 }
 

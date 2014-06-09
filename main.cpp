@@ -67,7 +67,7 @@
 #define INIT_HEIGHT 600
 #define FRAMEBUFFER_RES 2048
 #define pi 3.14159
-#define CAMERA_SPRING .15
+#define CAMERA_SPRING 0.95
 #define CAM_Y_MAX_OFFSET 3
 #define CAM_INIT_ANGLE 3* pi / 2
 #define NUM_LIGHTS 5
@@ -183,14 +183,16 @@ int diffMs(timeval t1, timeval t2)
 //Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   bjorn.facingRight = savedDirection; //THIS CAN BE WRONG
+   /*bjorn.facingRight = savedDirection; //THIS CAN BE WRONG
    hammer.setState(hammerResetState);
    hammer.setVelocity(glm::vec3(0));
    bjorn.setState(bjornResetState);
    bjorn.setVelocity(glm::vec3(0));
    bjorn.mountainSide = hammer.mountainSide = Mountain::getSide(bjorn.getPos());
    hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
-   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
+   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);*/
+   hammer.reset();
+   bjorn.reset();
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
    
@@ -256,11 +258,13 @@ void setWorld()
    
    cout << "Platforms placed\n";
    bjorn = Bjorn(world.getStart(), mainHandles, &bjornMod, &world);
-   bjornResetState = bjorn.getState();
+   //bjornResetState = bjorn.getState();
+   bjorn.save();
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.setInWorld(&world, &bjorn, &hammerMod, mainHandles);
-   hammerResetState = hammer.getState();
+   //hammerResetState = hammer.getState();
+   hammer.save();
    cout << "Hammer held\n";
    music.start();
    
@@ -688,8 +692,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
-   glm::vec3 norm, mWidth;
+   glm::vec3 norm, mWidth, camAdjust;
 
+   camAdjust = glm::vec3(0.0f);
    frames++;
    if ((int)curTime > (int)lastUpdated) {
       frameRate = frames;
@@ -738,10 +743,10 @@ void Animate()
       hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
       prevMouseLoc = currentMouseLoc;
       if (moveLeft) {
-         bjorn.moveLeft();
+         bjorn.moveLeft(timeStep);
       }
       else if (moveRight) {
-         bjorn.moveRight();
+         bjorn.moveRight(timeStep);
       }
 
       //THESE HAVE TO STAY IN THIS ORDER
@@ -777,20 +782,23 @@ void Animate()
 
       //Get the normal to move the camera along
       Mountain::lockOn(bjorn.getPos(),norm);
-      eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
+      camAdjust.y = CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset)*(float)timeStep;
       if(!manualCamControl)
-         camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
+         camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f)*(float)timeStep;
       
       //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
-      if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
+      if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2 && bjorn.grounded))
       {
          currentSide = bjorn.mountainSide;
          //Update reset variables for checkpoint
-         savedDirection = bjorn.facingRight;
+         /*savedDirection = bjorn.facingRight;
          bjornResetState = bjorn.getState();
-         hammerResetState = hammer.getState();
+         hammerResetState = hammer.getState();*/
+         bjorn.save();
+         hammer.save();
       }
-      eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
+      camAdjust += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING*(float)timeStep, 0.0f, (float)CAMERA_SPRING*(float)timeStep);
+      eye += camAdjust * (glm::length(camAdjust)*4.0f+1.0f);
    }
    mWidth = glm::vec3((float)MOUNT_WIDTH);
    skyBox.setPos(eye + (mWidth - lookAt * 2.0f) / mWidth * 0.5f);

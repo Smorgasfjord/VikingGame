@@ -277,7 +277,7 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
       }
       //printf("depth: %f on side %d with normal: (%f, %f, %f) at coords (%f, %f) with position (%f %f %f)\n",depthOffset, side,norms.x,norms.y,norms.z, x, y, roughPos.x, roughPos.y, roughPos.z);
    //}
-   printf("locked on to: (%f,%f,%f)\n",mountPos.x,mountPos.y,mountPos.z);
+   //printf("locked on to: (%f,%f,%f)\n",mountPos.x,mountPos.y,mountPos.z);
    return mountPos;
 }
 
@@ -323,7 +323,7 @@ int Mountain::getSide(glm::vec3 pos)
    else if (r >= 0.0) side = MOUNT_RIGHT;
    else if (b >= 0.0) side = MOUNT_BACK;
    else if (l >= 0.0) side = MOUNT_LEFT;
-   printf("f:%f,r:%f,b:%f,l:%f\n",f,r,b,l);
+   //printf("f:%f,r:%f,b:%f,l:%f\n",f,r,b,l);
    /*if (pos.x >= pos.z && pos.z < pos.y) {
       if (pos.x < pos.y*off/MOUNT_HEIGHT) {
          side = MOUNT_FR;

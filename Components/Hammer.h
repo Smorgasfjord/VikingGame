@@ -36,6 +36,8 @@ public:
    void updatePos(float dx, float dy);
    void updateAngle(float x, float y);
    void flip();
+   void save();
+   void reset();
    int mountainSide;
    bool manualLocked;
 private:
@@ -45,15 +47,20 @@ private:
    glm::vec3 pickNormal;
    glm::vec3 bjornOffset;
    glm::vec3 desiredRotation;
-   float rotation;
-   float angularVelocity;
+   glm::vec3 previousAngle;
    bool hammerSide;
    bool pickCollision;
-   bool pickLeaving;
    bool hammerCollision;
    bool locked;
+   glm::vec3 s_desiredRotation;
+   glm::vec3 s_previousAngle;
+   int s_mountainSide;
+   bool s_hammerSide;
+   bool s_pickCollision;
+   bool s_hammerCollision;
+   bool s_locked;
+   Transform_t s_state;
    //float mass;
-   glm::vec3 previousAngle;
 };
 
 #endif /* defined(__MyGame__Hammer__) */

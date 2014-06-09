@@ -57,6 +57,28 @@ float d2r(float val)
    return val * (pi / 180.0f);
 }
 
+void Hammer::save() {
+   s_state = getState();
+   s_mountainSide = mountainSide;
+   s_hammerSide = hammerSide;
+   s_pickCollision = false;
+   s_hammerCollision = false;
+   s_locked = false;
+   s_desiredRotation = desiredRotation;
+   s_previousAngle = previousAngle;
+}
+
+void Hammer::reset() {
+   setState(s_state);
+   mountainSide = s_mountainSide;
+   hammerSide = s_hammerSide;
+   pickCollision = false;
+   hammerCollision = false;
+   locked = false;
+   desiredRotation = s_desiredRotation;
+   previousAngle = s_previousAngle;
+}
+
 void Hammer::updatePos(float x, float y)
 {
    float xOff, zOff;
