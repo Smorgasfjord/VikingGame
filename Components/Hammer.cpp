@@ -22,6 +22,8 @@
 #define STUDS 6
 #define GRIP_NODE 7
 
+float MAX_PICK_DEPTH;
+
 Hammer::~Hammer()
 {
    
@@ -34,6 +36,8 @@ GameObject(n)
 void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, GLHandles handles)
 {
    GameModel simple = genSimpleModel(hammerMod);
+   MAX_PICK_DEPTH = simple.contents[PICK_NODE].verts[7].x - simple.contents[PICK_NODE].verts[0].x;
+   MAX_PICK_DEPTH /= 3.0;
    initialize(*hammerMod, 0, 0, handles);
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .2));
@@ -145,11 +149,18 @@ void Hammer::updateAngle(float x, float y)
 
 void Hammer::flip()
 {
+   CollisionData dat;
    if (!hammerCollision && !(locked || manualLocked)) {
-      hammerSide = !hammerSide;
       rotateBy(glm::vec3(0.0f, 180.0, 0.0));
-      desiredRotation += glm::vec3(0.0,180.0f,0.0);
-      previousAngle += glm::vec3(0.0,180.0f,0.0);
+      dat = world->checkCollision(this, modelIdx);
+      if (dat.hitObj.obj < 0) {
+         hammerSide = !hammerSide;
+         desiredRotation += glm::vec3(0.0,180.0f,0.0);
+         previousAngle += glm::vec3(0.0,180.0f,0.0);
+      }
+      else {
+         rotateBy(glm::vec3(0.0f, 180.0, 0.0));
+      }
    }
 }
 
@@ -205,7 +216,7 @@ void Hammer::step(double timeStep)
 // How the world reacts to Hommur
 void Hammer::update(double timeStep) {
    static double lockTime = 0.0;
-   glm::vec3 hammerTip, movedAngle, newPos, displacement, projection;
+   glm::vec3 hammerTip, movedAngle, newPos, displacement, projection, pickMove;
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
@@ -269,20 +280,38 @@ void Hammer::update(double timeStep) {
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
          }
-         if (glm::dot(projection,pickNormal) < 0.0) {
-            moveBy(projection*(float)timeStep*0.25f);
+         pickMove = projection*(float)timeStep*0.25f;
+         if (glm::dot(projection,pickNormal) > 0.0) {
+            if (pickDepth + glm::length(pickMove) > MAX_PICK_DEPTH) {
+               moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH));
+               pickDepth = MAX_PICK_DEPTH;
+               bjorn->addVelocity(-pickMove*pickDepth/MAX_PICK_DEPTH);
+            }
+            else {
+               moveBy(pickMove);
+               pickDepth += glm::length(pickMove);
+               bjorn->addVelocity(-pickMove);
+            }
          }
+         else {
+            moveBy(pickMove);
+            pickDepth -= glm::length(pickMove);
+            bjorn->addVelocity(-pickMove);
+         }
+         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          //bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
       }
       //pick hit object
       else if (dat.thisObj.mesh == PICK_NODE && !hammerCollision && !pickCollision && 
-            glm::length(pickNormal * glm::normalize(dat.collisionAngle)) > 0.8f) {
+            glm::length(pickNormal * glm::normalize(dat.collisionAngle)) > 0.7f) {
          printf("pick hit object\n");
+         pickDepth = 0.0;
          // lock rotation
          lockTime = 0.5;
          locked = true;
          pickCollision = true;
+         moveBy(-getVel()*(float)timeStep);
          // set bjorn velocity
          // set hit angle
          pickAngle = glm::normalize(dat.collisionAngle);
@@ -292,6 +321,25 @@ void Hammer::update(double timeStep) {
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
          }
+         pickMove = projection*(float)timeStep*0.25f;
+         if (glm::dot(projection,pickNormal) > 0.0) {
+            if (pickDepth + glm::length(pickMove) > MAX_PICK_DEPTH) {
+               moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH));
+               pickDepth = MAX_PICK_DEPTH;
+               bjorn->addVelocity(-pickMove*pickDepth/MAX_PICK_DEPTH);
+            }
+            else {
+               moveBy(pickMove);
+               pickDepth += glm::length(pickMove);
+               bjorn->addVelocity(-pickMove);
+            }
+         }
+         else {
+            moveBy(pickMove);
+            pickDepth -= glm::length(pickMove);
+            bjorn->addVelocity(-pickMove);
+         }
+         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          // suspend bjorn
          bjorn->suspend();
@@ -309,9 +357,28 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          // allow movement along insertion angle
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
-         moveBy(projection*(float)timeStep*0.25f);
+         pickMove = projection*(float)timeStep*0.25f;
+         // if pick sinking into object
+         if (glm::dot(projection,pickNormal) > 0.0) {
+            if (pickDepth + glm::length(pickMove) > MAX_PICK_DEPTH) {
+               moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH));
+               pickDepth = MAX_PICK_DEPTH;
+               bjorn->addVelocity(-pickMove*pickDepth/MAX_PICK_DEPTH);
+            }
+            else {
+               moveBy(pickMove);
+               pickDepth += glm::length(pickMove);
+               bjorn->addVelocity(-pickMove);
+            }
+         }
+         else {
+            moveBy(pickMove);
+            pickDepth -= glm::length(pickMove);
+            bjorn->addVelocity(-pickMove);
+         }
+         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          // move bjorn
-         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);
+         activeForce = (getVel() - projection) * glm::vec3(0.1,1.0f,0.1);
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
          }
@@ -325,13 +392,33 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          // allow movement along insertion angle
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
-         moveBy(projection*(float)timeStep*0.25f);
+         pickMove = projection*(float)timeStep*0.25f;
+         if (glm::dot(projection,pickNormal) > 0.0) {
+            if (pickDepth + glm::length(pickMove) > MAX_PICK_DEPTH) {
+               moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH));
+               pickDepth = MAX_PICK_DEPTH;
+               bjorn->addVelocity(-pickMove*pickDepth/MAX_PICK_DEPTH);
+               //moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH)/glm::length(pickMove));
+               //pickDepth += (1.0f-pickDepth/MAX_PICK_DEPTH)/glm::length(pickMove);
+            }
+            else {
+               moveBy(pickMove);
+               pickDepth += glm::length(pickMove);
+               bjorn->addVelocity(-pickMove);
+            }
+         }
+         else {
+            moveBy(pickMove);
+            pickDepth -= glm::length(pickMove);
+            bjorn->addVelocity(-pickMove);
+         }
+         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          setRotation(previousAngle);
          // lock rotation
          lockTime = 1.0;
          locked = true;
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
-         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);
+         activeForce = (getVel() - projection) * glm::vec3(0.1,1.0f,0.1);
          //bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          bjorn->suspend();
       }
@@ -356,7 +443,6 @@ void Hammer::update(double timeStep) {
          }
       }
       //bjorn->suspend();
-      movedAngle = getRot();
    }
    else {
       if (glm::length(getVel()) > 0.1) {

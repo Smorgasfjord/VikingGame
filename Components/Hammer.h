@@ -52,6 +52,7 @@ private:
    bool pickCollision;
    bool hammerCollision;
    bool locked;
+   float pickDepth;
    glm::vec3 s_desiredRotation;
    glm::vec3 s_previousAngle;
    int s_mountainSide;
