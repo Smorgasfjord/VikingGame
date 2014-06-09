@@ -65,10 +65,11 @@
 #define REFRESH_RATE 60.0
 #define INIT_WIDTH 800
 #define INIT_HEIGHT 600
-#define FRAMEBUFFER_RES 1560
+#define FRAMEBUFFER_RES 2048
 #define pi 3.14159
 #define CAMERA_SPRING .15
 #define CAM_Y_MAX_OFFSET 3
+#define CAM_INIT_ANGLE 3* pi / 2
 #define NUM_LIGHTS 5
 
 using namespace std;
@@ -108,6 +109,10 @@ Hammer hammer;
 GameObject skyBox;
 GameModel skyBoxMod;
 
+GameObject lightTest;
+float lightX = 0;
+float lightY = 1.5;
+
 //Text
 int playerScore = 0;
 double lastUpdated = 0.0;
@@ -122,12 +127,17 @@ Jukebox music;
 
 //Camera
 float camDistance = 4.0f;
-glm::vec3 eye = glm::vec3(g_groundSize / 2.0f, 1.0, g_groundSize / 2.0);
-glm::vec3 lookAt = glm::vec3(g_groundSize / 2.0f + 1.0f, 1.0, g_groundSize / 2.0 + 1.0);
+glm::vec3 eye, lookAt;
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
 float camYOffset = 0.0f;
 bool manualCamControl = false;
+
+//Establishing Shot
+static glm::vec3 flagPos = glm::vec3(29.65, 43, 20);
+bool openingShot = true;
+bool started = false;
+float theta = CAM_INIT_ANGLE;
 
 //For shadow debugging
 bool shadowMapDrawn = false;
@@ -145,7 +155,7 @@ void shadow(GameObject *obj);
 void SetProjectionMatrix(bool drawText) {
    glm::mat4 Projection;
    if(!drawText)
-      Projection = glm::perspective(90.0f, (float)g_width/g_height, 0.1f, 45.0f);
+      Projection = glm::perspective(100.0f, (float)g_width/g_height, 0.1f, 30.0f);
    else
       Projection = glm::ortho(0.0f, (float)g_width / 2,(float)g_height / 2,0.0f, 0.1f, 100.0f);
    safe_glUniformMatrix4fv(mainHandles.uProjMatrix, glm::value_ptr(Projection));
@@ -173,7 +183,6 @@ int diffMs(timeval t1, timeval t2)
 //Resets bjorn to the start of the level, or the last corner he rounded
 static void reset()
 {
-   //lookAt.y += 1.0f;
    bjorn.facingRight = savedDirection; //THIS CAN BE WRONG
    hammer.setState(hammerResetState);
    hammer.setVelocity(glm::vec3(0));
@@ -216,15 +225,15 @@ void setWorld()
    
    for(int i = 0; i < NUM_LIGHTS; i++)
    {
-      lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
+      lightPos[i] = glm::vec3((10 * i) + 15, 10, 0);
    }
-   //THIS LIGHT IS BEING USED FOR SHADOWING
-   //lightPos[4] = glm::vec3(40, 10, -10);
-   lightPos[4] = glm::vec3(42, 4, -7);
+
    //Send light data to shader
    glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-
-   safe_glUniform3f(mainHandles.uLightColor, 1, 1, 1);
+   //glUniform3f(mainHandles.uLightPos, lightPos[4].x, lightPos[4].y, lightPos[4].z);
+   lightTest = GameObject("light");
+   lightTest.initialize(skyBoxMod, 0, 4, mainHandles);
+   lightTest.setScale(glm::vec3(.25f));
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -235,14 +244,18 @@ void setWorld()
    world = World(platforms, &simplePlatformMod, mount, &mainHandles);
    cout << "World worked\n";
    //This stuff all assumes we start on the front of the mountain
+   eye = lookAt = flagPos;
+   lookAt.z += 10.0f;
+   /*
    eye = lookAt = world.getStart();
    eye.y += 1.0;
    eye.z -= camDistance;
+    */
    currentSide = MOUNT_FRONT;
    skyBox.setPos(eye);
    
    cout << "Platforms placed\n";
-   bjorn = Bjorn(lookAt, mainHandles, &bjornMod, &world);
+   bjorn = Bjorn(world.getStart(), mainHandles, &bjornMod, &world);
    bjornResetState = bjorn.getState();
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
@@ -400,14 +413,15 @@ void Draw (void)
    //This has to happen for the world to cull properly
    SetProjectionMatrix(false);
    SetView();
-   std::vector<GameObject> drawnWorld = world.getDrawn(0);
+   std::vector<GameObject*> drawnWorld = world.getDrawn(bjorn.mountainSide);
+   
    //Shadows
    setUpShadows();
    shadow(&bjorn);
    shadow(&hammer);
    for(int i = 0; i < drawnWorld.size(); i++)
    {
-      shadow(&drawnWorld.at(i));
+      shadow(drawnWorld.at(i));
    }
    if(!shadowMapDrawn)
    {
@@ -415,17 +429,27 @@ void Draw (void)
       safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
       safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
       
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
+      lightPos[4] = bjorn.getPos();
+      lightPos[4].x += lightX;
+      lightPos[4].y += lightY;
+      //lightTest.setPos(lightPos[4]);
+      //lightPos[4].z -= 4.0f;
+      glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
       
+      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
       glDisable( GL_DEPTH_TEST );
       skyBox.draw();
       glEnable( GL_DEPTH_TEST );
        
       safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
-
-      world.draw(bjorn.mountainSide);
+      //If its the opening shot make sure we draw on the side the camera is on
+      if(openingShot)
+         world.draw(Mountain::getSide(eye));
+      else
+         world.draw(bjorn.mountainSide);
       bjorn.draw();
       hammer.draw();
+      //lightTest.draw();
    }
 	//Disable the shader
 	glUseProgram(0);
@@ -448,7 +472,8 @@ void setUpShadows()
    
    glEnable(GL_CULL_FACE);
    glCullFace(GL_BACK);
-   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glEnable(GL_DEPTH_TEST);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glUseProgram(depthHandles.ShadeProg);
 }
 
@@ -464,8 +489,8 @@ void setUpMainDraw()
    
    //Pass depth texture
    glActiveTexture(GL_TEXTURE2); //PROBLEM AREA
-   glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
    glUniform1i(mainHandles.shadowMapID, 2);
+   glBindTexture(GL_TEXTURE_2D, shadowDepthTexture);
    
    //Pass Fog
    glActiveTexture(GL_TEXTURE1);
@@ -476,16 +501,16 @@ void setUpMainDraw()
    //set up the projection and camera - do not change
    SetProjectionMatrix(false);
    SetView();
-   //glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
-   //safe_glUniformMatrix4fv(mainHandles.uViewMatrix, glm::value_ptr(dViewMatrix));
 }
 
 void shadow(GameObject *obj)
 {
-   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -1, 20);
+   glm::mat4 dProjectionMatrix = glm::perspective(75.0f, 1.0f, 0.1f, 20.0f);
+   //glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -5, 20);
    glm::mat4 dViewMatrix = glm::lookAt(lightPos[4], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
-   
+   //Store the depthMVP in this obj
+   obj->setDepthMVP(depthMVP);
    // Send our transformation to the currently bound shader,
    // in the "MVP" uniform
    glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
@@ -513,14 +538,14 @@ void shadow(GameObject *obj)
          // Index buffer
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[i].buffDat.ibo);
          // Draw the shadow onto the frame
-         
+
          glDrawElements(GL_TRIANGLES, obj->model.children[j].meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
       }
    }
    
    glDisableVertexAttribArray(depthHandles.aPosition);
-   //Store the depthMVP in this obj
-   obj->setDepthMVP(depthMVP);
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 /* Reshape - note no scaling as perspective viewing*/
@@ -564,18 +589,22 @@ void mouse(GLFWwindow* window, double x, double y)
 
 void mouseClick(GLFWwindow* window, int button, int action, int mods)
 {
-   if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT)
-      hammer.flip();
-   else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
-      hammer.manualLocked = true;
-   else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_RIGHT)
-      hammer.manualLocked = false;
+   if(!openingShot)
+   {
+      if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_LEFT)
+         hammer.flip();
+      else if(action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
+         hammer.manualLocked = true;
+      else if(action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_RIGHT)
+         hammer.manualLocked = false;
+   }
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
    glm::vec3 delta;
-   if(action == GLFW_PRESS || action == GLFW_REPEAT)
+   //Dont allow movement during the opening shot
+   if((action == GLFW_PRESS || action == GLFW_REPEAT) && !openingShot)
    {
       switch( key ) {
          //Movement left/right
@@ -617,22 +646,27 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             shadowMapDrawn = !shadowMapDrawn;
             break;
          case GLFW_KEY_LEFT:
-            lightPos[4].x  += 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightX += .5;
             break;
          case GLFW_KEY_RIGHT:
-            lightPos[4].x -= 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightX -= .5;
             break;
          case GLFW_KEY_UP:
-            lightPos[4].z += 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightY += .5;
             break;
          case GLFW_KEY_DOWN:
-            lightPos[4].z -= 1;
-            glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+            lightY -= .5;
             break;
+         
       }
+   }
+   if ((action == GLFW_PRESS || action == GLFW_REPEAT) && openingShot)
+   {
+       switch( key ) {
+         case GLFW_KEY_ENTER:
+            started = true;
+            break;
+       }
    }
    if (action == GLFW_RELEASE) {
       switch( key ) {
@@ -654,7 +688,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
-   //CollisionData dat;
    glm::vec3 norm, mWidth;
 
    frames++;
@@ -668,65 +701,97 @@ void Animate()
    
    timeStep = curTime - lastUpdated;
    
-   wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
-
-   hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
-   hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
-   prevMouseLoc = currentMouseLoc;
-   if (moveLeft) {
-      bjorn.moveLeft();
-   }
-   else if (moveRight) {
-      bjorn.moveRight();
-   }
-
-   //THESE HAVE TO STAY IN THIS ORDER
-   bjorn.step(timeStep);
-   hammer.step(timeStep);
-   bjorn.update(timeStep);
-   hammer.update(timeStep);
-   //updates the spatial data structure
-   world.updateObject(&bjorn, bjorn.modelIdx);
-   world.updateObject(&hammer, hammer.modelIdx);
-  
-   //kill bjorn if he's falling too fast
-   if(bjorn.getVel().y < (-1.15 * GRAVITY))
-   {
-      Sound::scream();
-      bjorn.screamed = true;
-   }
-   if(bjorn.getVel().y < (-2.0 * GRAVITY) && !DEBUG_GAME)
-   {
-      Sound::stopScream();
-      reset();
-   }
+   if(openingShot)
+      wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(lookAt.y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
    
-   //If bjorn is grounded allow him to scream again
-   if(bjorn.getVel().y < .05 && bjorn.getVel().y > -.05)
+   if(openingShot && started)
    {
-      bjorn.screamed = false;
-      Sound::stopScream();
+      theta += timeStep;
+      if(lookAt.y > bjorn.getPos().y)
+         lookAt.y = eye.y = flagPos.y - ((theta - CAM_INIT_ANGLE) * 3);
+      
+      if(lookAt.y <= bjorn.getPos().y)
+      {
+         Mountain::lockOn(bjorn.getPos(),norm);
+         camYOffset += (CAMERA_SPRING / 2) * (bjorn.getPos().y - eye.y + 1.5f);
+         eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)(CAMERA_SPRING / 2), 0.0f, (float)(CAMERA_SPRING / 2));
+         lookAt.x = eye.x;
+         if(bjorn.getPos().x - eye.x < .4f && bjorn.getPos().x - eye.x > -.4f)
+         {
+            lookAt = bjorn.getPos();
+            openingShot = false;
+         }
+      }
+      else
+      {
+         float radius = ((flagPos.y - lookAt.y)* .9f) + 10.0f;
+         eye.x = flagPos.x + radius * cos(theta);
+         eye.z = (flagPos.z + 10.0f) + radius * sin(theta);
+      }
+      
    }
-   
-   //Update camera
-   lookAt = bjorn.getPos();
+   else if(!openingShot)
+   {
+      wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+      
+      hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
+      hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
+      prevMouseLoc = currentMouseLoc;
+      if (moveLeft) {
+         bjorn.moveLeft();
+      }
+      else if (moveRight) {
+         bjorn.moveRight();
+      }
 
-   //Get the normal to move the camera along
-   Mountain::lockOn(bjorn.getPos(),norm);
-   eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
-   if(!manualCamControl)
-      camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
-   
-   //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
-   if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
-   {
-      currentSide = bjorn.mountainSide;
-      //Update reset variables for checkpoint
-      savedDirection = bjorn.facingRight;
-      bjornResetState = bjorn.getState();
-      hammerResetState = hammer.getState();
+      //THESE HAVE TO STAY IN THIS ORDER
+      bjorn.step(timeStep);
+      hammer.step(timeStep);
+      bjorn.update(timeStep);
+      hammer.update(timeStep);
+      //updates the spatial data structure
+      world.updateObject(&bjorn, bjorn.modelIdx);
+      world.updateObject(&hammer, hammer.modelIdx);
+     
+      //kill bjorn if he's falling too fast
+      if(bjorn.getVel().y < (-1.15 * GRAVITY))
+      {
+         Sound::scream();
+         bjorn.screamed = true;
+      }
+      if(bjorn.getVel().y < (-2.0 * GRAVITY) && !DEBUG_GAME)
+      {
+         Sound::stopScream();
+         reset();
+      }
+      
+      //If bjorn is grounded allow him to scream again
+      if(bjorn.getVel().y < .05 && bjorn.getVel().y > -.05)
+      {
+         bjorn.screamed = false;
+         Sound::stopScream();
+      }
+      
+      //Update camera
+      lookAt = bjorn.getPos();
+
+      //Get the normal to move the camera along
+      Mountain::lockOn(bjorn.getPos(),norm);
+      eye.y += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.50f + camYOffset);
+      if(!manualCamControl)
+         camYOffset += CAMERA_SPRING * (bjorn.getPos().y - eye.y + 1.5f);
+      
+      //Mark a checkpoint if we're on a new side of the mountain and relatively steady in Y
+      if(currentSide != bjorn.mountainSide && (bjorn.getVel().y < 0.2 && bjorn.getVel().y > -0.2))
+      {
+         currentSide = bjorn.mountainSide;
+         //Update reset variables for checkpoint
+         savedDirection = bjorn.facingRight;
+         bjornResetState = bjorn.getState();
+         hammerResetState = hammer.getState();
+      }
+      eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    }
-   eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    mWidth = glm::vec3((float)MOUNT_WIDTH);
    skyBox.setPos(eye + (mWidth - lookAt * 2.0f) / mWidth * 0.5f);
    lastUpdated = curTime;
@@ -745,7 +810,7 @@ int main( int argc, char *argv[] )
    if (!glfwInit())
       exit(EXIT_FAILURE);
    
-   glfwWindowHint(GLFW_SAMPLES, 4);
+   //glfwWindowHint(GLFW_SAMPLES, 4);
 
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)

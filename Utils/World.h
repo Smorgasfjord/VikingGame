@@ -49,7 +49,7 @@ class World
       void updateObject(GameObject *obj, int objIndex);
       void removeObject(int objIndex);
       GameObject& getObjectByIndex(int idx);
-      std::vector<GameObject> getDrawn(int mountainSide);
+      std::vector<GameObject*> getDrawn(int mountainSide);
       glm::vec3 getStart();
    private:
       void SetMaterial(int i);
