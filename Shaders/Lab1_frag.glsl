@@ -42,7 +42,7 @@ void main() {
    float viewDist = HEIGHT_TO_VIEW_DIST / uFogStrength;
    float fogLinear = 0.6 / viewDist;
    float fogQuad = 0.4 / (viewDist * viewDist);
-   vec2 fogIdx = vec2((-uEyePos.x - uEyePos.z + 2.0 * gl_FragCoord.x/FOG_TEX_SIZE) * 0.2, (-uEyePos.y + 4.0 - 2.0 * gl_FragCoord.y/FOG_TEX_SIZE) * 0.2);
+   vec2 fogIdx = vec2((-uEyePos.x + uEyePos.z + 2.0 * gl_FragCoord.x/FOG_TEX_SIZE) * 0.2, (-uEyePos.y + 4.0 - 2.0 * gl_FragCoord.y/FOG_TEX_SIZE) * 0.2);
    fogIdx += vec2((uWindVec.x + uWindVec.z + 2.0) * 0.25,(-uWindVec.y + uWindVec.z + 2.0) * 0.25);
    //Shadow stuff
    float visibility, bias = 0.005;

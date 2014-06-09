@@ -10,6 +10,7 @@
 #include "Hammer.h"
 #define pi 3.14159
 #define MAX_ROT 45.0f
+#define MAX_FORCE 1.0f
 #define PICK_TIP1 0
 #define PICK_TIP2 2
 #define HANDLE_NODE 0
@@ -58,8 +59,11 @@ float d2r(float val)
 
 void Hammer::updatePos(float x, float y)
 {
+   float xOff, zOff;
+   zOff = -0.2*cos((float)mountainSide*M_PI/4.0);
+   xOff = 0.2*cos(((float)mountainSide+4.0)*M_PI/4.0);
    if (!bjorn->facingRight) x *= -1.0;
-   bjornOffset = glm::vec3(bjorn->getRotMat() * glm::vec4(-0.2f,y,x,0.0));
+   bjornOffset = glm::vec3(bjorn->getRotMat() * glm::vec4(0.0f,y,x,0.0)) + glm::vec3(xOff,0.0,zOff);
    if (glm::length(bjornOffset) > 1.4) {
       bjornOffset *= 1.4f / glm::length(bjornOffset);
    }
@@ -78,18 +82,19 @@ void Hammer::updateAngle(float x, float y)
       previousAngle = currentAngle;
       direction = hammerSide ? -1.0 : 1.0;
       //Rotation is flipped if the hammer is flipped
-      switch(bjorn->mountainSide) {
+      desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
+      /*switch(bjorn->mountainSide) {
       case MOUNT_FRONT:
          desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
          break;
       case MOUNT_BACK:
-         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * -angle * (180.0 / pi));
+         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
          break;
       case MOUNT_RIGHT:
-         desiredRotation = glm::vec3(-desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
+         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
          break;
       case MOUNT_LEFT:
-         desiredRotation = glm::vec3(-desiredRotation.x, desiredRotation.y, direction * -angle * (180.0 / pi));
+         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
          break;
       case MOUNT_FR:
          desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
@@ -105,7 +110,7 @@ void Hammer::updateAngle(float x, float y)
          break;
       default:
          break;
-      }
+      }*/
    }
    if (desiredRotation.x > 180.0) desiredRotation.x -= 360.0;
    else if (desiredRotation.x < -180.0) desiredRotation.x += 360.0;
@@ -134,10 +139,10 @@ void Hammer::step(double timeStep)
    if(mountainSide != bjorn->mountainSide)
    {
       if((mountainSide < bjorn->mountainSide || mountainSide == 7 && bjorn->mountainSide == 0) && 
-            !mountainSide == 0 && bjorn->mountainSide == 7)
-         desiredRotation.y += 315.0f;
-      else
+            !(mountainSide == 0 && bjorn->mountainSide == 7))
          desiredRotation.y += 45.0f;
+      else
+         desiredRotation.y += 315.0f;
       mountainSide = bjorn->mountainSide;
    }
    rotFix = getRot();
@@ -166,7 +171,8 @@ void Hammer::step(double timeStep)
    }
    if (!locked && !manualLocked) {
       rotateBy(rotIncrement);
-      pickNormal = glm::vec3(getRotMat() * glm::vec4(1.0,0.0,0.0,0.0f)) * glm::vec3(1.0,-1.0f,1.0);
+      //pickNormal = glm::vec3(getRotMat() * glm::vec4(-0.856474,-0.516190, 0.0,0.0f)) * glm::vec3(1.0f,1.0,1.0);
+      pickNormal = glm::vec3(getRotMat() * glm::vec4(-1.0,0.0, 0.0,0.0f)) * glm::vec3(1.0f,1.0,1.0);
       //printf("pick normal: (%f,%f,%f)\n",pickNormal.x,pickNormal.y,pickNormal.z);
    }
    moveBy(getVel()*(float)timeStep);
@@ -190,7 +196,7 @@ void Hammer::update(double timeStep) {
       displacement = dat.collisionAngle-dat.collisionStrength;
       //hammer collides with object
       if ((dat.thisObj.mesh == HAMMER_NODE || 
-               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& !pickCollision && !hammerCollision) {
+               dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& !pickCollision) {
          printf("hammer collides with object\n");
          // rotate back
          setRotation(previousAngle);
@@ -199,13 +205,13 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          setVelocity(-activeForce);
          // give bjorn force
-         activeForce = dat.collisionStrength * (float)(GRAVITY * 3.5f);
+         activeForce = dat.collisionStrength * (float)(GRAVITY );
          bjorn->addVelocity(-activeForce);///(float)timeStep);
          // lock rotation temporarily
          lockTime = 0.1;
          locked = true;
          // SMASH
-         Sound::hammerSmash();
+         if (!hammerCollision) Sound::hammerSmash(max(glm::length(dat.collisionStrength),1.0f));
          hammerCollision = true;
       }
       //pick sank into object
@@ -238,7 +244,10 @@ void Hammer::update(double timeStep) {
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
          activeForce = getVel() - projection;
-         if (glm::dot(projection,pickNormal) > 0.0) {
+         if (glm::length(activeForce) > MAX_FORCE) {
+            activeForce *= MAX_FORCE / glm::length(activeForce);
+         }
+         if (glm::dot(projection,pickNormal) < 0.0) {
             moveBy(projection*(float)timeStep*0.25f);
          }
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
@@ -257,6 +266,10 @@ void Hammer::update(double timeStep) {
          pickAngle = glm::normalize(dat.collisionAngle);
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
          activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);
+         Sound::pickStrike(max(glm::length(dat.collisionStrength),1.0f));
+         if (glm::length(activeForce) > MAX_FORCE) {
+            activeForce *= MAX_FORCE / glm::length(activeForce);
+         }
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          // suspend bjorn
          bjorn->suspend();
@@ -276,7 +289,10 @@ void Hammer::update(double timeStep) {
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
          moveBy(projection*(float)timeStep*0.25f);
          // move bjorn
-         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);;
+         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);
+         if (glm::length(activeForce) > MAX_FORCE) {
+            activeForce *= MAX_FORCE / glm::length(activeForce);
+         }
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          bjorn->suspend();
       }
@@ -297,7 +313,7 @@ void Hammer::update(double timeStep) {
          //bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          bjorn->suspend();
       }
-      else if (dat.thisObj.mesh != WTF_NODE && dat.thisObj.mesh != WOOD_NODE && dat.thisObj.mesh != GRIP_NODE && !pickCollision) {
+      else if (dat.thisObj.mesh != HAMMER_NODE && dat.thisObj.mesh != STUDS && dat.thisObj.mesh != STUD_BAND && !pickCollision) {
          printf("hammer resting against object\n");
          //moveBy(displacement);
          setRotation(previousAngle);
@@ -305,6 +321,9 @@ void Hammer::update(double timeStep) {
          bjorn->suspend();
          //m/s         = m/s                     - (m/s^2                * s)
          activeForce = dat.collisionStrength*(float)GRAVITY/4.0f;
+         if (glm::length(activeForce) > MAX_FORCE) {
+            activeForce *= MAX_FORCE / glm::length(activeForce);
+         }
          //                  m/s
          if (glm::length(bjornOffset) < 1.79f) {
             bjorn->addVelocity(-activeForce);//(float)timeStep);

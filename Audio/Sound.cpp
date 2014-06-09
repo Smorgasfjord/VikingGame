@@ -18,15 +18,17 @@ string files[] = {
    "Audio/Music/EverythingFadesToGray.mp3",
    "Audio/Effects/footsteps.mp3",
    "Audio/Effects/hammerSmash.mp3",
-   "Audio/Effects/scream.mp3"
+   "Audio/Effects/scream.mp3",
+   "Audio/Effects/pickStrike.mp3"
 };
-#define numChannels 4
+#define numChannels 5
 
 enum channelUsage {
    BACKGROUND_CHANNEL = 0,
    WALK_CHANNEL,
    HAMMER_CHANNEL,
    SCREAM_CHANNEL,
+   PICK_CHANNEL
 };
 
 //Add background music here
@@ -138,9 +140,16 @@ void Sound::stopWalk()
 
 //---------------------------------Hammer--------------------------------------
 
-void Sound::hammerSmash()
+void Sound::hammerSmash(float strength)
 {
+   setVolume(channels[HAMMER_CHANNEL], strength*(1.7-strength));
    play(HAMMER_CHANNEL);
+}
+
+void Sound::pickStrike(float strength)
+{
+   setVolume(channels[PICK_CHANNEL], strength*(1.7-strength));
+   play(PICK_CHANNEL);
 }
 
 //-----------------------------------Scream------------------------------------

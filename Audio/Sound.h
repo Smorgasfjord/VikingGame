@@ -56,7 +56,8 @@ public:
    static void stopWalk();
    
    //Hammer
-   static void hammerSmash();
+   static void hammerSmash(float v);
+   static void pickStrike(float v);
    
    //Scream
    static void scream();
