@@ -41,7 +41,7 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    initialize(*hammerMod, 0, 0, handles);
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .2));
-   scaleBy(glm::vec3(.25f));
+   scaleBy(glm::vec3(.20f));
    pickNormal = glm::vec3(1.0f,0.0,0.0);
    desiredRotation = previousAngle = glm::vec3(0.0f,180.0,270.0);
    setRotation(desiredRotation);
