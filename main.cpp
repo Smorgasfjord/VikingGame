@@ -70,7 +70,8 @@
 #define CAMERA_SPRING 0.95
 #define CAM_Y_MAX_OFFSET 3
 #define CAM_INIT_ANGLE 3* pi / 2
-#define NUM_LIGHTS 5
+#define NUM_LIGHTS 40 //6 per mountain face plus 4 on each corner
+#define BUFFERED_LIGHTS 6
 
 using namespace std;
 
@@ -115,6 +116,7 @@ static int frames = 0;
 
 //Light
 glm::vec3 lightPos[NUM_LIGHTS];
+glm::vec3 shadowLight;
 
 //Audio
 Jukebox music;
@@ -129,7 +131,7 @@ bool manualCamControl = false;
 
 //Establishing Shot
 static glm::vec3 flagPos = glm::vec3(29.65, 43, 20);
-bool openingShot = false;
+bool openingShot = true;
 bool started = false;
 float theta = CAM_INIT_ANGLE;
 
@@ -184,6 +186,60 @@ static void reset()
    eye.z -= camDistance;
 }
 
+//Store the lights in lightPos array
+void placeLights()
+{
+   int i = 0;
+   //Front face of the mountain
+   lightPos[i++] = glm::vec3(55, 5, 0);
+   lightPos[i++] = glm::vec3(30, 10, 5);
+   lightPos[i++] = glm::vec3(5, 10, 5);
+   lightPos[i++] = glm::vec3(35, 25, 15);
+   lightPos[i++] = glm::vec3(15, 25, 15);
+   lightPos[i++] = glm::vec3(30, 40, 25);
+   //Right face
+   lightPos[i++] = glm::vec3(0, 5, 5);
+   lightPos[i++] = glm::vec3(5, 10, 30);
+   lightPos[i++] = glm::vec3(5, 10, 55);
+   lightPos[i++] = glm::vec3(15, 25, 35);
+   lightPos[i++] = glm::vec3(15, 25, 35);
+   lightPos[i++] = glm::vec3(25, 40, 30);
+   //Back face
+   lightPos[i++] = glm::vec3(55, 5, 60);
+   lightPos[i++] = glm::vec3(30, 10, 55);
+   lightPos[i++] = glm::vec3(5, 10, 55);
+   lightPos[i++] = glm::vec3(35, 25, 45);
+   lightPos[i++] = glm::vec3(15, 25, 45);
+   lightPos[i++] = glm::vec3(30, 40, 35);
+   //Left face
+   lightPos[i++] = glm::vec3(60, 5, 5);
+   lightPos[i++] = glm::vec3(55, 10, 30);
+   lightPos[i++] = glm::vec3(55, 10, 55);
+   lightPos[i++] = glm::vec3(45, 25, 35);
+   lightPos[i++] = glm::vec3(45, 25, 35);
+   lightPos[i++] = glm::vec3(35, 40, 30);
+   //Front right corner
+   lightPos[i++] = glm::vec3(0, 10, 0);
+   lightPos[i++] = glm::vec3(10, 20, 10);
+   lightPos[i++] = glm::vec3(20, 30, 20);
+   lightPos[i++] = glm::vec3(25, 40, 25);
+   //Right back corner
+   lightPos[i++] = glm::vec3(0, 10, 60);
+   lightPos[i++] = glm::vec3(10, 20, 50);
+   lightPos[i++] = glm::vec3(20, 30, 40);
+   lightPos[i++] = glm::vec3(25, 40, 35);
+   //Back left corner
+   lightPos[i++] = glm::vec3(60, 10, 60);
+   lightPos[i++] = glm::vec3(50, 20, 50);
+   lightPos[i++] = glm::vec3(40, 30, 40);
+   lightPos[i++] = glm::vec3(35, 40, 35);
+   //Left front coner
+   lightPos[i++] = glm::vec3(60, 10, 0);
+   lightPos[i++] = glm::vec3(50, 20, 10);
+   lightPos[i++] = glm::vec3(40, 30, 20);
+   lightPos[i++] = glm::vec3(35, 40, 25);
+}
+
 /* Initialization of objects in the world. Only occurs Once */
 void setWorld()
 {
@@ -208,13 +264,8 @@ void setWorld()
    glUniform1i(mainHandles.uFogUnit, 1);
    simplePlatformMod = genSimpleModel(&platMod);
    
-   for(int i = 0; i < NUM_LIGHTS; i++)
-   {
-      lightPos[i] = glm::vec3((10 * i) + 15, 10, -5);
-   }
-
-   //Send light data to shader
-   glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
+   placeLights();
+   cout << "Lights lit";
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -394,13 +445,45 @@ void Initialize ()
    }
 }
 
+//Get the closest 6 lights to the given position and pass them to the shader
+void bufferClosestLights(glm::vec3 pos)
+{
+   glm::vec3 closestLights[BUFFERED_LIGHTS];
+   bool chosenLights[NUM_LIGHTS];
+   int placedLights = 0;
+   float lightCheckDistance = 10.0;
+   
+   for(int i = 0; i < NUM_LIGHTS; i++)
+      chosenLights[i] = false;
+   
+   while(placedLights < BUFFERED_LIGHTS)
+   {
+      for (int i = 0 ; i < NUM_LIGHTS && placedLights < BUFFERED_LIGHTS; i++) {
+         if(glm::length(lightPos[i] - pos) <= lightCheckDistance && !chosenLights[i])
+         {
+            chosenLights[i] = 1;
+            closestLights[placedLights++] = lightPos[i];
+         }
+      }
+      lightCheckDistance += 5.0;
+   }
+   //Send these lights to shader
+   glUniform3fv(mainHandles.uLightPos, BUFFERED_LIGHTS, glm::value_ptr(closestLights[0]));
+}
+
 /* Main display function */
 void Draw (void)
 {
+   glm::vec3 norm;
    //This has to happen for the world to cull properly
    SetProjectionMatrix(false);
    SetView();
    std::vector<GameObject*> drawnWorld = world.getDrawn(bjorn.mountainSide);
+   Mountain::lockOn(eye,norm);
+   //Place the shadowLight
+   shadowLight = eye;
+   shadowLight += ((eye - norm * camDistance) - eye) * ((float)(CAMERA_SPRING), 0.0f, (float)(CAMERA_SPRING / 2));
+   shadowLight.y += 1;
    
    //Shadows
    setUpShadows();
@@ -414,18 +497,17 @@ void Draw (void)
    setUpMainDraw();
    safe_glUniform3f(mainHandles.uEyePos, eye.x, eye.y, eye.z);
    safe_glUniform3f(mainHandles.uWindVec, wind.x, wind.y, wind.z);
-   
-   glUniform3fv(mainHandles.uLightPos, NUM_LIGHTS, glm::value_ptr(lightPos[0]));
-   if(openingShot)
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(eye.y) * 12.0f);
-   else
-      safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y) * 12.0f);
+
+   bufferClosestLights(eye);
+   safe_glUniform1f(mainHandles.uFogStrength, sqrt(eye.y) * 12.0f);
+
    glDisable( GL_DEPTH_TEST );
    skyBox.draw();
    glEnable( GL_DEPTH_TEST );
     
    safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
    //If its the opening shot make sure we draw on the side the camera is on
+   //Left this if check because it will be faster than calculating side everytime
    if(openingShot)
       world.draw(Mountain::getSide(eye));
    else
@@ -477,8 +559,8 @@ void setUpMainDraw()
 
 void shadow(GameObject *obj)
 {
-   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -5, 20);
-   glm::mat4 dViewMatrix = glm::lookAt(lightPos[2], lookAt, glm::vec3(0,1,0));//PROBLEM AREA
+   glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -1, 20);
+   glm::mat4 dViewMatrix = glm::lookAt(shadowLight, lookAt, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
    // Send our transformation to the currently bound shader,
    glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
