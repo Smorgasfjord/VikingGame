@@ -495,7 +495,7 @@ void shadow(GameObject *obj)
       // Index buffer
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.meshes[i].buffDat.ibo);
       // Draw the shadow onto the frame
-      glDrawElements(GL_TRIANGLES,3 * obj->model.meshes[i].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
+      glDrawElements(GL_TRIANGLES,3 * obj->model.meshes[i].buffDat.numFaces, GL_UNSIGNED_INT, 0);
    }
    
    //All children, this is a little silly since it's so similar oh well
@@ -510,7 +510,7 @@ void shadow(GameObject *obj)
          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->model.children[j].meshes[k].buffDat.ibo);
          // Draw the shadow onto the frame
 
-         glDrawElements(GL_TRIANGLES,3 * obj->model.children[j].meshes[k].buffDat.numFaces, GL_UNSIGNED_SHORT, 0);
+         glDrawElements(GL_TRIANGLES,3 * obj->model.children[j].meshes[k].buffDat.numFaces, GL_UNSIGNED_INT, 0);
       }
    }
    
