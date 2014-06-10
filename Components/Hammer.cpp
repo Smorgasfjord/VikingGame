@@ -14,7 +14,7 @@
 #define PICK_TIP1 0
 #define PICK_TIP2 2
 #define HANDLE_NODE 0
-#define WTF_NODE 0
+#define WTF_NODE 4
 #define WOOD_NODE 2
 #define HAMMER_NODE 1
 #define PICK_NODE 3
@@ -41,7 +41,7 @@ void Hammer::setInWorld(World * world, Bjorn *character, GameModel *hammerMod, G
    initialize(*hammerMod, 0, 0, handles);
    setPos(character->getPos());
    moveBy(glm::vec3(0, 0, .2));
-   scaleBy(glm::vec3(.25f));
+   scaleBy(glm::vec3(.20f));
    pickNormal = glm::vec3(1.0f,0.0,0.0);
    desiredRotation = previousAngle = glm::vec3(0.0f,180.0,270.0);
    setRotation(desiredRotation);
@@ -87,8 +87,12 @@ void Hammer::updatePos(float x, float y)
 {
    float xOff, zOff;
    zOff = -0.2*cos((float)mountainSide*M_PI/4.0);
-   xOff = 0.2*cos(((float)mountainSide+4.0)*M_PI/4.0);
-   if (!bjorn->facingRight) x *= -1.0;
+   xOff = 0.2*cos(((float)mountainSide+2.0)*M_PI/4.0);
+   if (!bjorn->facingRight) {
+      x *= -1.0;
+      zOff *= -1.0;
+      xOff *= -1.0;
+   }
    bjornOffset = glm::vec3(bjorn->getRotMat() * glm::vec4(0.0f,y,x,0.0)) + glm::vec3(xOff,0.0,zOff);
    if (glm::length(bjornOffset) > 1.4) {
       bjornOffset *= 1.4f / glm::length(bjornOffset);
@@ -109,34 +113,6 @@ void Hammer::updateAngle(float x, float y)
       direction = hammerSide ? -1.0 : 1.0;
       //Rotation is flipped if the hammer is flipped
       desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
-      /*switch(bjorn->mountainSide) {
-      case MOUNT_FRONT:
-         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
-         break;
-      case MOUNT_BACK:
-         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
-         break;
-      case MOUNT_RIGHT:
-         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
-         break;
-      case MOUNT_LEFT:
-         desiredRotation = glm::vec3(desiredRotation.x, desiredRotation.y, direction * angle * (180.0 / pi));
-         break;
-      case MOUNT_FR:
-         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
-         break;
-      case MOUNT_RB:
-         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
-         break;
-      case MOUNT_BL:
-         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * -angle * (90.0 / pi));
-         break;
-      case MOUNT_LF:
-         desiredRotation = glm::vec3(-angle * (90.0 / pi), desiredRotation.y, direction * angle * (90.0 / pi));
-         break;
-      default:
-         break;
-      }*/
    }
    if (desiredRotation.x > 180.0) desiredRotation.x -= 360.0;
    else if (desiredRotation.x < -180.0) desiredRotation.x += 360.0;
@@ -398,8 +374,6 @@ void Hammer::update(double timeStep) {
                moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH));
                pickDepth = MAX_PICK_DEPTH;
                bjorn->addVelocity(-pickMove*pickDepth/MAX_PICK_DEPTH);
-               //moveBy(pickMove*(1.0f-pickDepth/MAX_PICK_DEPTH)/glm::length(pickMove));
-               //pickDepth += (1.0f-pickDepth/MAX_PICK_DEPTH)/glm::length(pickMove);
             }
             else {
                moveBy(pickMove);
@@ -419,7 +393,10 @@ void Hammer::update(double timeStep) {
          locked = true;
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          activeForce = (getVel() - projection) * glm::vec3(0.1,1.0f,0.1);
-         //bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
+         if (glm::length(activeForce) > MAX_FORCE) {
+            activeForce *= MAX_FORCE / glm::length(activeForce);
+         }
+         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          bjorn->suspend();
       }
       else if (dat.thisObj.mesh != HAMMER_NODE && dat.thisObj.mesh != STUDS && dat.thisObj.mesh != STUD_BAND && !pickCollision) {
