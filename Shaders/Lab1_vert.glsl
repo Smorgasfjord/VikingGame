@@ -1,5 +1,5 @@
 //#version 120
-#define NUM_LIGHTS 5
+#define NUM_LIGHTS 6
 struct Material {
    vec3 aColor;
    vec3 dColor;
