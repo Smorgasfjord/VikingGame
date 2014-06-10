@@ -1,9 +1,8 @@
 //#version 120
 #define FOG_TEX_SIZE 512.0
-#define NUM_LIGHTS 5
-#define NUM_LIGHTS_F 5.0
+#define NUM_LIGHTS 6
 #define HEIGHT_TO_VIEW_DIST 100.0
-#define LIGHT_RADIUS 15.0
+#define LIGHT_RADIUS 10.0
 #define ATTENUATION_CONST 1.0
 #define ATTENUATION_LINEAR .8 / LIGHT_RADIUS
 #define ATTENUATION_QUADRATIC .6 / (LIGHT_RADIUS * LIGHT_RADIUS)
@@ -96,5 +95,4 @@ void main() {
    fogCol = texture2D(uFogUnit,fogIdx);
 
    gl_FragColor = vec4(phong * texColor.xyz * (1.0-attenuation) + fogCol.xyz * attenuation * 0.8, 1.0);
-   //gl_FragColor = vec4(phong, 1.0);
 }
