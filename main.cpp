@@ -104,6 +104,8 @@ int hammerTime;
 Transform_t hammerResetState;
 GameModel hammerMod;
 Hammer hammer;
+bool zoeMode = false;
+glm::vec2 zoeLoc;
 
 GameObject skyBox;
 GameModel skyBoxMod;
@@ -660,6 +662,10 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
    {
       switch( key ) {
          //Movement left/right
+      case GLFW_KEY_Z:
+         zoeMode = !zoeMode;
+         zoeLoc = currentMouseLoc;
+         break;
          case GLFW_KEY_D:
             moveRight = true;
             moveLeft = false;
@@ -721,6 +727,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
    }
 }
 
+void ZoeSmash(float timeStep) {
+   float angle = atan2(zoeLoc.y,zoeLoc.x);
+   float direction = bjorn.facingRight ? -1.0 : 1.0;
+   zoeLoc.x = 0.25f*cos(angle + direction*timeStep*10.0);
+   zoeLoc.y = 0.25f*sin(angle + direction*timeStep*10.0);
+   currentMouseLoc = zoeLoc;
+}
+
 void Animate()
 {
    double curTime = glfwGetTime(), timeStep;
@@ -771,6 +785,7 @@ void Animate()
    {
       wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
       
+      if (zoeMode) ZoeSmash(timeStep);
       hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
       hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
       prevMouseLoc = currentMouseLoc;
