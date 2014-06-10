@@ -251,7 +251,6 @@ void setWorld()
    std::vector<Platform> platforms;
    
    //Initialize models
-   
    glActiveTexture(GL_TEXTURE0);
    skyBoxMod = loadModel("Models/SkyBox.dae", mainHandles);
    mountMod = loadModel("Models/mountain.dae", mainHandles);
@@ -525,7 +524,7 @@ void setUpShadows()
    glViewport(0,0,FRAMEBUFFER_RES,FRAMEBUFFER_RES); // Render on the whole framebuffer
 
    glEnable(GL_CULL_FACE);
-   glCullFace(GL_BACK);
+   glCullFace(GL_FRONT);
    glEnable(GL_DEPTH_TEST);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glUseProgram(depthHandles.ShadeProg);
