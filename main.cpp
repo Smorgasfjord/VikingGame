@@ -266,7 +266,7 @@ void setWorld()
    simplePlatformMod = genSimpleModel(&platMod);
    
    placeLights();
-   cout << "Lights lit";
+   cout << "Lights lit\n";
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -383,7 +383,6 @@ void InstallShader(const GLchar *vShaderName, const GLchar *fShaderName, GLHandl
    handles->depthMatrixID = safe_glGetUniformLocation(ShadeProg, "uDepthMVP");
    handles->shadowMapID = safe_glGetUniformLocation(ShadeProg, "uShadowMap");
    handles->depthBiasID = safe_glGetUniformLocation(ShadeProg, "uDepthBiasMVP");
-   handles->biasMatrix = safe_glGetUniformLocation(ShadeProg, "biasMatrix");
    
    printf("sucessfully installed shader %d\n", ShadeProg);
 }
@@ -479,11 +478,11 @@ void Draw (void)
    //This has to happen for the world to cull properly
    SetProjectionMatrix(false);
    SetView();
-   std::vector<GameObject*> drawnWorld = world.getDrawn(bjorn.mountainSide);
+   std::vector<GameObject*> drawnWorld = world.getDrawn(Mountain::getSide(eye));
    Mountain::lockOn(eye,norm);
    //Place the shadowLight
    shadowLight = eye;
-   shadowLight += ((eye - norm * camDistance) - eye) * ((float)(CAMERA_SPRING), 0.0f, (float)(CAMERA_SPRING / 2));
+   shadowLight += ((eye - norm * camDistance) - eye) * ((float)CAMERA_SPRING, 0.0f, (float)CAMERA_SPRING);
    shadowLight.y += 1;
    
    //Shadows
@@ -662,11 +661,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
    {
       switch( key ) {
          //Movement left/right
-      case GLFW_KEY_Z:
-         zoeMode = !zoeMode;
-         zoeLoc = currentMouseLoc;
-         Sound::toggleZoeMode();
-         break;
+         case GLFW_KEY_Z:
+            zoeMode = !zoeMode;
+            zoeLoc = currentMouseLoc;
+            Sound::toggleZoeMode();
+            break;
          case GLFW_KEY_D:
             moveRight = true;
             moveLeft = false;
@@ -709,6 +708,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
          case GLFW_KEY_ENTER:
             started = true;
             break;
+          case GLFW_KEY_ESCAPE:
+             exit( EXIT_SUCCESS );
+             break;
        }
    }
    if (action == GLFW_RELEASE) {
@@ -786,7 +788,9 @@ void Animate()
    {
       wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
       
-      if (zoeMode) ZoeSmash(timeStep);
+      if(zoeMode)
+         ZoeSmash(timeStep);
+
       hammer.updateAngle(currentMouseLoc.x, currentMouseLoc.y-0.05f);
       hammer.updatePos(currentMouseLoc.x * camDistance, currentMouseLoc.y * camDistance);
       prevMouseLoc = currentMouseLoc;
@@ -861,8 +865,6 @@ int main( int argc, char *argv[] )
    
    if (!glfwInit())
       exit(EXIT_FAILURE);
-   
-   //glfwWindowHint(GLFW_SAMPLES, 4);
 
    window = glfwCreateWindow(g_width, g_height, "Climb the Mountain!", NULL, NULL);
    if (!window)
