@@ -19,16 +19,18 @@ string files[] = {
    "Audio/Effects/footsteps.mp3",
    "Audio/Effects/hammerSmash.mp3",
    "Audio/Effects/scream.mp3",
-   "Audio/Effects/pickStrike.mp3"
+   "Audio/Effects/pickStrike.mp3",
+   "Audio/Music/YaketySax.mp3"
 };
-#define numChannels 5
+#define numChannels 6
 
 enum channelUsage {
    BACKGROUND_CHANNEL = 0,
    WALK_CHANNEL,
    HAMMER_CHANNEL,
    SCREAM_CHANNEL,
-   PICK_CHANNEL
+   PICK_CHANNEL,
+   ZOE_CHANNEL
 };
 
 //Add background music here
@@ -39,7 +41,10 @@ string backgroundMusic[] = {
    "Audio/Music/EverythingFadesToGray.mp3",
    "Audio/Music/LastOfTheWilds.mp3",
 };
-#define backgroundFiles 4
+
+string zoeModeMusic = "Audio/Music/YaketySax.mp3";
+
+#define backgroundFiles 5
 int jukeboxIndex = 0;
 
 /******** CLASS VARIABLE DECLARATIONS ********/
@@ -121,6 +126,20 @@ void Sound::pauseJukebox()
 void Sound::setJukeboxVolume(float volume)
 {
    setVolume(channels[BACKGROUND_CHANNEL], volume);
+}
+
+void Sound::toggleZoeMode()
+{
+   FMOD_BOOL paused;
+   pauseJukebox();
+   FMOD_Channel_GetPaused(channels[BACKGROUND_CHANNEL], &paused);
+   if (paused) {
+      setVolume(channels[ZOE_CHANNEL], 1.0f);
+      play(ZOE_CHANNEL);
+   }
+   else {
+      togglePause(ZOE_CHANNEL);
+   }
 }
 
 //-------------------------------------Walking---------------------------------

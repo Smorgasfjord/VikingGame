@@ -665,6 +665,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
       case GLFW_KEY_Z:
          zoeMode = !zoeMode;
          zoeLoc = currentMouseLoc;
+         Sound::toggleZoeMode();
          break;
          case GLFW_KEY_D:
             moveRight = true;

@@ -51,6 +51,8 @@ public:
    static void pauseJukebox();
    static void setJukeboxVolume(float volume);
 
+   static void toggleZoeMode();
+
    //Walk sounds
    static void walk();
    static void stopWalk();
