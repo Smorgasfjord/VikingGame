@@ -390,7 +390,11 @@ void Hammer::update(double timeStep) {
          }
          //                  m/s
          if (glm::length(bjornOffset) < 1.79f) {
-            bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));//(float)timeStep);
+            bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
+         }
+         else if (glm::length(bjornOffset) > 2.0f) {
+            setPos(bjorn->getPos());
+            setVelocity(glm::vec3(0.0f));
          }
          else {
             bjorn->addVelocity((getPos() - bjorn->getPos())*0.05f);

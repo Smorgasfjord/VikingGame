@@ -150,8 +150,9 @@ void Bjorn::update(double timeStep) {
       collidedWith = world->getObjectByIndex(cData.hitObj.obj);
       //Nudge bjorn towards the correct position on the platform
       newPos = Mountain::lockOn(getPos(),displacement);
-      adjustment = ((newPos + displacement * glm::vec3(-1.0f,0.0f,-1.0f)) - getPos());
-      moveBy(adjustment/(glm::length(adjustment)+1.0f));
+         moveBy(((newPos+displacement*glm::vec3(-1.0f+(0.2*getVel().y),0.001f,-1.0f+(0.2*getVel().y))) - getPos())/10.0f);
+      //adjustment = ((newPos + displacement * glm::vec3(-1.0f,0.0f,-1.0f)) - getPos());
+      //moveBy(adjustment/(glm::length(adjustment)+1.0f));
       
       setVelocity((getVel() * 0.5f + glm::reflect(getVel(), cData.collisionNormal)) / 2.0f + cData.collisionNormal * (float)timeStep * 0.1f);
       if (cData.collisionNormal.y > 0.5) {
