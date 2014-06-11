@@ -39,8 +39,6 @@ class Mountain : public GameObject
    public:
       Mountain();
       Mountain(GLHandles hand, GameModel *model);
-      //static float getZ(glm::vec3 pos);
-      //static float getX(glm::vec3 pos);
       static int getSide(glm::vec3 pos);
       static glm::vec3 lockOn(glm::vec3 pos, glm::vec3 & norms);
    private:

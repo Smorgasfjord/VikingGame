@@ -53,8 +53,9 @@ class World
       glm::vec3 getStart();
    private:
       void SetMaterial(int i);
-      std::vector<GameObject> cull(int mountainSide);
+      std::vector<GameObject *> cull(int mountainSide);
       std::vector<Platform> platforms;
+      std::vector<GameObject *> objectsToDraw;
       Mountain mount;
       //std::vector<glm::vec3> groundTiles;
       ChunkWorld space; //rename

@@ -51,28 +51,23 @@ void World::SetMaterial(int i) {
 //This should be smarter
 std::vector<GameObject*> World::getDrawn(int mountainSide)
 {
-   std::vector<GameObject*>objectsInScene;
-   for (int i = 0; i < platforms.size(); i++) {
-      objectsInScene.push_back(&platforms.at(i));
-   }
+   std::vector<GameObject*>objectsInScene = cull(mountainSide);
+   objectsToDraw = objectsInScene;
    objectsInScene.push_back(&mount);
+  
    return objectsInScene;
 }
 
 void World::draw(int mountainSide)
 {
-   std::vector<GameObject>objectsInScene;
-   
 	safe_glEnableVertexAttribArray(handles->aPosition);
 	safe_glEnableVertexAttribArray(handles->aNormal);
    
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    mount.draw();
-   
-   objectsInScene = cull(mountainSide);
 
-   for (std::vector<GameObject>::iterator it = objectsInScene.begin(); it != objectsInScene.end(); ++ it) {
-      it->draw();
+   for (int i = 0; i < objectsToDraw.size(); i++) {
+      objectsToDraw.at(i)->draw();
    }
    
    //clean up
@@ -96,9 +91,9 @@ float testPlane(glm::vec4 row1, glm::vec4 row2, glm::vec4 point, float radius)
 }
 
 //Returns a vector of GameObjects which need to be drawn
-std::vector<GameObject> World::cull(int mountainSide)
+std::vector<GameObject*> World::cull(int mountainSide)
 {
-   vector<GameObject> objects;
+   vector<GameObject*> objects;
    //Get mvp matrix
    glm::mat4 model, view, projection, mvp;
    float radius;
@@ -108,13 +103,13 @@ std::vector<GameObject> World::cull(int mountainSide)
    glGetUniformfv(handles->ShadeProg, handles->uViewMatrix, glm::value_ptr(view));
    glGetUniformfv(handles->ShadeProg, handles->uProjMatrix, glm::value_ptr(projection));
    
-   for (std::vector<Platform>::iterator it = platforms.begin(); it != platforms.end(); ++ it) {
+   for (int i = 0; i < platforms.size(); i++) {
       //This will cull any platforms on the opposite side of the mountain
-      if (((mountainSide + it->mountainSide) % 4 != 0) || (mountainSide == it->mountainSide)) {
+      if (((mountainSide + platforms.at(i).mountainSide) % 4 != 0) || (mountainSide == platforms.at(i).mountainSide)) {
          //Not on the back side, check against each plane of view frustum
          //Get the model transform for this Object
-         model = it->model.state.transform;
-         radius = max(it->getScale().x, it->getScale().z);
+         model = platforms.at(i).model.state.transform;
+         radius = max(platforms.at(i).getScale().x, platforms.at(i).getScale().z);
          mvp = projection * view * model;
          //Negative Z
          if(testPlane(glm::row(mvp, 2), glm::row(mvp, 3), platformCenter, radius) > 0)
@@ -134,10 +129,9 @@ std::vector<GameObject> World::cull(int mountainSide)
                         //Positive X
                         if(testPlane(-glm::row(mvp, 0), glm::row(mvp, 3), platformCenter, radius) > 0)
                         {
-                           objects.push_back(*it);
+                           objects.push_back(&platforms.at(i));
                         }
                      }
-                     
                   }
                }
             }

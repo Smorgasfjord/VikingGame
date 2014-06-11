@@ -477,7 +477,7 @@ void Draw (void)
    //This has to happen for the world to cull properly
    SetProjectionMatrix(false);
    SetView();
-   std::vector<GameObject*> drawnWorld = world.getDrawn(bjorn.mountainSide);
+   std::vector<GameObject*> drawnWorld = world.getDrawn(Mountain::getSide(eye));
    Mountain::lockOn(eye,norm);
    //Place the shadowLight
    shadowLight = eye;
