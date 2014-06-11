@@ -284,8 +284,6 @@ void initDustParticles(float xPos, float yPos) {
      dustIdx, GL_STATIC_DRAW);
 }
 
-
-
 void initSnowParticles() {
    initSnowParticles(rand(), rand());
 }
@@ -302,7 +300,7 @@ void initSnowParticles(float xPos, float yPos) {
       free(snow);
    snow = (PARTICLE *)malloc(NUMBER_OF_SNOW_PARTICLES * sizeof(PARTICLE));
 
-   for (index=0;index<NUMBER_OF_SNOW_PARTICLES;index++)
+   for (index = 0; index < NUMBER_OF_SNOW_PARTICLES; index++)
       createSnowParticle(index, xPos, yPos, rand()%maxPos);
 
    for(unsigned int i = 0; i< NUMBER_OF_SNOW_PARTICLES; i++)
@@ -390,6 +388,49 @@ void moveParticles()
 
 
 }
+
+void drawParticles(GLHandles handles)
+{
+   // Compute the MVP matrix from keyboard and mouse input
+   glm::mat4 ModelMatrix = scale(mat4(1.0f), vec3(5.0));
+   
+   // Send our transformation to the currently bound shader
+   glUniformMatrix4fv(handles.uModelMatrix, 1, GL_FALSE, &ModelMatrix[0][0]);
+   
+   float sizeScale = 10.0;
+   glPointSize(sizeScale);
+   
+   // 1rst attribute buffer : vertices
+   glEnableVertexAttribArray(handles.aPosition);
+   glBindBuffer(GL_ARRAY_BUFFER, getDustBuff());
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+   //attibute, size, type, normalized, stride, array buffer offset
+   
+   
+   // Index buffer
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getDustInxBuff());
+   
+   
+   glDrawElements(GL_POINTS, NUMBER_OF_DUST_PARTICLES, GL_UNSIGNED_SHORT, (void*)0);
+   glPointSize(1 / sizeScale);
+   
+   sizeScale = 2;
+   glPointSize(sizeScale);
+   
+   // 1rst attribute buffer : vertices
+   glEnableVertexAttribArray(handles.aPosition);
+   glBindBuffer(GL_ARRAY_BUFFER, getSnowBuff());
+   glVertexAttribPointer(0, 3,GL_FLOAT,GL_FALSE,0,(void*)0);
+   //attibute, size, type, normalized, stride, array buffer offset
+   
+   // Index buffer
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getSnowInxBuff());
+   
+   glDrawElements(GL_POINTS, NUMBER_OF_SNOW_PARTICLES, GL_UNSIGNED_SHORT, (void*)0);
+   
+   glPointSize(1 / sizeScale);
+}
+
 
 GLuint getDustBuff()
 {

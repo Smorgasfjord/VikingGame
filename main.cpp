@@ -52,6 +52,7 @@
 #include "Utils/CMeshLoaderSimple.h"
 #include "Utils/GLHandles.h"
 #include "Utils/GLSL_helper.h"
+#include "Utils/particles.hpp"
 
 //GLM
 #include "glm/glm.hpp"
@@ -125,7 +126,7 @@ Jukebox music;
 
 //Camera
 float camDistance = 4.0f;
-glm::vec3 eye, lookAt;
+glm::vec3 eye, lookAtVec;
 glm::vec3 upV = glm::vec3(0.0, 1.0f, 0.0);
 int currentSide;
 float camYOffset = 0.0f;
@@ -133,7 +134,7 @@ bool manualCamControl = false;
 
 //Establishing Shot
 static glm::vec3 flagPos = glm::vec3(29.65, 43, 20);
-bool openingShot = true;
+bool openingShot = false;
 bool started = false;
 float theta = CAM_INIT_ANGLE;
 
@@ -159,7 +160,7 @@ void SetProjectionMatrix(bool drawText) {
 /* camera controls */
 void SetView() {
    glm::mat4 view;
-   view = glm::lookAt(eye, lookAt, upV);
+   view = glm::lookAt(eye, lookAtVec, upV);
    safe_glUniformMatrix4fv(mainHandles.uViewMatrix, glm::value_ptr(view));
 }
 
@@ -183,7 +184,7 @@ static void reset()
    world.updateObject(&bjorn, bjorn.modelIdx);
    world.updateObject(&hammer, hammer.modelIdx);
    
-   eye = lookAt = bjorn.getPos();
+   eye = lookAtVec = bjorn.getPos();
    eye.y += 1.5f;
    eye.z -= camDistance;
 }
@@ -268,6 +269,8 @@ void setWorld()
    placeLights();
    cout << "Lights lit\n";
    
+   initSnowParticles();
+   
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
    mount = Mountain(mainHandles, &mountMod);
@@ -279,13 +282,13 @@ void setWorld()
    //This stuff all assumes we start on the front of the mountain
    if(openingShot)
    {
-      eye = lookAt = flagPos;
-      lookAt.z += 10.0f;
+      eye = lookAtVec = flagPos;
+      lookAtVec.z += 10.0f;
    }
    else
    {
-      eye = lookAt = world.getStart();
-      lookAt.z -= camDistance;
+      eye = lookAtVec = world.getStart();
+      lookAtVec.z -= camDistance;
    }
    currentSide = MOUNT_FRONT;
    skyBox.setPos(eye);
@@ -297,7 +300,6 @@ void setWorld()
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.setInWorld(&world, &bjorn, &hammerMod, mainHandles);
-   //hammerResetState = hammer.getState();
    hammer.save();
    cout << "Hammer held\n";
    music.start();
@@ -514,6 +516,14 @@ void Draw (void)
       world.draw(bjorn.mountainSide);
    bjorn.draw();
    hammer.draw();
+   //Particles
+   /*
+   drawParticles(mainHandles);
+   if( glfwGetTime() > .1)
+   {
+      moveParticles();
+   }*/
+
 	//Disable the shader
 	glUseProgram(0);
 }
@@ -560,7 +570,7 @@ void setUpMainDraw()
 void shadow(GameObject *obj)
 {
    glm::mat4 dProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -1, 20);
-   glm::mat4 dViewMatrix = glm::lookAt(shadowLight, lookAt, glm::vec3(0,1,0));//PROBLEM AREA
+   glm::mat4 dViewMatrix = glm::lookAt(shadowLight, lookAtVec, glm::vec3(0,1,0));//PROBLEM AREA
    glm::mat4 depthMVP = dProjectionMatrix * dViewMatrix * obj->model.state.transform;
    // Send our transformation to the currently bound shader,
    glUniformMatrix4fv(depthHandles.depthMatrixID, 1, GL_FALSE, glm::value_ptr(depthMVP));
@@ -756,29 +766,29 @@ void Animate()
    timeStep = curTime - lastUpdated;
    
    if(openingShot)
-      wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(lookAt.y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
+      wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(lookAtVec.y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
    
    if(openingShot && started)
    {
       theta += timeStep;
-      if(lookAt.y > bjorn.getPos().y)
-         lookAt.y = eye.y = flagPos.y - ((theta - CAM_INIT_ANGLE) * 3);
+      if(lookAtVec.y > bjorn.getPos().y)
+         lookAtVec.y = eye.y = flagPos.y - ((theta - CAM_INIT_ANGLE) * 3);
       
-      if(lookAt.y <= bjorn.getPos().y)
+      if(lookAtVec.y <= bjorn.getPos().y)
       {
          Mountain::lockOn(bjorn.getPos(),norm);
          camYOffset += (CAMERA_SPRING / 2) * (bjorn.getPos().y - eye.y + 1.5f);
          eye += ((bjorn.getPos() - norm * camDistance) - eye) * ((float)(CAMERA_SPRING / 2), 0.0f, (float)(CAMERA_SPRING / 2));
-         lookAt.x = eye.x;
+         lookAtVec.x = eye.x;
          if(bjorn.getPos().x - eye.x < .4f && bjorn.getPos().x - eye.x > -.4f)
          {
-            lookAt = bjorn.getPos();
+            lookAtVec = bjorn.getPos();
             openingShot = false;
          }
       }
       else
       {
-         float radius = ((flagPos.y - lookAt.y)* .9f) + 10.0f;
+         float radius = ((flagPos.y - lookAtVec.y)* .9f) + 10.0f;
          eye.x = flagPos.x + radius * cos(theta);
          eye.z = (flagPos.z + 10.0f) + radius * sin(theta);
       }
@@ -787,7 +797,7 @@ void Animate()
    else if(!openingShot)
    {
       wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
-      
+      initDustParticles();
       if(zoeMode)
          ZoeSmash(timeStep);
 
@@ -830,7 +840,7 @@ void Animate()
       }
       
       //Update camera
-      lookAt = bjorn.getPos();
+      lookAtVec = bjorn.getPos();
 
       //Get the normal to move the camera along
       Mountain::lockOn(bjorn.getPos(),norm);
@@ -849,7 +859,7 @@ void Animate()
       eye += camAdjust * (glm::length(camAdjust)*4.0f+1.0f);
    }
    mWidth = glm::vec3((float)MOUNT_WIDTH);
-   skyBox.setPos(eye + (mWidth - lookAt * 2.0f) / mWidth * 0.5f);
+   skyBox.setPos(eye + (mWidth - lookAtVec * 2.0f) / mWidth * 0.5f);
    lastUpdated = curTime;
 }
 

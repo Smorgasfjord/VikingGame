@@ -2,26 +2,28 @@
 #define PARTICLES_HPP
 
 // Include standard headers
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
 #include <string>
 #include <iostream>
-#include "math.h"
+
 #include <time.h>
 
 // Include GLEW
-#include </home/nclarke/Desktop/deps/glew/include/GL/glew.h>
+#include <glew.h>
 
 // Include GLFW
-#include </home/nclarke/Desktop/deps/glfw/include/GLFW/glfw3.h>
+#include <glfw3.h>
 
 // Include GLM
-#include </home/nclarke/Desktop/deps/glm/include/glm/glm.hpp>
-#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/matrix_transform.hpp>
-#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/type_ptr.hpp> //value_ptr
-#include </home/nclarke/Desktop/deps/glm/include/glm/gtc/matrix_transform.hpp>
-#include </home/nclarke/Desktop/deps/glm/include/glm/gtx/transform.hpp>
+#include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
+#include "../glm/gtc/type_ptr.hpp"
+#include "../glm/gtx/transform.hpp"
+
+#include "GLHandles.h"
 using namespace glm;
 
 #define NUMBER_OF_DUST_PARTICLES 20
@@ -71,6 +73,7 @@ void initSnowParticles(float, float);
 
 
 void moveParticles();
+void drawParticles(GLHandles handles);
 
 
 GLuint getDustBuff();
