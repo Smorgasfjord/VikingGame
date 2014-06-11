@@ -170,9 +170,9 @@ void Bjorn::update(double timeStep) {
       else {
          grounded = false;
          jumping = true;
-         newPos = Mountain::lockOn(getPos(),displacement);
-         moveBy(((newPos+displacement*glm::vec3(-1.0f+(0.2*getVel().y),0.0f,-1.0f+(0.2*getVel().y))) - getPos())/10.0f);
       }
+      newPos = Mountain::lockOn(getPos(),displacement);
+      moveBy(((newPos+displacement*glm::vec3(-1.0f+(0.2*getVel().y),0.0f,-1.0f+(0.2*getVel().y))) - getPos())/10.0f);
    }
 }
 
