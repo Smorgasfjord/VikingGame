@@ -1,7 +1,6 @@
 /*
- *  CPE 476 Lab 1
- *  Planes fly around an area and bounce off each other. You must run into them
- *  to make them crash.
+ *  CPE 476 Smorgasfjord
+ *  Venture up the mountain using only your strength and your trusty hammer
  *
  *  Created by Taylor Woods on 4/10/14
  *
@@ -134,7 +133,7 @@ bool manualCamControl = false;
 
 //Establishing Shot
 static glm::vec3 flagPos = glm::vec3(29.65, 43, 20);
-bool openingShot = false;
+bool openingShot = true;
 bool started = false;
 float theta = CAM_INIT_ANGLE;
 
