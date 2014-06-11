@@ -12,10 +12,14 @@
 #include <time.h>
 
 // Include GLEW
+#ifndef __unix__
 #include <glew.h>
-
 // Include GLFW
 #include <glfw3.h>
+#else 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+#endif
 
 // Include GLM
 #include "../glm/glm.hpp"

@@ -258,7 +258,7 @@ void setWorld()
    mountMod = loadModel("Models/mountain.dae", mainHandles);
    platMod = loadModel("Models/platform_2.dae", mainHandles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", mainHandles);
-   bjornMod = loadModel("Models/bjorn_v1.3.dae", mainHandles);
+   bjornMod = loadModel("Models/bjorn2.0.dae", mainHandles);
 
    glActiveTexture(GL_TEXTURE1);
    fogTex = LoadGLTextures("Models/FogTexture.png");

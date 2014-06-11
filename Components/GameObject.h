@@ -68,6 +68,7 @@ class ObjectNode {
    public:
       vector<ObjectMesh> meshes;
       vector<ObjectNode> children;
+      vector<KeyFrame> keys;
       string name;
       Transform_t state;
 
@@ -122,6 +123,7 @@ class GameObject {
          gravityAffected = 1;
          mass = 1.0;
          collisionGroup = 0;
+         lastUpdated = 0.0;
       }
 
       void copyTo(GameObject & obj);
