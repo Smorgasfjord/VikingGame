@@ -297,7 +297,6 @@ void setWorld()
    cout << "Bjorn bound\n";
    hammer = Hammer("homar");
    hammer.setInWorld(&world, &bjorn, &hammerMod, mainHandles);
-   //hammerResetState = hammer.getState();
    hammer.save();
    cout << "Hammer held\n";
    music.start();
