@@ -167,8 +167,6 @@ void Hammer::step(double timeStep)
    if (glm::length(rotIncrement) > MAX_ROT * 2.0f) {
       rotIncrement = -rotIncrement;
    }
-   //printf("desired: (%f,%f,%f), current: (%f,%f,%f), increment: (%f,%f,%f)\n", 
-   //      desiredRotation.x,desiredRotation.y,desiredRotation.z, rotFix.x, rotFix.y, rotFix.z, rotIncrement.x, rotIncrement.y, rotIncrement.z);
    if (glm::length(rotIncrement) > MAX_ROT) {
       rotIncrement *= MAX_ROT / glm::length(rotIncrement);
    }
@@ -180,9 +178,7 @@ void Hammer::step(double timeStep)
    }
    if (!locked && !manualLocked) {
       rotateBy(rotIncrement);
-      //pickNormal = glm::vec3(getRotMat() * glm::vec4(-0.856474,-0.516190, 0.0,0.0f)) * glm::vec3(1.0f,1.0,1.0);
       pickNormal = glm::vec3(getRotMat() * glm::vec4(-1.0,0.0, 0.0,0.0f)) * glm::vec3(1.0f,1.0,1.0);
-      //printf("pick normal: (%f,%f,%f)\n",pickNormal.x,pickNormal.y,pickNormal.z);
    }
    moveBy(getVel()*(float)timeStep);
    
@@ -196,17 +192,10 @@ void Hammer::update(double timeStep) {
    CollisionData dat;
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
-      
-      /*printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
-             dat.thisObj.tri, dat.thisObj.mesh, dat.hitObj.obj, dat.hitObj.tri,
-             dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
-             dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);*/
-       
       displacement = dat.collisionAngle-dat.collisionStrength;
       //hammer collides with object
       if ((dat.thisObj.mesh == HAMMER_NODE || 
                dat.thisObj.mesh == STUDS || dat.thisObj.mesh == STUD_BAND)&& !pickCollision) {
-         printf("hammer collides with object\n");
          // rotate back
          setRotation(previousAngle);
          // move back
@@ -215,7 +204,7 @@ void Hammer::update(double timeStep) {
          setVelocity(-activeForce);
          // give bjorn force
          activeForce = dat.collisionStrength * (float)(GRAVITY *0.8);
-         bjorn->addVelocity(-activeForce);///(float)timeStep);
+         bjorn->addVelocity(-activeForce);
          // lock rotation temporarily
          lockTime = 0.1;
          locked = true;
@@ -225,7 +214,6 @@ void Hammer::update(double timeStep) {
       }
       //pick sank into object
       else if ((dat.thisObj.mesh != PICK_NODE) && pickCollision && !hammerCollision) {
-         printf("pick sank into object\n");
          // move back slightly
          moveBy(-getVel()*(float)timeStep);
          setRotation(previousAngle);
@@ -241,7 +229,6 @@ void Hammer::update(double timeStep) {
       }
       //pick moved while in object
       else if ((dat.thisObj.mesh != PICK_NODE) && pickCollision && hammerCollision) {
-         printf("pick moved while in object\n");
          // rotate back
          setRotation(previousAngle);
          // move back
@@ -274,13 +261,11 @@ void Hammer::update(double timeStep) {
             pickDepth -= glm::length(pickMove);
             bjorn->addVelocity(-pickMove);
          }
-         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));//(float)timeStep);
-         //bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
+         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));
       }
       //pick hit object
       else if (dat.thisObj.mesh == PICK_NODE && !hammerCollision && !pickCollision && 
             glm::length(pickNormal * glm::normalize(dat.collisionAngle)) > 0.7f) {
-         printf("pick hit object\n");
          pickDepth = 0.0;
          // lock rotation
          lockTime = 0.5;
@@ -321,7 +306,6 @@ void Hammer::update(double timeStep) {
       }
       //pick partially in object
       else if (dat.thisObj.mesh == PICK_NODE && !hammerCollision && pickCollision) {
-         printf("pick partially in object\n");
          // lock rotation
          lockTime = 0.5;
          locked = true;
@@ -361,7 +345,6 @@ void Hammer::update(double timeStep) {
       }
       //pick pulling out of object
       else if (dat.thisObj.mesh == PICK_NODE && hammerCollision && pickCollision) {
-         printf("pick pulling out of object\n");
          // move back
          moveBy(-getVel()*(float)timeStep);
          // allow movement along insertion angle
@@ -384,7 +367,6 @@ void Hammer::update(double timeStep) {
             pickDepth -= glm::length(pickMove);
             bjorn->addVelocity(-pickMove);
          }
-         //printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          setRotation(previousAngle);
          // lock rotation
          lockTime = 1.0;
@@ -398,8 +380,6 @@ void Hammer::update(double timeStep) {
          bjorn->suspend();
       }
       else if (dat.thisObj.mesh != HAMMER_NODE && dat.thisObj.mesh != STUDS && dat.thisObj.mesh != STUD_BAND && !pickCollision) {
-         printf("hammer resting against object\n");
-         //moveBy(displacement);
          setRotation(previousAngle);
          moveBy(-getVel()*(float)timeStep);
          bjorn->suspend();
@@ -417,7 +397,6 @@ void Hammer::update(double timeStep) {
             addVelocity((bjorn->getPos() - getPos())*0.2f);
          }
       }
-      //bjorn->suspend();
    }
    else {
       if (glm::length(getVel()) > 0.1) {

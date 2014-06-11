@@ -270,14 +270,10 @@ glm::vec3 Mountain::lockOn(glm::vec3 pos, glm::vec3 & norms)
          norms = glm::normalize(glm::vec3(-depthOffsetX,0.0f,depthOffsetZ));
          mountPos.z = fabsf(depthZ) - depthOffsetZ/depthOffset;
          mountPos.x = fabsf(depthX) + depthOffsetX/depthOffset;
-         //printf("depth:(%f,0.0,%f), offset(%f,0.0,%f) / %f\n",depthX,depthZ,depthOffsetX,depthOffsetZ,depthOffset);
          break;
       default:
          break;
       }
-      //printf("depth: %f on side %d with normal: (%f, %f, %f) at coords (%f, %f) with position (%f %f %f)\n",depthOffset, side,norms.x,norms.y,norms.z, x, y, roughPos.x, roughPos.y, roughPos.z);
-   //}
-   //printf("locked on to: (%f,%f,%f)\n",mountPos.x,mountPos.y,mountPos.z);
    return mountPos;
 }
 
@@ -304,12 +300,6 @@ int Mountain::getSide(glm::vec3 pos)
    glm::vec3 norms;
    float x,y,z, off, f, r, b, l;
    off = (float)MOUNT_WIDTH;
-   /*x = ((float)MOUNT_WIDTH - pos.x) * ((float)IMG_MAX_X / MOUNT_WIDTH);
-   y = (((float)MOUNT_HEIGHT - pos.y) * (((float)IMG_MAX_Y - (float)IMG_MIN_Y) / (float)MOUNT_HEIGHT)) + (float)IMG_MIN_Y;
-   y = interpolateDepth(x,y,0,norms);
-   x = 30.0f;
-   z = 30.0f;
-   off -= (1.0 - y / 255.0) * off;*/
    f = front.a*pos.x + front.b*pos.y + front.c*pos.z + front.d;
    r = rght.a*pos.x + rght.b*pos.y + rght.c*pos.z + rght.d;
    b = back.a*pos.x + back.b*pos.y + back.c*pos.z + back.d;
@@ -323,32 +313,6 @@ int Mountain::getSide(glm::vec3 pos)
    else if (r >= 0.0) side = MOUNT_RIGHT;
    else if (b >= 0.0) side = MOUNT_BACK;
    else if (l >= 0.0) side = MOUNT_LEFT;
-   //printf("f:%f,r:%f,b:%f,l:%f\n",f,r,b,l);
-   /*if (pos.x >= pos.z && pos.z < pos.y) {
-      if (pos.x < pos.y*off/MOUNT_HEIGHT) {
-         side = MOUNT_FR;
-      } else if (pos.x >= off - pos.y) {
-         side = MOUNT_LF;
-      } else {
-         side = MOUNT_FRONT;
-      }
-   } else if (pos.x >= pos.z && pos.z < off - pos.y) {
-      side = MOUNT_LEFT;
-   } else if (pos.x >= pos.z) {
-      side = MOUNT_BL;
-   } else if (pos.z > pos.x && pos.x < pos.y) {
-      if (pos.z < pos.y) {
-         side = MOUNT_FR;
-      } else if (pos.z >= off - pos.y) {
-         side = MOUNT_RB;
-      } else {
-         side = MOUNT_RIGHT;
-      }
-   } else if (pos.z > pos.x && pos.x < off - pos.y) {
-      side = MOUNT_BACK;
-   } else if (pos.z > pos.x) {
-      side = MOUNT_BL;
-   }*/
    return side;
 }
 #endif

@@ -124,13 +124,6 @@ void Bjorn::update(double timeStep) {
    glm::vec3 displacement, newPos, adjustment;
    cData = world->checkCollision(this, modelIdx);
    if (cData.hitObj.obj >= 0) {
-      /*
-      printf("Bjorn vertex %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) while trying to move (%f, %f, %f)\n",
-             cData.thisObj.tri, cData.hitObj.obj, cData.hitObj.tri,
-             cData.collisionPoint.x, cData.collisionPoint.y,cData.collisionPoint.z,cData.collisionNormal.x, cData.collisionNormal.y,cData.collisionNormal.z,
-             cData.collisionAngle.x, cData.collisionAngle.y,cData.collisionAngle.z,cData.collisionStrength.x,cData.collisionStrength.y,cData.collisionStrength.z);
-      */
-      
       displacement = cData.collisionAngle-cData.collisionStrength;
       moveBy(displacement); //reevaluate location
 
