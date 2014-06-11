@@ -1,0 +1,1 @@
+export LD_LIBRARY_PATH="/home/idunn01/484/glew-1.10.0/lib:$LD_LIBRARY_PATH"

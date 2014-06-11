@@ -197,10 +197,10 @@ void Hammer::update(double timeStep) {
    dat = world->checkCollision(this, modelIdx);
    if (dat.hitObj.obj >= 0) {
       
-      printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
+      /*printf("Hommur vertex %d node %d hit platform %d face %d at the location (%f, %f, %f) with normal (%f, %f, %f) while moving in the direction (%f, %f, %f) after trying to move (%f, %f, %f)\n",
              dat.thisObj.tri, dat.thisObj.mesh, dat.hitObj.obj, dat.hitObj.tri,
              dat.collisionPoint.x, dat.collisionPoint.y,dat.collisionPoint.z,dat.collisionNormal.x, dat.collisionNormal.y,dat.collisionNormal.z,
-             dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);
+             dat.collisionAngle.x, dat.collisionAngle.y,dat.collisionAngle.z,dat.collisionStrength.x, dat.collisionStrength.y,dat.collisionStrength.z);*/
        
       displacement = dat.collisionAngle-dat.collisionStrength;
       //hammer collides with object
@@ -214,7 +214,7 @@ void Hammer::update(double timeStep) {
          moveBy(-getVel()*(float)timeStep);
          setVelocity(-activeForce);
          // give bjorn force
-         activeForce = dat.collisionStrength * (float)(GRAVITY );
+         activeForce = dat.collisionStrength * (float)(GRAVITY *0.8);
          bjorn->addVelocity(-activeForce);///(float)timeStep);
          // lock rotation temporarily
          lockTime = 0.1;
@@ -252,7 +252,7 @@ void Hammer::update(double timeStep) {
          // move bjorn
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
          projection = glm::dot(getVel(),pickNormal)*pickNormal;
-         activeForce = getVel() - projection;
+         activeForce = (getVel() - projection) * glm::vec3(0.1f,(float)GRAVITY,0.1);
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
          }
@@ -274,8 +274,7 @@ void Hammer::update(double timeStep) {
             pickDepth -= glm::length(pickMove);
             bjorn->addVelocity(-pickMove);
          }
-         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
-         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
+         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));//(float)timeStep);
          //bjorn->setVelocity(bjorn->getVel() * dat.collisionNormal);
       }
       //pick hit object
@@ -288,11 +287,12 @@ void Hammer::update(double timeStep) {
          locked = true;
          pickCollision = true;
          moveBy(-getVel()*(float)timeStep);
+         moveBy(dat.collisionAngle);
          // set bjorn velocity
          // set hit angle
          pickAngle = glm::normalize(dat.collisionAngle);
-         projection = glm::dot(getVel(),pickNormal)*pickNormal;
-         activeForce = (getVel() - projection) * glm::vec3(0,1.0f,0);
+         projection = glm::dot(-displacement,pickNormal)*pickNormal;
+         activeForce = (-displacement - projection) * glm::vec3(0,1.0f,0);
          Sound::pickStrike(max(glm::length(dat.collisionStrength),1.0f));
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
@@ -315,7 +315,6 @@ void Hammer::update(double timeStep) {
             pickDepth -= glm::length(pickMove);
             bjorn->addVelocity(-pickMove);
          }
-         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
          // suspend bjorn
          bjorn->suspend();
@@ -352,13 +351,12 @@ void Hammer::update(double timeStep) {
             pickDepth -= glm::length(pickMove);
             bjorn->addVelocity(-pickMove);
          }
-         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          // move bjorn
-         activeForce = (getVel() - projection) * glm::vec3(0.1,1.0f,0.1);
+         activeForce = (getVel() - projection) * glm::vec3(0.1,(float)GRAVITY,0.1);
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
          }
-         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
+         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));//(float)timeStep);
          bjorn->suspend();
       }
       //pick pulling out of object
@@ -386,17 +384,17 @@ void Hammer::update(double timeStep) {
             pickDepth -= glm::length(pickMove);
             bjorn->addVelocity(-pickMove);
          }
-         printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
+         //printf("pick depth: %f, MAX: %f\n",pickDepth, MAX_PICK_DEPTH);
          setRotation(previousAngle);
          // lock rotation
          lockTime = 1.0;
          locked = true;
          //m/s         = m/s                     * (no unit)           - (m/s^2                * s)
-         activeForce = (getVel() - projection) * glm::vec3(0.1,1.0f,0.1);
+         activeForce = (getVel() - projection) * glm::vec3(0.1,(float)GRAVITY,0.1);
          if (glm::length(activeForce) > MAX_FORCE) {
             activeForce *= MAX_FORCE / glm::length(activeForce);
          }
-         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*15.2f));//(float)timeStep);
+         bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));//(float)timeStep);
          bjorn->suspend();
       }
       else if (dat.thisObj.mesh != HAMMER_NODE && dat.thisObj.mesh != STUDS && dat.thisObj.mesh != STUD_BAND && !pickCollision) {
@@ -412,7 +410,7 @@ void Hammer::update(double timeStep) {
          }
          //                  m/s
          if (glm::length(bjornOffset) < 1.79f) {
-            bjorn->addVelocity(-activeForce);//(float)timeStep);
+            bjorn->addVelocity(-activeForce/(2.0f+glm::length(bjorn->getVel())*5.2f));//(float)timeStep);
          }
          else {
             bjorn->addVelocity((getPos() - bjorn->getPos())*0.05f);
