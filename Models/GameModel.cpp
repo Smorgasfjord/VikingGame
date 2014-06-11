@@ -359,9 +359,23 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshDat
    unsigned int mIdx;
    glm::mat4 trans;
 
-   for (int k = 0; k < 16; k++) {
-      arr[k] = *(node->mTransformation[k]);
-   }
+      arr[15] = node->mTransformation.a1;
+      arr[14] = node->mTransformation.a2;
+      arr[13] = node->mTransformation.a3;
+      arr[12] = node->mTransformation.a4;
+      arr[11] = node->mTransformation.b1;
+      arr[10] = node->mTransformation.b2;
+      arr[9] = node->mTransformation.b3;
+      arr[8] = node->mTransformation.b4;
+      arr[7] = node->mTransformation.c1;
+      arr[6] = node->mTransformation.c2;
+      arr[5] = node->mTransformation.c3;
+      arr[4] = node->mTransformation.c4;
+      arr[3] = node->mTransformation.d1;
+      arr[2] = node->mTransformation.d2;
+      arr[1] = node->mTransformation.d3;
+      arr[0] = node->mTransformation.d4;
+   printf("%1.3f %1.3f %1.3f %1.3f\n%1.3f %1.3f %1.3f %1.3f\n%1.3f %1.3f %1.3f %1.3f\n%1.3f %1.3f %1.3f %1.3f\n\n",arr[0],arr[1],arr[2],arr[3],arr[4],arr[5],arr[6],arr[7],arr[8],arr[9],arr[10],arr[11],arr[12],arr[13],arr[14],arr[15]);
    //trans = glm::make_mat4x4(arr); //not working for some reason
    trans = glm::mat4(1.0f);
    nod = ModelNode(node->mName.C_Str(), trans);
@@ -400,6 +414,7 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
 
    static int wat = 0;
    MeshBufferData aMesh;
+   VertexBoneData mBone;
    struct MyMaterial aMat;
    //GLsizei stride = (3 + 3 + 2) * sizeof(float);
    float *firstComp = 0;
@@ -474,6 +489,13 @@ void GameModel::genVAOsAndUniformBuffer(const aiScene *sc, GLHandles handle) {
          glBindBuffer(GL_ARRAY_BUFFER, aMesh.tbo);
          glBufferData(GL_ARRAY_BUFFER, sizeof(float)*2*mesh->mNumVertices, texCoords, GL_STATIC_DRAW);
       }
+
+      // buffer for bones
+      /*if (mesh->HasBones()) {
+         glGenBuffers(1, &(aMesh.bbo));
+         glBindBuffer(GL_ARRAY_BUFFER, aMesh.bbo);
+         for (unsigned int b = 0; b < mesh->mNumBones; b++) {
+      */
 
       // unbind buffers
       //glBindVertexArray(0);

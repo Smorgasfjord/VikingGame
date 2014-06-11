@@ -92,6 +92,7 @@ struct MyMesh{
    GLuint tbo;
    GLuint nbo;
    GLuint ibo;
+   GLuint bbo;
    GLuint texIndex;
    GLuint uniformBlockIndex;
    MatData mat;
@@ -162,7 +163,10 @@ int LoadGLTextures(std::string fName);
 void set_float4(float f[4], float a, float b, float c, float d);
 void color4_to_float4(const aiColor4D *c, float f[4]);
 
-
+typedef struct vertexBoneData {
+   std::vector<unsigned int> boneIds;
+   std::vector<float> boneWeights;
+} VertexBoneData;
 
 class BufferContents {
    public:
@@ -170,6 +174,7 @@ class BufferContents {
       std::vector<glm::vec3> norms;
       std::vector<glm::vec2> texes;
       std::vector<glm::vec3> faces;
+      std::vector<VertexBoneData> bones;
       unsigned int numVerts;
       unsigned int numFaces;
 
