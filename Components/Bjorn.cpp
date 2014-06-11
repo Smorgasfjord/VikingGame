@@ -22,6 +22,7 @@
 #include "../Utils/GLSL_helper.h"
 
 #define MAX_SPEED 2.5
+#define RIGHT_ARM 2
 
 Bjorn::~Bjorn()
 {
@@ -52,6 +53,7 @@ GameObject("Bjorn")
    this->world = worl;
    modelIdx = world->placeObject(this, &simple);
    mountainSide = Mountain::getSide(pos);
+   animationStage = 0;
 }
 
 void Bjorn::save() {
@@ -67,20 +69,43 @@ void Bjorn::reset() {
    grounded = true;
 }
 
+void Bjorn::animate(ObjectNode & nod, glm::mat4 cumul) {
+   float frac, idx;
+   int keyIdx;
+   if (nod.keys.size() > 0) {
+      frac = modf(animationStage*2.0,&idx);
+      keyIdx = (int)idx % (nod.keys.size()-1);
+      nod.state.pos = (nod.keys[keyIdx].t*(1.0f-frac) + nod.keys[keyIdx+1].t*frac);
+      nod.state.scale = (nod.keys[keyIdx].s*(1.0f-frac) + nod.keys[keyIdx+1].s*frac);
+      nod.state.orient = (nod.keys[keyIdx].r*(1.0f-frac) + nod.keys[keyIdx+1].r*frac);
+      nod.state.translate = glm::translate(glm::mat4(1.0f), nod.state.pos);
+      nod.state.scaling = glm::scale(glm::mat4(1.0f), nod.state.scale);
+      nod.state.rotation = glm::rotate(glm::mat4(1.0f), nod.state.orient.z*180.0f/(float)M_PI-90.0f, glm::vec3(1.0f,0.0,0.0));
+      nod.state.rotation *= glm::rotate(glm::mat4(1.0f), nod.state.orient.y*180.0f/(float)M_PI, glm::vec3(0.0,1.0f,0.0));
+      nod.state.rotation *= glm::rotate(glm::mat4(1.0f), nod.state.orient.x*180.0f/(float)M_PI, glm::vec3(0.0,0.0,1.0f));
+      nod.state.transform = nod.state.translate * nod.state.rotation * nod.state.scaling;
+   }
+   for (int i = 0; i < nod.children.size(); i++) {
+      animate(nod.children[i],cumul);
+   }
+}
+
 //What Bjorn does
 void Bjorn::step(double timeStep)
 {
    int newSide;
-   if (grounded) {
+   if (grounded || !jumping) {
       Sound::walk();
       //Update X velocity due to friction
       if(glm::length(getVel()) > 0.1)
       {
+         animationStage += timeStep * glm::length(getVel());
          setVelocity(getVel() * (float)exp(-1.0 * timeStep));
       }
       else
       {
          setVelocity(glm::vec3(0.0f));
+         animationStage = 0;
          Sound::stopWalk();
       }
    }
@@ -89,8 +114,10 @@ void Bjorn::step(double timeStep)
       {
          setVelocity(getVel() * (float)exp(-0.2 * timeStep));
       } 
+      animationStage = 0;
       Sound::stopWalk();
    }
+   animate(model, glm::mat4(1.0f));
    //                         (m/s^2  * s)
    if (!suspended) addVelocity(-glm::vec3(0.0,GRAVITY * timeStep,0.0));
    moveBy(getVel()*(float)timeStep);
@@ -143,7 +170,7 @@ void Bjorn::update(double timeStep) {
       
    }
    else {
-      if (jumpCount < 0.2) {
+      if (jumpCount < 0.8) {
          jumpCount+=timeStep;
       }
       else {
@@ -165,7 +192,7 @@ void Bjorn::moveRight(float timeStep)
    }
 
    if (grounded || DEBUG_GAME) {
-      speed = getRotMat() * glm::vec4(0.0f, (float)GRAVITY*2.0f, 30.0f, 0.0f) * timeStep + glm::vec4(0.0f,-getVel().y,0.0f,0.0);
+      speed = getRotMat() * glm::vec4(0.0f, (float)GRAVITY*1.05f, 30.0f, 0.0f) * timeStep + glm::vec4(0.0f,-getVel().y,0.0f,0.0);
    }
    else {
       speed = getRotMat() * glm::vec4(0.0f, 0.0f, 6.0f, 0.0f) * timeStep;
@@ -188,7 +215,7 @@ void Bjorn::moveLeft(float timeStep)
    }
 
    if (grounded || DEBUG_GAME) {
-      speed = getRotMat() * glm::vec4(0.0f, (float)GRAVITY*2.0f, 30.0f, 0.0f) * timeStep + glm::vec4(0.0f,-getVel().y,0.0f,0.0);
+      speed = getRotMat() * glm::vec4(0.0f, (float)GRAVITY*1.05f, 30.0f, 0.0f) * timeStep + glm::vec4(0.0f,-getVel().y,0.0f,0.0);
    }
    else {
       speed = getRotMat() * glm::vec4(0.0f, 0.0f, 6.0f, 0) * timeStep;

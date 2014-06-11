@@ -278,6 +278,32 @@ void color4_to_float4(const aiColor4D *c, float f[4])
    f[3] = c->a;
 }
 
+glm::vec3 eulerAngles(glm::quat q1) {
+   glm::vec3 ret;
+   float sqw = q1.w*q1.w;
+   float sqx = q1.x*q1.x;
+   float sqy = q1.y*q1.y;
+   float sqz = q1.z*q1.z;
+   float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+   float test = q1.x*q1.y + q1.z*q1.w;
+   if (test > 0.499*unit) { // singularity at north pole
+      ret.y = 2.0 * atan2(q1.x,q1.w);
+      ret.x = M_PI/2.0;
+      ret.z = 0;
+      return ret;
+   }
+   if (test < -0.499*unit) { // singularity at south pole
+      ret.y = -2.0 * atan2(q1.x,q1.w);
+      ret.x = -M_PI/2.0;
+      ret.z = 0;
+      return ret;
+   }
+   ret.y = atan2(2.0*q1.y*q1.w-2.0*q1.x*q1.z , sqx - sqy - sqz + sqw);
+   ret.x = asin(2.0*test/unit);
+   ret.z = atan2(2.0*q1.x*q1.w-2.0*q1.y*q1.z , -sqx + sqy - sqz + sqw);
+   return ret;
+}
+
 BufferContents findBounds(BufferContents & bc) {
    BufferContents newBc = BufferContents(8,12);
    glm::vec3 min = glm::vec3(10000.0f), max = glm::vec3(-10000.0f), norm;
@@ -351,13 +377,16 @@ GameModel genSimpleModel(GameModel *mod) {
    return newMod;
 }
 
-ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshData) {
+ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshData, const aiAnimation *anim) {
    ModelNode nod;
    ModelMesh mesh;
    MeshBufferData mDat;
    float arr[16];
    unsigned int mIdx;
-   glm::mat4 trans;
+   glm::mat4 trans, mPos, mScale, mRot;
+   glm::quat converter;
+   KeyFrame frame;
+   std::vector<glm::vec3> pos, scale, rot;
 
       arr[15] = node->mTransformation.a1;
       arr[14] = node->mTransformation.a2;
@@ -386,7 +415,47 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshDat
       nod.meshes.push_back(mesh);
    }
    for (int j = 0; j < node->mNumChildren; j++) {
-      nod.children.push_back(genModelNode(node->mChildren[j], meshData));
+      nod.children.push_back(genModelNode(node->mChildren[j], meshData, anim));
+   }
+   if (anim != NULL) {
+      for (int a = 0; a < anim->mNumChannels; a++) {
+         if (anim->mChannels[a]->mNodeName == node->mName) {
+            for (int k = 0; k < anim->mChannels[a]->mNumPositionKeys; k++) {
+               pos.push_back(glm::vec3());
+               pos[k].z = anim->mChannels[a]->mPositionKeys[k].mValue.x;
+               pos[k].x = anim->mChannels[a]->mPositionKeys[k].mValue.y;
+               pos[k].y = anim->mChannels[a]->mPositionKeys[k].mValue.z;
+               printf("animation transation: %f,%f,%f\n", pos[k].x,pos[k].y,pos[k].z);
+            }
+            for (int k = 0; k < anim->mChannels[a]->mNumScalingKeys; k++) {
+               scale.push_back(glm::vec3());
+               scale[k].x = anim->mChannels[a]->mScalingKeys[k].mValue.x;
+               scale[k].y = anim->mChannels[a]->mScalingKeys[k].mValue.y;
+               scale[k].z = anim->mChannels[a]->mScalingKeys[k].mValue.z;
+               printf("animation scaling: %f,%f,%f\n", scale[k].x,scale[k].y,scale[k].z);
+            }
+            for (int k = 0; k < anim->mChannels[a]->mNumRotationKeys; k++) {
+               converter.x = anim->mChannels[a]->mRotationKeys[k].mValue.x;
+               converter.y = anim->mChannels[a]->mRotationKeys[k].mValue.y;
+               converter.z = anim->mChannels[a]->mRotationKeys[k].mValue.z;
+               converter.w = anim->mChannels[a]->mRotationKeys[k].mValue.w;
+               rot.push_back(eulerAngles(converter));
+               printf("animation rotation: %f,%f,%f\n", rot[k].x*180.0f/(float)M_PI,rot[k].y*180.0f/(float)M_PI,rot[k].z*180.0f/(float)M_PI);
+            }
+            for (int m = 0; m < pos.size(); m++) {
+               /*mPos = glm::translate(glm::mat4(1.0f), pos[m]);
+               mScale = glm::scale(glm::mat4(1.0f), scale[m]);
+               mRot = glm::rotate(glm::mat4(1.0f), rot[m].x*180.0f/(float)M_PI, glm::vec3(1.0f,0.0,0.0));
+               mRot *= glm::rotate(glm::mat4(1.0f), rot[m].y*180.0f/(float)M_PI, glm::vec3(0.0f,1.0,0.0));
+               mRot *= glm::rotate(glm::mat4(1.0f), rot[m].z*180.0f/(float)M_PI, glm::vec3(0.0f,0.0,1.0));
+               trans = mPos * mRot * mScale;*/
+               frame.t = pos[m];
+               frame.s = scale[m];
+               frame.r = rot[m];
+               nod.keys.push_back(frame);
+            }
+         }
+      }
    }
    return nod;
 }
@@ -394,7 +463,13 @@ ModelNode genModelNode(const aiNode *node, std::vector<MeshBufferData> & meshDat
 ModelNode genModel(const aiScene *sc, std::vector<MeshBufferData> & meshData) {
    ModelNode mod;
 
-   mod = genModelNode(sc->mRootNode, meshData);
+   if (sc->HasAnimations()) {
+      mod = genModelNode(sc->mRootNode, meshData, sc->mAnimations[0]);
+   }
+   else {
+      mod = genModelNode(sc->mRootNode, meshData, NULL);
+   }
+
    return mod;
 }
 

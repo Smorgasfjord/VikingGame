@@ -29,6 +29,7 @@
 #include "GameObject.h"
 #include "../Utils/World.h"
 #include "../Audio/Sound.h"
+#define RIGHT_ARM 2
 
 
 class Bjorn : public GameObject
@@ -50,12 +51,14 @@ class Bjorn : public GameObject
       bool screamed;
       bool jumping;
       bool suspended;
+      void animate(ObjectNode & nod, glm::mat4 cumul);
       void save();
       void reset();
    private:
       void SetModel(glm::vec3 loc, glm::vec3 size);
       World * world;
       float mass;
+      float animationStage;
       float gravity;
       bool s_facingRight;
       int s_mountainSide;

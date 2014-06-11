@@ -27,6 +27,7 @@ void initGameObjState(Transform_t *state) {
 void ObjectNode::initialize(ModelNode & modNod) {
    ObjectMesh mesh;
    ObjectNode nod;
+   KeyFrame frame;
    for (int i = 0; i < modNod.meshes.size(); i++) {
       mesh = ObjectMesh(modNod.meshes[i].mIdx, modNod.meshes[i].buffDat);
       meshes.push_back(mesh);
@@ -35,6 +36,9 @@ void ObjectNode::initialize(ModelNode & modNod) {
       nod = ObjectNode(modNod.children[j].name.c_str());
       nod.initialize(modNod.children[j]);
       children.push_back(nod);
+   }
+   for (int k = 0; k < modNod.keys.size(); k++) {
+      keys.push_back(modNod.keys[k]);
    }
    state.transform = modNod.transform;
 }
@@ -231,7 +235,7 @@ void GameObject::draw() {
 }
 
 void ObjectNode::render(GLHandles handle, mat4 cumulative) {
-   mat4 current = state.transform * cumulative;
+   mat4 current = cumulative * state.transform;// * cumulative;
    safe_glUniformMatrix4fv(handle.uModelMatrix, value_ptr(current));
    safe_glUniformMatrix4fv(handle.uNormMatrix, value_ptr(transpose(inverse(current))));
    
