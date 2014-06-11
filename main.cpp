@@ -264,7 +264,7 @@ void setWorld()
    simplePlatformMod = genSimpleModel(&platMod);
    
    placeLights();
-   cout << "Lights lit";
+   cout << "Lights lit\n";
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -381,7 +381,6 @@ void InstallShader(const GLchar *vShaderName, const GLchar *fShaderName, GLHandl
    handles->depthMatrixID = safe_glGetUniformLocation(ShadeProg, "uDepthMVP");
    handles->shadowMapID = safe_glGetUniformLocation(ShadeProg, "uShadowMap");
    handles->depthBiasID = safe_glGetUniformLocation(ShadeProg, "uDepthBiasMVP");
-   handles->biasMatrix = safe_glGetUniformLocation(ShadeProg, "biasMatrix");
    
    printf("sucessfully installed shader %d\n", ShadeProg);
 }
