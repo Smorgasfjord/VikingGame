@@ -61,6 +61,8 @@
 #include <assimp/scene.h>
 
 #include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
+#include "../glm/gtc/quaternion.hpp"
 #include "../glm/gtc/type_ptr.hpp"
 
 using namespace std;
@@ -168,6 +170,12 @@ typedef struct vertexBoneData {
    std::vector<float> boneWeights;
 } VertexBoneData;
 
+typedef struct keyFrame {
+   glm::vec3 t;
+   glm::vec3 s;
+   glm::vec3 r;
+} KeyFrame;
+
 class BufferContents {
    public:
       std::vector<glm::vec3> verts;
@@ -215,6 +223,7 @@ class ModelNode {
       std::vector<ModelNode> children;
       std::string name;
       glm::mat4 transform;
+      std::vector<KeyFrame> keys;
 
       ModelNode()
       {

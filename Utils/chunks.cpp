@@ -151,7 +151,7 @@ MicroChunk * ChunkWorld::addMicroChunk(float x, float y, float z) {
 }
 
 glm::mat4 ChunkWorld::accumTransform(ObjectNode *node, glm::mat4 cumulative, int & currNod, int targetNode) {
-   glm::mat4 current = node->state.transform * cumulative, ret;
+   glm::mat4 current = cumulative * node->state.transform, ret;
    currNod++;
    if (currNod == targetNode) {
       return current;
@@ -168,7 +168,8 @@ glm::mat4 ChunkWorld::accumTransform(ObjectNode *node, glm::mat4 cumulative, int
 glm::mat4 ChunkWorld::findTransform(ObjData dat) {
    GameObject *mesh = &(objects[dat.obj]);
    int currNod = -1;
-   return accumTransform(&(mesh->model), glm::mat4(), currNod, dat.nod);
+   return mesh->model.state.transform;
+   //return accumTransform(&(mesh->model), glm::mat4(), currNod, dat.nod);
 }
 
 glm::vec3 ChunkWorld::findCollisionPoint(glm::vec3 ray, glm::vec3 eye, ObjData dat, glm::mat4 trans) {
@@ -316,8 +317,8 @@ CollisionData ChunkWorld::checkMeshCollision(const BufferContents & geom, glm::m
 }
 
 CollisionData ChunkWorld::checkNodeCollision(ObjectNode & newNod, ObjectNode & oldNod, const vector<BufferContents> & geom, glm::mat4 newCumulative, glm::mat4 oldCumulative, ObjData & dat) {
-   glm::mat4 newCurrent = newNod.state.transform * newCumulative;
-   glm::mat4 oldCurrent = oldNod.state.transform * oldCumulative;
+   glm::mat4 newCurrent = newCumulative;// *  newNod.state.transform * newCumulative;
+   glm::mat4 oldCurrent = oldCumulative;// * oldNod.state.transform * oldCumulative;
    CollisionData ret, newRet;
    ObjData cDat;
    cDat.obj = -1;
@@ -346,7 +347,7 @@ CollisionData ChunkWorld::checkForCollision(GameObject *obj, int objIndex) {
    GameObject & old = objects[objIndex];
    gDat.nod = -1;
    gDat.obj = objIndex;
-   return checkNodeCollision(obj->model, old.model, models[objIndex], glm::mat4(1.0f), glm::mat4(1.0f), gDat);
+   return checkNodeCollision(obj->model, old.model, models[objIndex], obj->model.state.transform, old.model.state.transform, gDat);
 }
 
 
@@ -392,7 +393,7 @@ void ChunkWorld::traceMesh(const BufferContents & geom, glm::mat4 trans, ObjData
 }
 
 int ChunkWorld::traceNode(ObjectNode *node, const vector<BufferContents> & geom, glm::mat4 cumulative, ObjData dat) {
-   glm::mat4 current = node->state.transform * cumulative;
+   glm::mat4 current = cumulative;// * node->state.transform;// * cumulative;
    dat.nod++;
    for (int i = 0; i < node->meshes.size(); i++) {
       dat.mesh = i;
@@ -437,7 +438,7 @@ void ChunkWorld::repopulate(GameObject* obj, int objIndex) {
    depopulate(objIndex);
    dat.obj = objIndex;
    dat.nod = -1;
-   traceNode(&(obj->model), models[objIndex], glm::mat4(1.0f), dat);
+   traceNode(&(obj->model), models[objIndex], obj->model.state.transform, dat);
    obj->copyTo(objects[objIndex]);
 }
 
@@ -447,7 +448,7 @@ int ChunkWorld::populate(GameObject *mesh, const vector<BufferContents> & geom) 
 
    dat.obj = objCount;
    dat.nod = -1;
-   traceNode(&(mesh->model), geom, glm::mat4(1.0f), dat);
+   traceNode(&(mesh->model), geom, mesh->model.state.transform, dat);
 
    objects.push_back(mesh->copy());
    gDat.obj = -1;
