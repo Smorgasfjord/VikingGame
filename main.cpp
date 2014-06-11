@@ -91,6 +91,7 @@ GLHandles depthHandles;
 World world;
 std::vector<int> platIdxs;
 GameModel simplePlatformMod;
+GameObject endFlag;
 
 //Bjorn
 GameModel bjornMod;
@@ -251,6 +252,7 @@ void setWorld()
    //Platforms
    GameModel platMod;
    std::vector<Platform> platforms;
+   GameModel endFlagMod;
    
    //Initialize models
    glActiveTexture(GL_TEXTURE0);
@@ -259,6 +261,7 @@ void setWorld()
    platMod = loadModel("Models/platform_2.dae", mainHandles);
    hammerMod = loadModel("Models/bjorn_hammer.dae", mainHandles);
    bjornMod = loadModel("Models/bjorn2.0.dae", mainHandles);
+   //endFlagMod = loadModel("Models/end_flag.dae", mainHandles);
 
    glActiveTexture(GL_TEXTURE1);
    fogTex = LoadGLTextures("Models/FogTexture.png");
@@ -268,7 +271,13 @@ void setWorld()
    placeLights();
    cout << "Lights lit\n";
    
-   initSnowParticles();
+   //initSnowParticles();
+   
+   endFlag = GameObject("flag");
+   endFlag.initialize(skyBoxMod, 0, 4, mainHandles);
+   endFlag.setPos(flagPos);
+   endFlag.moveBy(glm::vec3(0, 0, 5));
+   
    
    skyBox = GameObject("skybox");
    skyBox.initialize(skyBoxMod, 0, 4, mainHandles);
@@ -505,6 +514,8 @@ void Draw (void)
    glDisable( GL_DEPTH_TEST );
    skyBox.draw();
    glEnable( GL_DEPTH_TEST );
+   
+   //endFlag.draw();
     
    safe_glUniform1f(mainHandles.uFogStrength, sqrt(bjorn.getPos().y));
    //If its the opening shot make sure we draw on the side the camera is on
@@ -796,7 +807,7 @@ void Animate()
    else if(!openingShot)
    {
       wind += glm::vec3(randomFloat(-0.01,0.01) + 0.05f, sqrt(fabsf(bjorn.getPos().y)) / 1000.0f, randomFloat(-0.005,0.005)) * (float)timeStep;
-      initDustParticles();
+      //initDustParticles();
       if(zoeMode)
          ZoeSmash(timeStep);
 

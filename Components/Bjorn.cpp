@@ -127,16 +127,9 @@ void Bjorn::step(double timeStep)
    //Check if we've changed sides of the mountain
    if(newSide != mountainSide)
    {
-         setRotation(glm::vec3(0, 45.0 * newSide + 270.0, 0));
-         if (!facingRight) rotateBy(glm::vec3(0,180.0f,0));
+      setRotation(glm::vec3(0, 45.0 * newSide + 270.0, 0));
+      if (!facingRight) rotateBy(glm::vec3(0,180.0f,0));
       
-      //Transfer velocity
-      /*
-      if (getVel().x != 0)
-         setVelocity(glm::vec3(0, getVel().y, getVel().x));
-      else
-         setVelocity(glm::vec3(getVel().z, getVel().y, 0));
-   */
       mountainSide = newSide;
    }
    
